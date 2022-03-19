@@ -1,0 +1,26 @@
+server:
+  port: 9092
+
+eureka:
+  client:
+    registryFetchIntervalSeconds: 5
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  application:
+    name: bolnica-gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: user
+          uri: lb://BOLNICA-USER-SERVICE
+          predicates:
+            - Path=/bolnica-user-service/**
+
+zuul:
+  sensitiveHeaders: Cookie,Set-Cookie
+
+ribbon:
+  ServerListRefreshInterval: 5000
