@@ -9,16 +9,16 @@ public class ZdravstvenaUstanova {
     @Id
     @Column(nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id_bolnice;
+    private long idBolnice;
 
     @Column(nullable = false, unique = true)
-    private long poslovni_broj_bolnice;
+    private long poslovniBrojBolnice;
 
     @Column(nullable = false)
     private String naziv;
 
     @Column(nullable = false)
-    private String skracen_naziv;
+    private String skracenNaziv;
 
     @Column(nullable = false)
     private String mesto;
@@ -42,20 +42,20 @@ public class ZdravstvenaUstanova {
 
     }
 
-    public long getId_bolnice() {
-        return id_bolnice;
+    public long getIdBolnice() {
+        return idBolnice;
     }
 
-    public void setId_bolnice(long id_bolnice) {
-        this.id_bolnice = id_bolnice;
+    public void setIdBolnice(long idBolnice) {
+        this.idBolnice = idBolnice;
     }
 
-    public long getPoslovni_broj_bolnice() {
-        return poslovni_broj_bolnice;
+    public long getPoslovniBrojBolnice() {
+        return poslovniBrojBolnice;
     }
 
-    public void setPoslovni_broj_bolnice(long poslovni_broj_bolnice) {
-        this.poslovni_broj_bolnice = poslovni_broj_bolnice;
+    public void setPoslovniBrojBolnice(long poslovniBrojBolnice) {
+        this.poslovniBrojBolnice = poslovniBrojBolnice;
     }
 
     public String getNaziv() {
@@ -66,12 +66,12 @@ public class ZdravstvenaUstanova {
         this.naziv = naziv;
     }
 
-    public String getSkracen_naziv() {
-        return skracen_naziv;
+    public String getSkracenNaziv() {
+        return skracenNaziv;
     }
 
-    public void setSkracen_naziv(String skracen_naziv) {
-        this.skracen_naziv = skracen_naziv;
+    public void setSkracenNaziv(String skracenNaziv) {
+        this.skracenNaziv = skracenNaziv;
     }
 
     public String getMesto() {

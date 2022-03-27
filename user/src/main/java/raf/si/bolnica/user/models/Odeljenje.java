@@ -29,14 +29,6 @@ public class Odeljenje {
 
     }
 
-    public List<User> getZaposleni() {
-        return zaposleni;
-    }
-
-    public void setZaposleni(List<User> zaposleni) {
-        this.zaposleni = zaposleni;
-    }
-
     public long getIdOdeljenja() {
         return idOdeljenja;
     }
@@ -67,6 +59,14 @@ public class Odeljenje {
 
     public void setBolnica(ZdravstvenaUstanova bolnica) {
         this.bolnica = bolnica;
+    }
+
+    public List<User> getZaposleni() {
+        return zaposleni;
+    }
+
+    public void setZaposleni(List<User> zaposleni) {
+        this.zaposleni = zaposleni;
     }
 
     public boolean isObrisan() {
