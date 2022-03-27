@@ -16,52 +16,52 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userId;
 
-//    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private long licniBrojZaposlenog;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String name;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String surname;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private Date datumRodjenja;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String pol;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String jmbg;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String adresaStanovanja;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String mestoStanovanja;
 
-//    @Column(nullable = true)
+    @Column(nullable = true)
     private String kontaktTelefon;
 
-//    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String titula;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String zanimanje;
 
-//    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String korisnickoIme;
 
     @ManyToOne
     private Odeljenje odeljenje;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private String password;
 
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private boolean obrisan = false;
 
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
