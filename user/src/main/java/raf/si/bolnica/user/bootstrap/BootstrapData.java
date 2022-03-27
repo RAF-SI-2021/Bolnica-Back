@@ -48,7 +48,7 @@ public class BootstrapData implements CommandLineRunner {
         user.setMestoStanovanja("SRBIJA");
         user.setTitula("titula");
         user.setKorisnickoIme("superadmin");
-        
+        user.setZanimanje("zanimanje");
 
 
 
