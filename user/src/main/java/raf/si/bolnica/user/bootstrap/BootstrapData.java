@@ -9,6 +9,7 @@ import raf.si.bolnica.user.models.User;
 import raf.si.bolnica.user.repositories.RoleRepository;
 import raf.si.bolnica.user.repositories.UserRepository;
 
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +36,21 @@ public class BootstrapData implements CommandLineRunner {
         user.setName("Super");
         user.setSurname("Admin");
         user.setRoles(roles);
+
+        //admin user fields
+        user.setLicniBrojZaposlenog(123);
+        user.setName("admin");
+        user.setSurname("adminic");
+        user.setDatumRodjenja(new Date(System.currentTimeMillis()));
+        user.setPol("Muski");
+        user.setJmbg("123456789");
+        user.setAdresaStanovanja("adresa 1");
+        user.setMestoStanovanja("SRBIJA");
+        user.setTitula("titula");
+        user.setKorisnickoIme("superadmin");
+        user.setZanimanje("zanimanje");
+
+
 
         userRepository.save(user);
     }
