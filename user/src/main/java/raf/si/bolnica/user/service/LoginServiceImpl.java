@@ -37,10 +37,10 @@ public class LoginServiceImpl implements LoginService {
         validateUserUsername.accept(user);
         validatePassword.accept(requestDTO, user);
 
-        return jwtTokenProvider.createToken(requestDTO.getUserCredential(), user.getRoles());
+        return jwtTokenProvider.createToken(requestDTO.getEmail(), user);
     }
 
-    private final Function<LoginRequestDTO, User> fetchUserDetails = (loginRequestDTO) -> userRepository.findByEmail(loginRequestDTO.getUserCredential());
+    private final Function<LoginRequestDTO, User> fetchUserDetails = (loginRequestDTO) -> userRepository.findByEmail(loginRequestDTO.getEmail());
 
     private final Consumer<User> validateUserUsername = (admin) -> {
         if (Objects.isNull(admin))
