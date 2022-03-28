@@ -26,8 +26,30 @@ public class BootstrapData implements CommandLineRunner {
         Role adminRole = new Role();
         adminRole.setName("ROLE_ADMIN");
 
+        Role drSpecOdeljenjaRole = new Role();
+        drSpecOdeljenjaRole.setName("ROLE_DR_SPEC_ODELJENJA");
+
+        Role drSpecRole = new Role();
+        drSpecRole.setName("ROLE_DR_SPEC");
+
+        Role drSpecPovRole = new Role();
+        drSpecPovRole.setName("ROLE_DR_SPEC_POV");
+
+        Role visaMedSestraRole = new Role();
+        visaMedSestraRole.setName("ROLE_VISA_MED_SESTRA");
+
+        Role MedSestraRole = new Role();
+        MedSestraRole.setName("ROLE_MED_SESTRA");
+
+
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.save(adminRole));
+        roles.add(roleRepository.save(drSpecOdeljenjaRole));
+        roles.add(roleRepository.save(drSpecRole));
+        roles.add(roleRepository.save(drSpecPovRole));
+        roles.add(roleRepository.save(visaMedSestraRole));
+        roles.add(roleRepository.save(MedSestraRole));
+
 
         User user = new User();
         user.setEmail("superadmin");
