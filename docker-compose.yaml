@@ -1,0 +1,59 @@
+version: '3.1'
+
+services:
+  docker-mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  eureka:
+    image: abasic8619rn/bolnica-eureka:v1
+    container_name: eureka-service
+    ports: 
+      - "8761:8761"
+    expose:
+      - "8761"
+
+  gateway:
+    image: abasic8619rn/bolnica-gateway:v1
+    container_name: gateway-service
+    ports:
+      - "9092:9092"
+    # environment:
+    #   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+    links:
+      - eureka
+
+  user-service:
+    image: abasic8619rn/bolnica-user:v2
+    restart: always
+    ports:
+      - "8081:8081"
+    links:
+      - eureka
+    
+    # environment:
+    #   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      
+  # management-service:
+  #   image: abasic8619rn/bolnica-management
+  #   container_name: management-service
+  #   environment:
+  #     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+  #   ports:
+  #     - "8082:8082"
+  #   links:
+  #     - discovery
+
