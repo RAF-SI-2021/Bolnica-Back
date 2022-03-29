@@ -43,9 +43,6 @@ services:
       - "8081:8081"
     links:
       - eureka
-    
-    # environment:
-    #   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
       
   # management-service:
   #   image: abasic8619rn/bolnica-management
@@ -55,5 +52,5 @@ services:
   #   ports:
   #     - "8082:8082"
   #   links:
-  #     - discovery
+  #     - eureka
 
