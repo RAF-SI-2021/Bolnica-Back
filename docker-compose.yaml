@@ -19,7 +19,7 @@ services:
       - 8080:8080
 
   eureka:
-    image: abasic8619rn/bolnica-eureka:v1
+    # image: abasic8619rn/bolnica-eureka:v1
     container_name: eureka-service
     build:
       context: ./eureka
@@ -30,7 +30,7 @@ services:
       - "8761"
 
   gateway:
-    image: abasic8619rn/bolnica-gateway:v1
+    # image: abasic8619rn/bolnica-gateway:v1
     container_name: gateway-service
     ports:
       - "9092:9092"
@@ -43,7 +43,7 @@ services:
       - eureka
 
   user-service:
-    image: abasic8619rn/bolnica-user:v2
+    # image: abasic8619rn/bolnica-user:v2
     restart: always
     build:
       context: ./user
@@ -54,7 +54,7 @@ services:
       - eureka
       
   management-service:
-    image: abasic8619rn/bolnica-management
+    # image: abasic8619rn/bolnica-management
     container_name: management-service
     build:
       context: ./management
