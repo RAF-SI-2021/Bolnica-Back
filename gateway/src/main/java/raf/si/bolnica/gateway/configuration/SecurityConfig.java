@@ -30,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/bolnica-user-service/api/login").permitAll()
+                .antMatchers("/bolnica-user-service/api/create-employee").hasRole("ADMIN")
                 .antMatchers("/bolnica-user-service/api/hello").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
