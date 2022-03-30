@@ -30,28 +30,22 @@ public class UserController {
         return ok(userService.fetchUserByEmail(username));
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        System.out.println(loggedInUser.getRoles());
-        return "Hello " + loggedInUser.getUsername();
-    }
-
     @PostMapping("/forgot-password")
-    public HttpStatus forgotPassword(@RequestBody String usersEmail) {
+    public ResponseEntity<Void> forgotPassword() {
 
-        User user = userService.fetchUserByEmail(usersEmail);
-
-        System.out.println("ovo je username : " + usersEmail);
+        User user = userService.fetchUserByEmail(loggedInUser.getUsername());
 
         if (user == null) {
-            //username doesnt exist, return 403
-            return HttpStatus.valueOf(403);
+            // Username doesn't exist, return 403
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } else {
-            //username exists, proceeds to generate and save new password, also send email
+            // Username exists, proceeds to generate and save new password, also send email
             String generatedPassword = userService.generateNewPassword(user);
+
             userService.savePassword(user, generatedPassword);
-            emailService.sendEmail(usersEmail, generatedPassword);
-            return HttpStatus.valueOf(200);
+            emailService.sendEmail(loggedInUser.getUsername(), generatedPassword);
+
+            return ok().build();
         }
 
     }

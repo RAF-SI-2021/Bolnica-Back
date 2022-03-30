@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.user.models.User;
+import raf.si.bolnica.user.properties.EmailProperties;
 import raf.si.bolnica.user.repositories.UserRepository;
 
 
@@ -13,8 +14,10 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 @Service
-public class EmailServiceImpl implements EmailService{
+public class EmailServiceImpl implements EmailService {
 
+    @Autowired
+    private EmailProperties emailProperties;
 
     @Override
     public boolean sendEmail(String usersEmail, String password) {
@@ -24,16 +27,13 @@ public class EmailServiceImpl implements EmailService{
         properties.put("mail.smtp.host", "smtp.gmail.com");
         properties.put("mail.smtp.port", "587");
 
-        String myAccountEmail = "ibis.raf@gmail.com";
-        String myAccountPassword = "pvgkqgjwhdmiqrqd";
-
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(myAccountEmail, myAccountPassword);
+                return new PasswordAuthentication(emailProperties.getEmail(), emailProperties.getPassword());
             }
         });
-        Message message = prepareMessage(session, myAccountEmail, usersEmail,password);
+        Message message = prepareMessage(session, emailProperties.getEmail(), usersEmail,password);
         try {
             Transport.send(message);
             System.out.println("Mail is sent");
@@ -54,7 +54,7 @@ public class EmailServiceImpl implements EmailService{
                     "U nastavku email-a se nalazi vaša nova lozinka kojom se možete prijaviti na IBIS bolnički sistem:\n" +
                     "\n" +
                     newPassword+
-                    "\n" +
+                    "\n\n" +
                     "Sve najbolje,\n" +
                     "IBIS Administrator");
             return message;

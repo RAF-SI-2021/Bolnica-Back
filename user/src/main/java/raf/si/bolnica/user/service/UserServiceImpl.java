@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String generateNewPassword(User user) {
-        //generating new random 8 char password from alphanumericals
+        //generating new random 8 char password from alphanumerical
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
         SecureRandom random = new SecureRandom();
@@ -33,17 +33,13 @@ public class UserServiceImpl implements UserService {
             int randomIndex = random.nextInt(chars.length());
             sb.append(chars.charAt(randomIndex));
         }
-        String newPassword = sb.toString();
-        return newPassword;
-
+        return sb.toString();
     }
 
     @Override
     public void savePassword(User user, String password) {
-        //Encrypting password before saving it in database
+        // Encrypting password before saving it in database
         user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         userRepository.save(user);
-
     }
-
 }

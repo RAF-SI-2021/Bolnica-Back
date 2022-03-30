@@ -24,3 +24,4 @@ zuul:
 
 ribbon:
   ServerListRefreshInterval: 5000
+  ReadTimeout: 20000
