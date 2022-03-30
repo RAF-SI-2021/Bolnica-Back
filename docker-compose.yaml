@@ -3,66 +3,98 @@ version: '3.1'
 services:
   docker-mysql:
     image: mysql
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init-db.sql
     restart: always
+    volumes:
+        - ./init-db.sql:/data/application/init-db.sql
     environment:
       MYSQL_ROOT_PASSWORD: password
     ports:
       - "3306:3306"
     expose:
       - "3306"
+    networks:
+      - local_network
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+    depends_on:
+      docker-mysql:
+        condition: service_healthy
+    networks:
+      - local_network
 
   eureka:
     # image: abasic8619rn/bolnica-eureka:v1
+    restart: always
     container_name: eureka-service
     build:
       context: ./eureka
       dockerfile: Dockerfile
+    healthcheck:
+       test: curl -f http://localhost:8761
     ports: 
       - "8761:8761"
     expose:
       - "8761"
+    networks:
+      - local_network
 
   gateway:
     # image: abasic8619rn/bolnica-gateway:v1
+    restart: always
     container_name: gateway-service
     ports:
       - "9092:9092"
     build:
       context: ./gateway
       dockerfile: Dockerfile
-    # environment:
-    #   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
-    links:
-      - eureka
+    networks:
+      - local_network
+    depends_on:
+      eureka:
+        condition: service_healthy
 
   user-service:
     # image: abasic8619rn/bolnica-user:v2
-    restart: always
+    restart: unless-stopped
     build:
       context: ./user
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
-    links:
-      - eureka
+    networks:
+      - local_network
+    depends_on:
+      docker-mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
       
   management-service:
     # image: abasic8619rn/bolnica-management
+    restart: unless-stopped
     container_name: management-service
     build:
       context: ./management
       dockerfile: Dockerfile
-    # environment:
-    #   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
     ports:
       - "8082:8082"
-    links:
-      - eureka
+    networks:
+      - local_network
+    depends_on:
+      docker-mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
 
+networks:
+  local_network:
+    name: local_network
