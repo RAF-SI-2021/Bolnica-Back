@@ -9,6 +9,7 @@ import raf.si.bolnica.user.models.User;
 import raf.si.bolnica.user.repositories.RoleRepository;
 import raf.si.bolnica.user.repositories.UserRepository;
 
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,8 +27,30 @@ public class BootstrapData implements CommandLineRunner {
         Role adminRole = new Role();
         adminRole.setName("ROLE_ADMIN");
 
+        Role drSpecOdeljenjaRole = new Role();
+        drSpecOdeljenjaRole.setName("ROLE_DR_SPEC_ODELJENJA");
+
+        Role drSpecRole = new Role();
+        drSpecRole.setName("ROLE_DR_SPEC");
+
+        Role drSpecPovRole = new Role();
+        drSpecPovRole.setName("ROLE_DR_SPEC_POV");
+
+        Role visaMedSestraRole = new Role();
+        visaMedSestraRole.setName("ROLE_VISA_MED_SESTRA");
+
+        Role MedSestraRole = new Role();
+        MedSestraRole.setName("ROLE_MED_SESTRA");
+
+
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.save(adminRole));
+        roles.add(roleRepository.save(drSpecOdeljenjaRole));
+        roles.add(roleRepository.save(drSpecRole));
+        roles.add(roleRepository.save(drSpecPovRole));
+        roles.add(roleRepository.save(visaMedSestraRole));
+        roles.add(roleRepository.save(MedSestraRole));
+
 
         User user = new User();
         user.setEmail("superadmin");
@@ -35,6 +58,21 @@ public class BootstrapData implements CommandLineRunner {
         user.setName("Super");
         user.setSurname("Admin");
         user.setRoles(roles);
+
+        //admin user fields
+        user.setLicniBrojZaposlenog(123);
+        user.setName("admin");
+        user.setSurname("adminic");
+        user.setDatumRodjenja(new Date(System.currentTimeMillis()));
+        user.setPol("Muski");
+        user.setJmbg("123456789");
+        user.setAdresaStanovanja("adresa 1");
+        user.setMestoStanovanja("SRBIJA");
+        user.setTitula("titula");
+        user.setKorisnickoIme("superadmin");
+        user.setZanimanje("zanimanje");
+
+
 
         userRepository.save(user);
     }
