@@ -9,7 +9,7 @@ public class ZdravstvenaUstanova {
     @Id
     @Column(nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idBolnice;
+    private long zdravstvenaUstanovaId;
 
     @Column(nullable = false, unique = true)
     private long poslovniBrojBolnice;
@@ -42,12 +42,12 @@ public class ZdravstvenaUstanova {
 
     }
 
-    public long getIdBolnice() {
-        return idBolnice;
+    public long getZdravstvenaUstanovaId() {
+        return zdravstvenaUstanovaId;
     }
 
-    public void setIdBolnice(long idBolnice) {
-        this.idBolnice = idBolnice;
+    public void setZdravstvenaUstanovaId(long zdravstvenaUstanovaId) {
+        this.zdravstvenaUstanovaId = zdravstvenaUstanovaId;
     }
 
     public long getPoslovniBrojBolnice() {

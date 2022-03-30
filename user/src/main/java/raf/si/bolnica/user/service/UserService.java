@@ -7,4 +7,8 @@ public interface UserService {
     User fetchUserByEmail(String email);
 
     User createEmployee(User user);
+
+    String generateNewPassword(User user);
+
+    void savePassword(User user, String password);
 }

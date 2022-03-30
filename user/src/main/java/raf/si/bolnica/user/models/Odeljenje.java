@@ -8,7 +8,7 @@ public class Odeljenje {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idOdeljenja;
+    private long odeljenjeId;
 
     @Column(nullable = false)
     private long poslovniBrojOdeljenja;
@@ -29,12 +29,12 @@ public class Odeljenje {
 
     }
 
-    public long getIdOdeljenja() {
-        return idOdeljenja;
+    public long getOdeljenjeId() {
+        return odeljenjeId;
     }
 
-    public void setIdOdeljenja(long idOdeljenja) {
-        this.idOdeljenja = idOdeljenja;
+    public void setOdeljenjeId(long odeljenjeId) {
+        this.odeljenjeId = odeljenjeId;
     }
 
     public long getPoslovniBrojOdeljenja() {
