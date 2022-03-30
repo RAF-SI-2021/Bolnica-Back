@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
+import raf.si.bolnica.user.models.Odeljenje;
 import raf.si.bolnica.user.models.Role;
 import raf.si.bolnica.user.models.User;
+import raf.si.bolnica.user.models.ZdravstvenaUstanova;
+import raf.si.bolnica.user.repositories.OdeljenjeRepository;
 import raf.si.bolnica.user.repositories.RoleRepository;
 import raf.si.bolnica.user.repositories.UserRepository;
+import raf.si.bolnica.user.repositories.ZdravstvenaUstanovaRepository;
 
 import java.sql.Date;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,8 +27,32 @@ public class BootstrapData implements CommandLineRunner {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private OdeljenjeRepository odeljenjeRepository;
+
+    @Autowired
+    private ZdravstvenaUstanovaRepository zdravstvenaUstanovaRepository;
+
     @Override
     public void run(String... args) throws Exception {
+        ZdravstvenaUstanova zdravstvenaUstanova = new ZdravstvenaUstanova();
+        zdravstvenaUstanova.setAdresa("Heroja Milana Tepića 1, Beograd");
+        zdravstvenaUstanova.setDatumOsnivanja(new Date(Calendar.getInstance().getTime().getTime()));
+        zdravstvenaUstanova.setDelatnost("Ginekologija i akušerstvo");
+        zdravstvenaUstanova.setMesto("Beograd");
+        zdravstvenaUstanova.setNaziv("Kliničko-bolnički centar \"Dragiša Mišović\"");
+        zdravstvenaUstanova.setPoslovniBrojBolnice(1234);
+        zdravstvenaUstanova.setSkracenNaziv("KBC Dragiša Mišović");
+
+        zdravstvenaUstanova = zdravstvenaUstanovaRepository.save(zdravstvenaUstanova);
+
+        Odeljenje odeljenje = new Odeljenje();
+        odeljenje.setNaziv("Hirurgija");
+        odeljenje.setBolnica(zdravstvenaUstanova);
+        odeljenje.setPoslovniBrojOdeljenja(12345);
+
+        odeljenje = odeljenjeRepository.save(odeljenje);
+
         Role adminRole = new Role();
         adminRole.setName("ROLE_ADMIN");
 
@@ -53,11 +82,12 @@ public class BootstrapData implements CommandLineRunner {
 
 
         User user = new User();
-        user.setEmail("superadmin");
+        user.setEmail("test@gmail.com");
         user.setPassword(BCrypt.hashpw("superadmin", BCrypt.gensalt()));
         user.setName("Super");
         user.setSurname("Admin");
         user.setRoles(roles);
+        user.setOdeljenje(odeljenje);
 
         //admin user fields
         user.setLicniBrojZaposlenog(123);
