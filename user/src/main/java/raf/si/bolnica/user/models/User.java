@@ -3,6 +3,10 @@ package raf.si.bolnica.user.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +47,7 @@ public class User {
     @Column(nullable = true)
     private String kontaktTelefon;
 
+    //@Email(message = "Email not valid")
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -52,6 +57,8 @@ public class User {
     @Column(nullable = false)
     private String zanimanje;
 
+    @Size(min = 5, max = 30, message
+            = "Min 5 characters, max 30 characters")
     @Column(unique = true, nullable = false)
     private String korisnickoIme;
 

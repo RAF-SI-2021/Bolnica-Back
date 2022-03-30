@@ -5,4 +5,6 @@ import raf.si.bolnica.user.models.User;
 public interface UserService {
 
     User fetchUserByEmail(String email);
+
+    User createEmployee(User user);
 }
