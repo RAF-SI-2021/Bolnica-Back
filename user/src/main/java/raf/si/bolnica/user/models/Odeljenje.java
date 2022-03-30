@@ -1,5 +1,9 @@
 package raf.si.bolnica.user.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -20,6 +24,7 @@ public class Odeljenje {
     private ZdravstvenaUstanova bolnica;
 
     @OneToMany(mappedBy = "odeljenje")
+    @JsonIgnore
     private List<User> zaposleni;
 
     @Column(nullable = true)

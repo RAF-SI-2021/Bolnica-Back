@@ -2,6 +2,7 @@ package raf.si.bolnica.user.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import raf.si.bolnica.user.exceptionHandler.user.UserExceptionHandler;
 import raf.si.bolnica.user.interceptors.LoggedInUser;
 import raf.si.bolnica.user.models.Odeljenje;
 import raf.si.bolnica.user.models.User;
+import raf.si.bolnica.user.requests.CreateEmployeeRequestDTO;
 import raf.si.bolnica.user.responses.UserResponseDTO;
 import raf.si.bolnica.user.service.OdeljenjeService;
 import raf.si.bolnica.user.service.UserService;
@@ -37,8 +39,8 @@ public class UserController {
     @Autowired
     private EmailService emailService;
 
-    @GetMapping(value = "/fetch-user/{username}")
-    public ResponseEntity<UserResponseDTO> fetchAdminByUsername(@PathVariable("username") String username) {
+    @GetMapping(value = "/fetch-user", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserResponseDTO> fetchAdminByUsername(@RequestParam String username) {
         User user = userService.fetchUserByEmail(username);
         if (user != null) {
             UserResponseDTO userResponseDTO = new UserResponseDTO(user.getUserId(), user.getName(), user.getSurname(), user.getPassword(), user.getEmail(), user.getRoles());
@@ -68,24 +70,38 @@ public class UserController {
     }
 
     @PostMapping(value = Constants.CREATE_EMPLOYEE)
-    public ResponseEntity<?> createEmployee(@RequestBody User requestDTO) {
+    public ResponseEntity<?> createEmployee(@RequestBody CreateEmployeeRequestDTO requestDTO) {
         if (loggedInUser.getRoles().contains("ROLE_ADMIN")) {
-            Odeljenje odeljenje = odeljenjeService.fetchOdeljenjeById(requestDTO.getOdeljenje().getOdeljenjeId());
+            Odeljenje odeljenje = odeljenjeService.fetchOdeljenjeById(requestDTO.getDepartment());
             String username = requestDTO.getEmail().substring(0, requestDTO.getEmail().indexOf("@"));
             String password = requestDTO.getEmail().substring(0, requestDTO.getEmail().indexOf("@"));
 
-            requestDTO.setOdeljenje(odeljenje);
-            requestDTO.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
-            requestDTO.setKorisnickoIme(username);
+            userExceptionHandler.validateUsername.accept(username);
+            userExceptionHandler.validateUserTitle.accept(requestDTO.getTitle());
+            userExceptionHandler.validateUserProfession.accept(requestDTO.getProfession());
+            userExceptionHandler.validateUserGender.accept(requestDTO.getGender());
 
-            userExceptionHandler.validateUsername.accept(requestDTO.getKorisnickoIme());
-            userExceptionHandler.validateUserTitle.accept(requestDTO.getTitula());
-            userExceptionHandler.validateUserProfession.accept(requestDTO.getZanimanje());
+            User user = new User();
 
-            User userToReturn = userService.createEmployee(requestDTO);
-            return ResponseEntity.status(201).build();
+            user.setOdeljenje(odeljenje);
+            user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+            user.setKorisnickoIme(username);
+            user.setEmail(requestDTO.getEmail());
+            user.setName(requestDTO.getName());
+            user.setSurname(requestDTO.getSurname());
+            user.setAdresaStanovanja(requestDTO.getAddress());
+            user.setDatumRodjenja(requestDTO.getDob());
+            user.setMestoStanovanja(requestDTO.getCity());
+            user.setJmbg(requestDTO.getJmbg());
+            user.setKontaktTelefon(requestDTO.getContact());
+            user.setPol(requestDTO.getGender());
+            user.setTitula(requestDTO.getTitle());
+            user.setZanimanje(requestDTO.getProfession());
+
+            User userToReturn = userService.createEmployee(user);
+            return ok(userToReturn);
         }
-        return ResponseEntity.status(500).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
 }

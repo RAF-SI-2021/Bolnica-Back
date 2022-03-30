@@ -8,6 +8,8 @@ import raf.si.bolnica.user.exceptions.UnauthorisedException;
 import raf.si.bolnica.user.models.User;
 import raf.si.bolnica.user.requests.LoginRequestDTO;
 import raf.si.bolnica.user.utils.FileUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -38,6 +40,14 @@ public class UserExceptionHandler {
         List<String> professions = FileUtils.readUserProfessions();
         if (!professions.contains(userProfession))
             throw new InvalidRegistrationException(Constants.RegistrationInvalidFields.MESSAGE_USER_PROFESSION_INVALID, Constants.RegistrationInvalidFields.DEVELOPER_MESSAGE_USER_PROFESSION_INVALID);
+    };
+
+    public final Consumer<String> validateUserGender = (gender) -> {
+        List<String> genders = new ArrayList<>();
+        genders.add("male");
+        genders.add("female");
+        if (!genders.contains(gender))
+            throw new InvalidRegistrationException(Constants.RegistrationInvalidFields.MESSAGE_USER_GENDER_INVALID, Constants.RegistrationInvalidFields.DEVELOPER_MESSAGE_USER_GENDER_INVALID);
     };
 
     public final Consumer<User> validateUserUsername = (admin) -> {

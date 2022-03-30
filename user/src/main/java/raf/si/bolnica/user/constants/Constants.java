@@ -28,6 +28,9 @@ public class Constants {
 
         String DEVELOPER_MESSAGE_USER_PROFESSION_INVALID = "User profession not valid";
         String MESSAGE_USER_PROFESSION_INVALID = "There is no such profession";
+
+        String DEVELOPER_MESSAGE_USER_GENDER_INVALID = "User gender not valid";
+        String MESSAGE_USER_GENDER_INVALID = "There is no such gender";
     }
 
     public interface InvalidAdminUsername {

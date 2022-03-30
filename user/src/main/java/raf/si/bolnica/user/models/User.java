@@ -1,6 +1,8 @@
 package raf.si.bolnica.user.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -62,10 +64,11 @@ public class User {
     @Column(unique = true, nullable = false)
     private String korisnickoIme;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Odeljenje odeljenje;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)
