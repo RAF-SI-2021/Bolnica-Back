@@ -53,7 +53,7 @@ public class BootstrapData implements CommandLineRunner {
 
 
         User user = new User();
-        user.setEmail("superadmin");
+        user.setEmail("test@gmail.com");
         user.setPassword(BCrypt.hashpw("superadmin", BCrypt.gensalt()));
         user.setName("Super");
         user.setSurname("Admin");
