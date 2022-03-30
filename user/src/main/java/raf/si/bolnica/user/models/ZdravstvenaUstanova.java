@@ -1,5 +1,9 @@
 package raf.si.bolnica.user.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.List;
@@ -9,7 +13,7 @@ public class ZdravstvenaUstanova {
     @Id
     @Column(nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idBolnice;
+    private long zdravstvenaUstanovaId;
 
     @Column(nullable = false, unique = true)
     private long poslovniBrojBolnice;
@@ -30,6 +34,7 @@ public class ZdravstvenaUstanova {
     private String delatnost;
 
     @OneToMany(mappedBy = "bolnica")
+    @JsonIgnore
     private List<Odeljenje> odeljenja;
 
     @Column(nullable = true)
@@ -42,12 +47,12 @@ public class ZdravstvenaUstanova {
 
     }
 
-    public long getIdBolnice() {
-        return idBolnice;
+    public long getZdravstvenaUstanovaId() {
+        return zdravstvenaUstanovaId;
     }
 
-    public void setIdBolnice(long idBolnice) {
-        this.idBolnice = idBolnice;
+    public void setZdravstvenaUstanovaId(long zdravstvenaUstanovaId) {
+        this.zdravstvenaUstanovaId = zdravstvenaUstanovaId;
     }
 
     public long getPoslovniBrojBolnice() {
