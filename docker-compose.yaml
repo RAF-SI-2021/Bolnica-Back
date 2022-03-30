@@ -59,8 +59,8 @@ services:
     build:
       context: ./management
       dockerfile: Dockerfile
-    environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+    # environment:
+    #   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
     ports:
       - "8082:8082"
     links:
