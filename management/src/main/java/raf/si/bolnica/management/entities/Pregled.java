@@ -11,28 +11,40 @@ public class Pregled {
     @Column(name = "pregled_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long pregledId;
+
     @Column(nullable = false)
     private Date datumPregleda;
+
     private Boolean indikatorPoverljivosti = false;
+
     private String glavneTegobe;
+
     private String sadasnjaBolest;
+
     private String licnaAnamneza;
+
     private String porodicnaAnamneza;
+
     private String misljenjePacijenta;
+
     @Column(nullable = false)
     private String objektivniNalaz;
+
     private String dijagnoza;
+
     private String predlozenaTerapija;
+
     private String savet;
+
     private Boolean obrisan = false;
 
     // FKs
     @ManyToOne
     @JoinColumn(name = "zdravstveni_karton_id")
     private ZdravstveniKarton zdravstveniKarton;
-    @Column(nullable = false)
-    private long lbz;
 
+    @Column(nullable = false)
+    private long zaposleniId;
 
     public long getPregledId() {
         return pregledId;
@@ -146,11 +158,11 @@ public class Pregled {
         this.zdravstveniKarton = zdravstveniKarton;
     }
 
-    public long getLbz() {
-        return lbz;
+    public long getZaposleniId() {
+        return zaposleniId;
     }
 
-    public void setLbz(long lbz) {
-        this.lbz = lbz;
+    public void setZaposleniId(long zaposleniId) {
+        this.zaposleniId = zaposleniId;
     }
 }

@@ -14,12 +14,16 @@ public class ZdravstveniKarton {
     @Column(name = "zdravstveni_karton_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long zdravstveniKartonId;
+
     @Column(nullable = false)
     private Date datumRegistracije;
+
     @Enumerated(EnumType.STRING)
     private KrvnaGrupa krvnaGrupa;
+
     @Enumerated(EnumType.STRING)
     private RhFaktor rhFaktor;
+
     private Boolean obrisan = false;
 
     @OneToMany(mappedBy = "zdravstveniKarton")

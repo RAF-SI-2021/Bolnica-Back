@@ -10,18 +10,22 @@ public class Operacija {
     @Column(name = "operacija_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long operacijaId;
+
     @Column(nullable = false)
     private Date datumOperacije;
+
     @Column(nullable = false)
     private String opis;
+
     private Boolean obrisan = false;
 
     // FKs
     @ManyToOne
     @JoinColumn(name = "zdravstveni_karton_id", nullable = false)
     private ZdravstveniKarton zdravstveniKarton;
+
     @Column(nullable = false)
-    private long pbo;
+    private long odeljenjeId;
 
     public long getOperacijaId() {
         return operacijaId;
@@ -31,12 +35,12 @@ public class Operacija {
         this.operacijaId = operacijaId;
     }
 
-    public long getPbo() {
-        return pbo;
+    public long getOdeljenjeId() {
+        return odeljenjeId;
     }
 
-    public void setPbo(long pbo) {
-        this.pbo = pbo;
+    public void setOdeljenjeId(long odeljenjeId) {
+        this.odeljenjeId = odeljenjeId;
     }
 
     public Date getDatumOperacije() {

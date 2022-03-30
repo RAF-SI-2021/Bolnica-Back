@@ -14,45 +14,68 @@ public class Pacijent {
     @Column(name = "pacijent_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long pacijentId;
+
     @Column(nullable = false, unique = true)
     private UUID lbp;
+
     @Column(nullable = false)
     private String ime;
+
     @Column(nullable = false)
     private String prezime;
+
     @Column(nullable = false)
     private Date datumRodjenja;
+
     @Column(nullable = false)
     private String imeRoditelja;
+
     @Column(nullable = false, unique = true)
     private String jmbg;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Pol pol;
+
     @Column(nullable = false)
     private String mestoRodjenja;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CountryCode zemljaDrzavljanstva;
+
     private Timestamp datumVremeSmrti;
+
     private String adresa;
+
     private String mestoStanovanja;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CountryCode zemljaStanovanja;
+
     private String kontaktTelefon;
+
     @Column(unique = true)
     private String email;
+
     private String jmbgStaratelj;
-    private String nameStaratelj;
+
+    private String imeStaratelj;
+
     @Enumerated(EnumType.STRING)
     private PorodicniStatus porodicniStatus;
+
     @Enumerated(EnumType.STRING)
     private BracniStatus bracniStatus;
+
     private Integer brojDece;
+
     @Enumerated(EnumType.STRING)
     private StrucnaSprema stepenStrucneSpreme;
+
     private String zanimanje;
+
     private Boolean obrisan = false;
 
     // FKs
@@ -203,12 +226,12 @@ public class Pacijent {
         this.jmbgStaratelj = jmbgStaratelj;
     }
 
-    public String getNameStaratelj() {
-        return nameStaratelj;
+    public String getImeStaratelj() {
+        return imeStaratelj;
     }
 
-    public void setNameStaratelj(String nameStaratelj) {
-        this.nameStaratelj = nameStaratelj;
+    public void setImeStaratelj(String imeStaratelj) {
+        this.imeStaratelj = imeStaratelj;
     }
 
     public PorodicniStatus getPorodicniStatus() {
