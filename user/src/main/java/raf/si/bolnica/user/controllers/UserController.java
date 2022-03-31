@@ -1,5 +1,6 @@
 package raf.si.bolnica.user.controllers;
 
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +18,8 @@ import raf.si.bolnica.user.service.OdeljenjeService;
 import raf.si.bolnica.user.service.UserService;
 import raf.si.bolnica.user.service.EmailService;
 
+
+import javax.websocket.server.PathParam;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -101,6 +104,49 @@ public class UserController {
             User userToReturn = userService.createEmployee(user);
             return ok(userToReturn);
         }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+
+    @DeleteMapping(value = Constants.REMOVE_EMPLOYEE)
+    public ResponseEntity<?> removeEmployee(@RequestParam String username) {
+        if (loggedInUser.getRoles().contains("ROLE_ADMIN")) {
+
+            User user = userService.fetchUserByUsername(username);
+
+            if (user == null) {
+                return ResponseEntity.status(403).build();
+            }
+
+            if (user.getEmail().equals(loggedInUser.getUsername())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            userService.deleteById(user.getUserId());
+            return ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @GetMapping(value = Constants.GET_EMPLOYEE)
+    public ResponseEntity<UserResponseDTO> getEmployee(@PathVariable Long lbz) {
+
+        User user = userService.fetchUserByLBZ(lbz);
+
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+
+        System.out.println(user.getKorisnickoIme());
+
+        if (loggedInUser.getRoles().contains("ROLE_ADMIN") || loggedInUser.getLBZ().equals(lbz)) {
+            System.out.println("test");
+            UserResponseDTO userResponseDTO = new UserResponseDTO(user.getUserId(), user.getName(), user.getSurname(), "", user.getEmail(), user.getRoles());
+            return ok(userResponseDTO);
+        }
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 

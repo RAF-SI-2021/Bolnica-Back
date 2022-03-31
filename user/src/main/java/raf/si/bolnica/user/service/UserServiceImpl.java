@@ -16,9 +16,13 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public User fetchUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
+    public User fetchUserByEmail(String email) { return userRepository.findByEmail(email); }
+
+    @Override
+    public User fetchUserByUsername(String username) { return userRepository.findByKorisnickoIme(username); }
+
+    @Override
+    public User fetchUserByLBZ(Long lbz) { return userRepository.findByLicniBrojZaposlenog(lbz); }
 
     @Override
     public User createEmployee(User user) {
@@ -45,5 +49,10 @@ public class UserServiceImpl implements UserService {
         // Encrypting password before saving it in database
         user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         userRepository.save(user);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
     }
 }

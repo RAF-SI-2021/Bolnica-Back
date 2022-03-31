@@ -28,6 +28,7 @@ public class UserInfoInterceptor implements HandlerInterceptor {
             String[] roles = jws.getBody().get("roles", String.class).split(",");
 
             loggedInUser.setUsername(jws.getBody().getSubject());
+            loggedInUser.setLBZ(Long.valueOf((Integer)jws.getBody().get("LBZ")));
             loggedInUser.setRoles(new HashSet<>(Arrays.asList(roles)));
         }
 

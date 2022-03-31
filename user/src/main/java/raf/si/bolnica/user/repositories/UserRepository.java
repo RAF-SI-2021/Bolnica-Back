@@ -8,4 +8,8 @@ import raf.si.bolnica.user.models.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByEmail(String email);
+
+    User findByKorisnickoIme(String korisnickoIme);
+
+    User findByLicniBrojZaposlenog(Long lbz);
 }
