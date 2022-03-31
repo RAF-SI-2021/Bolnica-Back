@@ -18,6 +18,7 @@ import raf.si.bolnica.user.query.UserSpecification;
 import raf.si.bolnica.user.requests.CreateEmployeeRequestDTO;
 import raf.si.bolnica.user.requests.ListEmployeesRequestDTO;
 import raf.si.bolnica.user.requests.UpdateEmployeeRequestDTO;
+import raf.si.bolnica.user.responses.UserDataResponseDTO;
 import raf.si.bolnica.user.responses.UserResponseDTO;
 import raf.si.bolnica.user.service.OdeljenjeService;
 import raf.si.bolnica.user.service.UserService;
@@ -95,6 +96,7 @@ public class UserController {
 
             User user = new User();
 
+            user.setLicniBrojZaposlenog(requestDTO.getLbz());
             user.setOdeljenje(odeljenje);
             user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
             user.setKorisnickoIme(username);
@@ -138,7 +140,7 @@ public class UserController {
     }
 
     @GetMapping(value = Constants.GET_EMPLOYEE)
-    public ResponseEntity<UserResponseDTO> getEmployee(@PathVariable Long lbz) {
+    public ResponseEntity<UserDataResponseDTO> getEmployee(@PathVariable Long lbz) {
 
         User user = userService.fetchUserByLBZ(lbz);
 
@@ -151,15 +153,15 @@ public class UserController {
 
         if (loggedInUser.getRoles().contains("ROLE_ADMIN") || loggedInUser.getLBZ().equals(lbz)) {
             System.out.println("test");
-            UserResponseDTO userResponseDTO = new UserResponseDTO(user.getUserId(), user.getName(), user.getSurname(), "", user.getEmail(), user.getRoles());
-            return ok(userResponseDTO);
+            UserDataResponseDTO userDataResponseDTO = new UserDataResponseDTO(user);
+            return ok(userDataResponseDTO);
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @GetMapping(value = Constants.LIST_EMPLOYEES)
-    public ResponseEntity<List<UserResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO) {
+    public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO) {
         Specification spec = null;
         if(requestDTO.getName()!=null) {
             UserSpecification nameSpecification = new UserSpecification(new SearchCriteria("name",requestDTO.getName()));
@@ -198,11 +200,12 @@ public class UserController {
             }
         }
         List<User> users = userService.filterUsers(spec);
-        List<UserResponseDTO> userResponseDTOList = new ArrayList<>();
+        List<UserDataResponseDTO> userDataResponseDTOList = new ArrayList<>();
         for(User user: users) {
-            userResponseDTOList.add(new UserResponseDTO(user.getUserId(), user.getName(), user.getSurname(), "", user.getEmail(), user.getRoles()));
+            UserDataResponseDTO userDataResponseDTO = new UserDataResponseDTO(user);
+            userDataResponseDTOList.add(userDataResponseDTO);
         }
-        return ok(userResponseDTOList);
+        return ok(userDataResponseDTOList);
     }
 
     @PutMapping(value = Constants.UPDATE_EMPLOYEE)
