@@ -2,6 +2,7 @@ package raf.si.bolnica.user.controllers;
 
 import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,14 +13,21 @@ import raf.si.bolnica.user.exceptionHandler.user.UserExceptionHandler;
 import raf.si.bolnica.user.interceptors.LoggedInUser;
 import raf.si.bolnica.user.models.Odeljenje;
 import raf.si.bolnica.user.models.User;
+import raf.si.bolnica.user.query.SearchCriteria;
+import raf.si.bolnica.user.query.UserSpecification;
 import raf.si.bolnica.user.requests.CreateEmployeeRequestDTO;
+import raf.si.bolnica.user.requests.ListEmployeesRequestDTO;
 import raf.si.bolnica.user.responses.UserResponseDTO;
 import raf.si.bolnica.user.service.OdeljenjeService;
 import raf.si.bolnica.user.service.UserService;
 import raf.si.bolnica.user.service.EmailService;
 
 
+import javax.swing.text.html.HTMLDocument;
 import javax.websocket.server.PathParam;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -139,7 +147,6 @@ public class UserController {
         }
 
 
-        System.out.println(user.getKorisnickoIme());
 
         if (loggedInUser.getRoles().contains("ROLE_ADMIN") || loggedInUser.getLBZ().equals(lbz)) {
             System.out.println("test");
@@ -150,4 +157,50 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
+    @GetMapping(value = Constants.LIST_EMPLOYEES)
+    public ResponseEntity<List<UserResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO) {
+        Specification spec = null;
+        if(requestDTO.getName()!=null) {
+            UserSpecification nameSpecification = new UserSpecification(new SearchCriteria("name",requestDTO.getName()));
+            if(spec != null) {
+                spec = Specification.where(nameSpecification);
+            }
+            else {
+                spec = Specification.where(spec).and(nameSpecification);
+            }
+        }
+        if(requestDTO.getSurname()!=null) {
+            UserSpecification surnameSpecification = new UserSpecification(new SearchCriteria("surname",requestDTO.getSurname()));
+            if(spec != null) {
+                spec = Specification.where(surnameSpecification);
+            }
+            else {
+                spec = Specification.where(spec).and(surnameSpecification);
+            }
+        }
+        if(requestDTO.getObrisan()!=null) {
+            UserSpecification obrisanSpecification = new UserSpecification(new SearchCriteria("obrisan",requestDTO.getObrisan()));
+            if(spec != null) {
+                spec = Specification.where(obrisanSpecification);
+            }
+            else {
+                spec = Specification.where(spec).and(obrisanSpecification);
+            }
+        }
+        if(requestDTO.getDepartment()!=null) {
+            UserSpecification odeljenjeSpecification = new UserSpecification(new SearchCriteria("odeljenje",odeljenjeService.fetchOdeljenjeById(requestDTO.getDepartment())));
+            if(spec != null) {
+                spec = Specification.where(odeljenjeSpecification);
+            }
+            else {
+                spec = Specification.where(spec).and(odeljenjeSpecification);
+            }
+        }
+        List<User> users = userService.filterUsers(spec);
+        List<UserResponseDTO> userResponseDTOList = new ArrayList<>();
+        for(User user: users) {
+            userResponseDTOList.add(new UserResponseDTO(user.getUserId(), user.getName(), user.getSurname(), "", user.getEmail(), user.getRoles()));
+        }
+        return ok(userResponseDTOList);
+    }
 }

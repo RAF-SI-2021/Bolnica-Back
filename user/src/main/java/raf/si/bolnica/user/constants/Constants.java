@@ -7,6 +7,7 @@ public class Constants {
     public static final String CREATE_EMPLOYEE = "/create-employee";
     public static final String REMOVE_EMPLOYEE = "/remove-employee";
     public static final String GET_EMPLOYEE = "/get-employee/{lbz}";
+    public static final String LIST_EMPLOYEES = "/list-employees";
 
     public static final String JWT_KEY = "QnuQblQWn8H9ggiwfGbCxpPA3gdY1oAe";
 

@@ -1,12 +1,15 @@
 package raf.si.bolnica.user.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.user.models.User;
+import raf.si.bolnica.user.query.UserSpecification;
 import raf.si.bolnica.user.repositories.UserRepository;
 import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 @Transactional("transactionManager")
@@ -54,5 +57,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public List<User> filterUsers(Specification userSpecification) {
+        if(userSpecification==null) return userRepository.findAll();
+        else return userRepository.findAll(userSpecification);
     }
 }
