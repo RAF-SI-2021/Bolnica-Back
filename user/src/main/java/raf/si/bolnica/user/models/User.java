@@ -64,7 +64,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String korisnickoIme;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Odeljenje odeljenje;
 
     @Column(nullable = false)
