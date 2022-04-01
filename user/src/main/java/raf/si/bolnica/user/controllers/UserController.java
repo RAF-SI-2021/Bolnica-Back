@@ -1,6 +1,5 @@
 package raf.si.bolnica.user.controllers;
 
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -13,8 +12,6 @@ import raf.si.bolnica.user.exceptionHandler.user.UserExceptionHandler;
 import raf.si.bolnica.user.interceptors.LoggedInUser;
 import raf.si.bolnica.user.models.Odeljenje;
 import raf.si.bolnica.user.models.User;
-import raf.si.bolnica.user.query.SearchCriteria;
-import raf.si.bolnica.user.query.UserSpecification;
 import raf.si.bolnica.user.requests.CreateEmployeeRequestDTO;
 import raf.si.bolnica.user.requests.ListEmployeesRequestDTO;
 import raf.si.bolnica.user.requests.UpdateEmployeeRequestDTO;
@@ -25,10 +22,10 @@ import raf.si.bolnica.user.service.UserService;
 import raf.si.bolnica.user.service.EmailService;
 
 
-import javax.swing.text.html.HTMLDocument;
-import javax.websocket.server.PathParam;
-
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -51,6 +48,9 @@ public class UserController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @GetMapping(value = "/fetch-user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponseDTO> fetchAdminByUsername(@RequestParam String username) {
@@ -162,44 +162,82 @@ public class UserController {
 
     @GetMapping(value = Constants.LIST_EMPLOYEES)
     public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO) {
-        Specification spec = null;
+
+        String s = "SELECT u FROM User u";
+        boolean fst = true;
+
+        HashMap<String,Object> param = new HashMap<>();
+
+        if(requestDTO.getDepartment()!=null || requestDTO.getHospital()!=null) {
+            s = s + " INNER JOIN u.odeljenje o";
+        }
+
+        if(requestDTO.getHospital()!=null) {
+            s = s + " INNER JOIN o.bolnica z";
+        }
+
         if(requestDTO.getName()!=null) {
-            UserSpecification nameSpecification = new UserSpecification(new SearchCriteria("name",requestDTO.getName()));
-            if(spec != null) {
-                spec = Specification.where(nameSpecification);
+            if(fst) {
+                s = s + " WHERE ";
+                fst = false;
             }
-            else {
-                spec = Specification.where(spec).and(nameSpecification);
-            }
+            else s = s + " AND ";
+            s = s + " u.name like :name ";
+            param.put("name",requestDTO.getName());
         }
         if(requestDTO.getSurname()!=null) {
-            UserSpecification surnameSpecification = new UserSpecification(new SearchCriteria("surname",requestDTO.getSurname()));
-            if(spec != null) {
-                spec = Specification.where(surnameSpecification);
+            if(fst) {
+                s = s + " WHERE ";
+                fst = false;
             }
-            else {
-                spec = Specification.where(spec).and(surnameSpecification);
-            }
+            else s = s + " AND ";
+            s = s + " u.surname like :surname ";
+            param.put("surname",requestDTO.getSurname());
         }
         if(requestDTO.getObrisan()!=null) {
-            UserSpecification obrisanSpecification = new UserSpecification(new SearchCriteria("obrisan",requestDTO.getObrisan()));
-            if(spec != null) {
-                spec = Specification.where(obrisanSpecification);
+            if(fst) {
+                s = s + " WHERE ";
+                fst = false;
             }
-            else {
-                spec = Specification.where(spec).and(obrisanSpecification);
-            }
+            else s = s + " AND ";
+            s = s + " u.obrisan = :obrisan ";
+            param.put("obrisan",requestDTO.getObrisan());
         }
+
         if(requestDTO.getDepartment()!=null) {
-            UserSpecification odeljenjeSpecification = new UserSpecification(new SearchCriteria("odeljenje",odeljenjeService.fetchOdeljenjeById(requestDTO.getDepartment())));
-            if(spec != null) {
-                spec = Specification.where(odeljenjeSpecification);
+            if(fst) {
+                s = s + " WHERE ";
+                fst = false;
             }
+            else s = s + " AND ";
+            s = s + " o.odeljenjeId = :odeljenje";
+            param.put("odeljenje",requestDTO.getDepartment());
+        }
+
+        if(requestDTO.getHospital()!=null) {
+            if(fst) {
+                s = s + " WHERE ";
+                fst = false;
+            }
+            else s = s + " AND ";
+            s = s + " z.zdravstvenaUstanovaId = :bolnica";
+            param.put("bolnica",requestDTO.getHospital());
+        }
+
+        //System.out.println(s);
+
+        TypedQuery<User> query
+                = entityManager.createQuery(
+                s, User.class);
+        for(String t: param.keySet()) {
+            if(t.equals("obrisan")) query.setParameter(t,(Boolean)param.get(t));
             else {
-                spec = Specification.where(spec).and(odeljenjeSpecification);
+                if(t.equals("odeljenje") || t.equals("bolnica"))  query.setParameter(t,(Long)param.get(t));
+                else query.setParameter(t,(String)param.get(t));
             }
         }
-        List<User> users = userService.filterUsers(spec);
+        List<User> users = query.getResultList();
+
         List<UserDataResponseDTO> userDataResponseDTOList = new ArrayList<>();
         for(User user: users) {
             UserDataResponseDTO userDataResponseDTO = new UserDataResponseDTO(user);

@@ -6,7 +6,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.user.models.User;
-import raf.si.bolnica.user.query.UserSpecification;
 import raf.si.bolnica.user.repositories.UserRepository;
 import java.security.SecureRandom;
 import java.util.List;
@@ -59,9 +58,4 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    @Override
-    public List<User> filterUsers(Specification userSpecification) {
-        if(userSpecification==null) return userRepository.findAll();
-        else return userRepository.findAll(userSpecification);
-    }
 }
