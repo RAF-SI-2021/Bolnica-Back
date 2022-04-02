@@ -14,6 +14,8 @@ public class LoggedInUser {
 
     private Set<String> roles;
 
+    private Long lbz;
+
     public LoggedInUser() {}
 
     public String getUsername() {
@@ -22,6 +24,14 @@ public class LoggedInUser {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Long getLBZ() {
+        return lbz;
+    }
+
+    public void setLBZ(Long lbz) {
+        this.lbz = lbz;
     }
 
     public Set<String> getRoles() {

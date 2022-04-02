@@ -7,13 +7,11 @@ import lombok.Setter;
 
 import java.sql.Date;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateEmployeeRequestDTO {
-
+public class UpdateEmployeeRequestDTO {
     private String name;
 
     private String surname;
@@ -24,9 +22,9 @@ public class CreateEmployeeRequestDTO {
 
     private String jmbg;
 
-    private String address;
-
     private Long lbz;
+
+    private String address;
 
     private String city;
 
@@ -39,4 +37,8 @@ public class CreateEmployeeRequestDTO {
     private String profession;
 
     private long department;
+
+    private String oldPassword;
+
+    private String newPassword;
 }

@@ -29,7 +29,7 @@ public class FileUtils {
 
         while (titlesFile.hasNext()) {
             title = titlesFile.next();
-            titleList.add(title);
+            titleList.add(title.substring(0,title.length()-1));
         }
         titlesFile.close();
 
