@@ -32,10 +32,15 @@ public class ZdravstveniKarton {
     @OneToMany(mappedBy = "zdravstveniKarton")
     private Set<Pregled> pregledi;
 
+    @OneToMany(mappedBy = "zdravstveniKarton", cascade = CascadeType.ALL)
+    Set<AlergenZdravstveniKarton> alergenZdravstveniKarton;
+
     // FKs
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pacijent")
     private Pacijent pacijent;
+
+
 
     public long getZdravstveniKartonId() {
         return zdravstveniKartonId;
