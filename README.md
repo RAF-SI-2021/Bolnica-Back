@@ -8,5 +8,18 @@
 - To shut down the services press Ctrl + C or open another tab in terminal and run command `docker-compose down`
 
 ### Napomena
-Iz nekog razloga se ne pravi baza user tako da ce morati manuelno da se napravi tako sto se udje u localhost:8080 i da se doda baza rucno i onda ce proraditi.
-Takodje kada budete razvijali dalje aplikacije potrebno ce biti da se odradi `maven clean install` svaki put kad zelite da pokrenete aplikacije sa izmenama koje ste napravili kako bi se ponovo napravio jar fajl koji se koristi za docker image.
+
+Inicijalno kreiranje baze se može učiniti kroz sledeće korake:
+
+- Otići na adresu http://localhost:8080
+- Popuniti kredencijale kao na slici ispod:
+
+![alt text](https://i.imgur.com/Y08PSAa.png)
+
+- Napraviti potrebnu user i management bazu
+
+Kako bi Docker pokupio izmene načinjene nad projektom, prilikom izmene bilo kog file-a u određenom servisu - neophodno je da njega ponovo build-ujemo kroz komandu `docker-compose build $service` gde je $service onaj servis nad kojim imamo izmene. 
+
+Primer komande: `docker-compose build management-service`. 
+
+Takođe, moguće je odraditi komandu `docker-compose up --build` koja će sve servise ponovo build-ovati iz source-a.
