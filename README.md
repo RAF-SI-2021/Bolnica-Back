@@ -9,15 +9,6 @@
 
 ### Napomena
 
-Inicijalno kreiranje baze se može učiniti kroz sledeće korake:
-
-- Otići na adresu http://localhost:8080
-- Popuniti kredencijale kao na slici ispod:
-
-![alt text](https://i.imgur.com/Y08PSAa.png)
-
-- Napraviti potrebnu user i management bazu
-
 Kako bi Docker pokupio izmene načinjene nad projektom, prilikom izmene bilo kog file-a u određenom servisu - neophodno je da njega ponovo build-ujemo kroz komandu `docker-compose build $service` gde je $service onaj servis nad kojim imamo izmene. 
 
 Primer komande: `docker-compose build management-service`. 
