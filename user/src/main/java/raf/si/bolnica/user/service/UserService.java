@@ -13,7 +13,7 @@ public interface UserService {
 
     User fetchUserByLBZ(Long lbz);
 
-    User createEmployee(User user);
+    User saveEmployee(User user);
 
     String generateNewPassword(User user);
 

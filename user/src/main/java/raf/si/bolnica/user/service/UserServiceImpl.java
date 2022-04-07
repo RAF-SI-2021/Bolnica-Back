@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     public User fetchUserByLBZ(Long lbz) { return userRepository.findByLicniBrojZaposlenog(lbz); }
 
     @Override
-    public User createEmployee(User user) {
+    public User saveEmployee(User user) {
         return userRepository.save(user);
     }
 

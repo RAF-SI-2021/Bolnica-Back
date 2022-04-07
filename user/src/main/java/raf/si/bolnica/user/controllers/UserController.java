@@ -112,7 +112,7 @@ public class UserController {
             user.setTitula(requestDTO.getTitle());
             user.setZanimanje(requestDTO.getProfession());
 
-            User userToReturn = userService.createEmployee(user);
+            User userToReturn = userService.saveEmployee(user);
             return ok(userToReturn);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -133,7 +133,10 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
-            userService.deleteById(user.getUserId());
+            user.setObrisan(true);
+
+            userService.saveEmployee(user);
+
             return ok().build();
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -281,7 +284,7 @@ public class UserController {
             user.setTitula(requestDTO.getTitle());
             user.setZanimanje(requestDTO.getProfession());
 
-            User userToReturn = userService.createEmployee(user);
+            User userToReturn = userService.saveEmployee(user);
             return ok(userToReturn);
         }
         else {
@@ -294,7 +297,7 @@ public class UserController {
                 if(requestDTO.getNewPassword()!=null && user.getPassword().equals(BCrypt.hashpw(requestDTO.getOldPassword(), BCrypt.gensalt()))) {
                     user.setPassword(BCrypt.hashpw(requestDTO.getNewPassword(), BCrypt.gensalt()));
                 }
-                user = userService.createEmployee(user);
+                user = userService.saveEmployee(user);
                 return ok(user);
             }
         }
