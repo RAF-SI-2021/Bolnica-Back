@@ -14,6 +14,7 @@ public class VakcinacijaKey implements Serializable {
     @Column(name = "zdravstveni_karton_id")
     private long zdravstveniKartonId;
 
+
     public long getVakcinaId() {
         return vakcinaId;
     }

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import raf.si.bolnica.management.entities.Vakcina;
+import raf.si.bolnica.management.repositories.AlergenZdravstveniKartonRepository;
+import raf.si.bolnica.management.repositories.PacijentRepository;
 import raf.si.bolnica.management.repositories.VakcinaRepository;
 import raf.si.bolnica.management.entities.Alergen;
 import raf.si.bolnica.management.repositories.AlergenRepository;
@@ -19,6 +21,12 @@ public class BootstrapData implements CommandLineRunner {
   
     @Autowired
     private AlergenRepository alergenRepository;
+
+    @Autowired
+    private AlergenZdravstveniKartonRepository alergenZdravstveniKartonRepository;
+
+    @Autowired
+    private PacijentRepository pacijentRepository;
 
 
     @Override
