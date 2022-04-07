@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface PacijentRepository extends JpaRepository<Pacijent, Long> {
 
     Pacijent findByLBP(UUID lbp);
+
+    Pacijent findByPacijentId(Long Id);
 }

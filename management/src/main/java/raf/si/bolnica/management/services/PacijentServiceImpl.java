@@ -21,6 +21,11 @@ public class PacijentServiceImpl implements  PacijentService{
     }
 
     @Override
+    public Pacijent fetchPacijentById(Long id) {
+        return pacijentRepository.findByPacijentId(id);
+    }
+
+    @Override
     public Pacijent createPacijent(Pacijent pacijent) {
         return pacijentRepository.save(pacijent);
     }

@@ -10,5 +10,7 @@ public interface PacijentService {
 
     Pacijent createPacijent(Pacijent pacijent);
 
+    Pacijent fetchPacijentById(Long id);
+
     void deleteById(Long id);
 }
