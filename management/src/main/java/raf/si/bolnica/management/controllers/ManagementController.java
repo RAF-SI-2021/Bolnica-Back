@@ -3,10 +3,13 @@ package raf.si.bolnica.management.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
+import raf.si.bolnica.management.requests.PacijentCRUDRequestValidator;
+import raf.si.bolnica.management.response.PacijentCRUDResponseDTO;
 import raf.si.bolnica.management.services.*;
 
 import javax.persistence.EntityManager;
@@ -53,30 +56,17 @@ public class ManagementController {
         if(loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
                 loggedInUser.getRoles().contains("ROLE_MED_SESTRA")) {
 
+            String msg = PacijentCRUDRequestValidator.checkValid(request);
+
+            if(!msg.equals("ok")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
+            }
+
             Pacijent pacijent = new Pacijent();
 
             pacijent.setLbp(UUID.randomUUID());
-            pacijent.setAdresa(request.getAdresa());
-            pacijent.setBracniStatus(request.getBracniStatus());
-            pacijent.setBrojDece(request.getBrojDece());
-            pacijent.setDatumRodjenja(request.getDatumRodjenja());
-            pacijent.setEmail(request.getEmail());
-            pacijent.setDatumVremeSmrti(request.getDatumVremeSmrti());
-            pacijent.setIme(request.getIme());
-            pacijent.setImeRoditelja(request.getImeRoditelja());
-            pacijent.setPrezime(request.getPrezime());
-            pacijent.setImeStaratelj(request.getImeStaratelj());
-            pacijent.setJmbg(request.getJmbg());
-            pacijent.setJmbgStaratelj(request.getJmbgStaratelj());
-            pacijent.setKontaktTelefon(request.getKontaktTelefon());
-            pacijent.setZemljaStanovanja(request.getZemljaStanovanja());
-            pacijent.setZemljaDrzavljanstva(request.getZemljaDrzavljanstva());
-            pacijent.setZanimanje(request.getZanimanje());
-            pacijent.setStepenStrucneSpreme(request.getStepenStrucneSpreme());
-            pacijent.setPorodicniStatus(request.getPorodicniStatus());
-            pacijent.setPol(request.getPol());
-            pacijent.setMestoStanovanja(request.getMestoStanovanja());
-            pacijent.setMestoRodjenja(request.getMestoRodjenja());
+
+            request.updatePacijentWithData(pacijent);
 
             ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();
 
@@ -86,9 +76,11 @@ public class ManagementController {
 
             zdravstveniKarton.setPacijent(kreiranPacijent);
 
-            zdravstveniKartonService.saveZdravstveniKarton(zdravstveniKarton);
+            ZdravstveniKarton kreiranZdravstveniKarton = zdravstveniKartonService.saveZdravstveniKarton(zdravstveniKarton);
 
-            return ok(kreiranPacijent);
+            kreiranPacijent.setZdravstveniKarton(kreiranZdravstveniKarton);
+
+            return ok(new PacijentCRUDResponseDTO(kreiranPacijent));
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
@@ -98,37 +90,23 @@ public class ManagementController {
         if(loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
                 loggedInUser.getRoles().contains("ROLE_MED_SESTRA")) {
 
+            String msg = PacijentCRUDRequestValidator.checkValid(request);
+
+            if(!msg.equals("ok")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
+            }
+
             Pacijent pacijent = pacijentService.fetchPacijentById(id);
 
             if(pacijent == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
-            pacijent.setAdresa(request.getAdresa());
-            pacijent.setBracniStatus(request.getBracniStatus());
-            pacijent.setBrojDece(request.getBrojDece());
-            pacijent.setDatumRodjenja(request.getDatumRodjenja());
-            pacijent.setEmail(request.getEmail());
-            pacijent.setDatumVremeSmrti(request.getDatumVremeSmrti());
-            pacijent.setIme(request.getIme());
-            pacijent.setImeRoditelja(request.getImeRoditelja());
-            pacijent.setPrezime(request.getPrezime());
-            pacijent.setImeStaratelj(request.getImeStaratelj());
-            pacijent.setJmbg(request.getJmbg());
-            pacijent.setJmbgStaratelj(request.getJmbgStaratelj());
-            pacijent.setKontaktTelefon(request.getKontaktTelefon());
-            pacijent.setZemljaStanovanja(request.getZemljaStanovanja());
-            pacijent.setZemljaDrzavljanstva(request.getZemljaDrzavljanstva());
-            pacijent.setZanimanje(request.getZanimanje());
-            pacijent.setStepenStrucneSpreme(request.getStepenStrucneSpreme());
-            pacijent.setPorodicniStatus(request.getPorodicniStatus());
-            pacijent.setPol(request.getPol());
-            pacijent.setMestoStanovanja(request.getMestoStanovanja());
-            pacijent.setMestoRodjenja(request.getMestoRodjenja());
+            request.updatePacijentWithData(pacijent);
 
             Pacijent azuriranPacijent = pacijentService.savePacijent(pacijent);
 
-            return ok(azuriranPacijent);
+            return ok(new PacijentCRUDResponseDTO(azuriranPacijent));
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
@@ -157,18 +135,18 @@ public class ManagementController {
 
             TypedQuery<AlergenZdravstveniKarton> query1 = entityManager.createQuery(s, AlergenZdravstveniKarton.class);
 
-            query1.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+            query1.setParameter("zk",zdravstveniKarton);
 
             for(AlergenZdravstveniKarton azk : query1.getResultList()) {
                 azk.setObrisan(true);
                 alergenZdravstveniKartonService.saveAlergenZdravstveniKarton(azk);
             }
 
-            s = "SELECT az FROM Vakcinacija az WHERE az.zdravstveniKartonId = :zk";
+            s = "SELECT az FROM Vakcinacija az WHERE az.zdravstveniKarton = :zk";
 
             TypedQuery<Vakcinacija> query2 = entityManager.createQuery(s, Vakcinacija.class);
 
-            query2.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+            query2.setParameter("zk",zdravstveniKarton);
 
             for(Vakcinacija v: query2.getResultList()) {
                 v.setObrisan(true);
@@ -179,7 +157,7 @@ public class ManagementController {
 
             TypedQuery<Operacija> query3 = entityManager.createQuery(s, Operacija.class);
 
-            query3.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+            query3.setParameter("zk",zdravstveniKarton);
 
             for(Operacija o: query3.getResultList()) {
                 o.setObrisan(true);
@@ -190,7 +168,7 @@ public class ManagementController {
 
             TypedQuery<Pregled> query4 = entityManager.createQuery(s, Pregled.class);
 
-            query4.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+            query4.setParameter("zk",zdravstveniKarton);
 
             for(Pregled p: query4.getResultList()) {
                 p.setObrisan(true);
@@ -201,7 +179,7 @@ public class ManagementController {
 
             TypedQuery<IstorijaBolesti> query5 = entityManager.createQuery(s, IstorijaBolesti.class);
 
-            query5.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+            query5.setParameter("zk",zdravstveniKarton);
 
             for(IstorijaBolesti i: query5.getResultList()) {
                 i.setObrisan(true);
