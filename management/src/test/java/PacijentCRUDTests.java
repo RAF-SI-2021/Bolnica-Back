@@ -1,13 +1,8 @@
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.controllers.ManagementController;
 import raf.si.bolnica.management.entities.*;
@@ -19,11 +14,9 @@ import raf.si.bolnica.management.response.PacijentCRUDResponseDTO;
 import raf.si.bolnica.management.services.PacijentService;
 import raf.si.bolnica.management.services.ZdravstveniKartonService;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -34,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PacijentCRUDTest {
+public class PacijentCRUDTests {
 
     @Mock
     LoggedInUser loggedInUser;
