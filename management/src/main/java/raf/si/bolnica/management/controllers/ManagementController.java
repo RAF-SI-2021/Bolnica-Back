@@ -8,9 +8,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import raf.si.bolnica.management.entities.Pacijent;
+import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
 import raf.si.bolnica.management.services.PacijentService;
+import raf.si.bolnica.management.services.ZdravstveniKartonService;
+
+import java.sql.Date;
+import java.time.LocalDate;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -23,6 +28,9 @@ public class ManagementController {
 
     @Autowired
     private PacijentService pacijentService;
+
+    @Autowired
+    private ZdravstveniKartonService zdravstveniKartonService;
 
     @PostMapping("/create-patient")
     public ResponseEntity<?> createPatient(@RequestBody PacijentCRUDRequestDTO request) {
@@ -53,8 +61,20 @@ public class ManagementController {
             pacijent.setMestoStanovanja(request.getMestoStanovanja());
             pacijent.setMestoRodjenja(request.getMestoRodjenja());
 
+            ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();
+
+            zdravstveniKarton.setDatumRegistracije(Date.valueOf(LocalDate.now()));
+
+            zdravstveniKarton.setPacijent(pacijent);
+
+            pacijentService.createPacijent(pacijent);
+
+            zdravstveniKartonService.createZdravstveniKarton(zdravstveniKarton);
+
             return ok(pacijent);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
+
 }
