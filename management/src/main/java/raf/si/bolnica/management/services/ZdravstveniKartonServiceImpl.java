@@ -16,7 +16,7 @@ public class ZdravstveniKartonServiceImpl implements  ZdravstveniKartonService {
     ZdravstveniKartonRepository zdravstveniKartonRepository;
 
     @Override
-    public ZdravstveniKarton createZdravstveniKarton(ZdravstveniKarton zdravstveniKarton) {
+    public ZdravstveniKarton saveZdravstveniKarton(ZdravstveniKarton zdravstveniKarton) {
         return zdravstveniKartonRepository.save(zdravstveniKarton);
     }
 }

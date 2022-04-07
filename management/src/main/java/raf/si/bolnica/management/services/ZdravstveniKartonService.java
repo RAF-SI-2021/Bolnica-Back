@@ -6,5 +6,5 @@ public interface ZdravstveniKartonService {
 
 
 
-    ZdravstveniKarton createZdravstveniKarton(ZdravstveniKarton zdravstveniKarton);
+    ZdravstveniKarton saveZdravstveniKarton(ZdravstveniKarton zdravstveniKarton);
 }

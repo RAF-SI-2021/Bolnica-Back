@@ -8,7 +8,7 @@ public interface PacijentService {
 
     Pacijent fetchPacijentByLBP(UUID lbp);
 
-    Pacijent createPacijent(Pacijent pacijent);
+    Pacijent savePacijent(Pacijent pacijent);
 
     Pacijent fetchPacijentById(Long id);
 

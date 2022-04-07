@@ -4,13 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import raf.si.bolnica.management.entities.Pacijent;
-import raf.si.bolnica.management.entities.ZdravstveniKarton;
+import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
+import raf.si.bolnica.management.repositories.IstorijaBolestiRepository;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
-import raf.si.bolnica.management.services.PacijentService;
-import raf.si.bolnica.management.services.ZdravstveniKartonService;
+import raf.si.bolnica.management.services.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.sql.Date;
 import java.time.LocalDate;
 
@@ -28,6 +29,24 @@ public class ManagementController {
 
     @Autowired
     private ZdravstveniKartonService zdravstveniKartonService;
+
+    @Autowired
+    private AlergenZdravstveniKartonService alergenZdravstveniKartonService;
+
+    @Autowired
+    private VakcinacijaKeyService vakcinacijaKeyService;
+
+    @Autowired
+    private OperacijaService operacijaService;
+
+    @Autowired
+    private PregledService pregledService;
+
+    @Autowired
+    private IstorijaBolestiService istorijaBolestiService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @PostMapping("/create-patient")
     public ResponseEntity<?> createPatient(@RequestBody PacijentCRUDRequestDTO request) {
@@ -64,9 +83,9 @@ public class ManagementController {
 
             zdravstveniKarton.setPacijent(pacijent);
 
-            Pacijent kreiranPacijent = pacijentService.createPacijent(pacijent);
+            Pacijent kreiranPacijent = pacijentService.savePacijent(pacijent);
 
-            zdravstveniKartonService.createZdravstveniKarton(zdravstveniKarton);
+            zdravstveniKartonService.saveZdravstveniKarton(zdravstveniKarton);
 
             return ok(kreiranPacijent);
         }
@@ -106,9 +125,89 @@ public class ManagementController {
             pacijent.setMestoStanovanja(request.getMestoStanovanja());
             pacijent.setMestoRodjenja(request.getMestoRodjenja());
 
-            Pacijent kreiranPacijent = pacijentService.createPacijent(pacijent);
+            Pacijent azuriranPacijent = pacijentService.savePacijent(pacijent);
 
-            return ok(kreiranPacijent);
+            return ok(azuriranPacijent);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @DeleteMapping("/remove-patient/{id}")
+    public ResponseEntity<?> removePatient(@PathVariable Long id) {
+        if(loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA")) {
+
+            Pacijent pacijent = pacijentService.fetchPacijentById(id);
+
+            if(pacijent == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            pacijent.setObrisan(true);
+
+            pacijentService.savePacijent(pacijent);
+
+            ZdravstveniKarton zdravstveniKarton = pacijent.getZdravstveniKarton();
+
+            zdravstveniKarton.setObrisan(true);
+
+            zdravstveniKartonService.saveZdravstveniKarton(zdravstveniKarton);
+
+            String s = "SELECT az FROM AlergenZdravstveniKarton az WHERE az.zdravstveniKarton = :zk";
+
+            TypedQuery<AlergenZdravstveniKarton> query1 = entityManager.createQuery(s, AlergenZdravstveniKarton.class);
+
+            query1.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+
+            for(AlergenZdravstveniKarton azk : query1.getResultList()) {
+                azk.setObrisan(true);
+                alergenZdravstveniKartonService.saveAlergenZdravstveniKarton(azk);
+            }
+
+            s = "SELECT az FROM VakcinacijaKey az WHERE az.zdravstveniKartonId = :zk";
+
+            TypedQuery<VakcinacijaKey> query2 = entityManager.createQuery(s, VakcinacijaKey.class);
+
+            query2.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+
+            for(VakcinacijaKey vk : query2.getResultList()) {
+                vk.setObrisan(true);
+                vakcinacijaKeyService.saveVakcinacijaKey(vk);
+            }
+
+            s = "SELECT az FROM Operacija az WHERE az.zdravstveniKarton = :zk";
+
+            TypedQuery<Operacija> query3 = entityManager.createQuery(s, Operacija.class);
+
+            query3.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+
+            for(Operacija o: query3.getResultList()) {
+                o.setObrisan(true);
+                operacijaService.saveOperacija(o);
+            }
+
+            s = "SELECT az FROM Pregled az WHERE az.zdravstveniKarton = :zk";
+
+            TypedQuery<Pregled> query4 = entityManager.createQuery(s, Pregled.class);
+
+            query4.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+
+            for(Pregled p: query4.getResultList()) {
+                p.setObrisan(true);
+                pregledService.savePregled(p);
+            }
+
+            s = "SELECT az FROM IstorijaBolesti az WHERE az.zdravstveniKarton = :zk";
+
+            TypedQuery<IstorijaBolesti> query5 = entityManager.createQuery(s, IstorijaBolesti.class);
+
+            query5.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
+
+            for(IstorijaBolesti i: query5.getResultList()) {
+                i.setObrisan(true);
+                istorijaBolestiService.saveIstorijaBolesti(i);
+            }
+
+            return ok().build();
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
