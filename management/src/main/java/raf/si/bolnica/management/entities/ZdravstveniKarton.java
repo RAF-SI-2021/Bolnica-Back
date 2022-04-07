@@ -36,7 +36,7 @@ public class ZdravstveniKarton {
     Set<AlergenZdravstveniKarton> alergenZdravstveniKarton;
 
     // FKs
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "pacijent")
     private Pacijent pacijent;
 

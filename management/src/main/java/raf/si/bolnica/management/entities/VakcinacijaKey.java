@@ -14,16 +14,6 @@ public class VakcinacijaKey implements Serializable {
     @Column(name = "zdravstveni_karton_id")
     private long zdravstveniKartonId;
 
-    @Column(nullable = false)
-    private Boolean obrisan = false;
-
-    public Boolean getObrisan() {
-        return obrisan;
-    }
-
-    public void setObrisan(Boolean obrisan) {
-        this.obrisan = obrisan;
-    }
 
     public long getVakcinaId() {
         return vakcinaId;

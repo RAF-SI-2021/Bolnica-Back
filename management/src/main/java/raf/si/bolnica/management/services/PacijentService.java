@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public interface PacijentService {
 
-    Pacijent fetchPacijentByLBP(UUID lbp);
+    Pacijent fetchPacijentByLbp(UUID lbp);
 
     Pacijent savePacijent(Pacijent pacijent);
 

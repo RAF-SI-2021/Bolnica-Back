@@ -50,5 +50,6 @@ public class SpringWebConfiguration extends WebMvcConfigurationSupport {
     public void addInterceptors(InterceptorRegistry registry) {
         String secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecretKey().getBytes());
         registry.addInterceptor(new UserInfoInterceptor(loggedInUser, secretKey));
+        System.out.println("tst");
     }
 }

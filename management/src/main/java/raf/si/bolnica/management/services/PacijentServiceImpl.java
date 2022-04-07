@@ -16,8 +16,8 @@ public class PacijentServiceImpl implements  PacijentService{
     private PacijentRepository pacijentRepository;
 
     @Override
-    public Pacijent fetchPacijentByLBP(UUID lbp) {
-        return pacijentRepository.findByLBP(lbp);
+    public Pacijent fetchPacijentByLbp(UUID lbp) {
+        return pacijentRepository.findByLbp(lbp);
     }
 
     @Override

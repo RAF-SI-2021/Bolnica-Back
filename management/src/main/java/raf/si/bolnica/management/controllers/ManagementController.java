@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
-import raf.si.bolnica.management.repositories.IstorijaBolestiRepository;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
 import raf.si.bolnica.management.services.*;
 
@@ -14,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -34,7 +34,7 @@ public class ManagementController {
     private AlergenZdravstveniKartonService alergenZdravstveniKartonService;
 
     @Autowired
-    private VakcinacijaKeyService vakcinacijaKeyService;
+    private VakcinacijaService vakcinacijaService;
 
     @Autowired
     private OperacijaService operacijaService;
@@ -55,6 +55,7 @@ public class ManagementController {
 
             Pacijent pacijent = new Pacijent();
 
+            pacijent.setLbp(UUID.randomUUID());
             pacijent.setAdresa(request.getAdresa());
             pacijent.setBracniStatus(request.getBracniStatus());
             pacijent.setBrojDece(request.getBrojDece());
@@ -81,9 +82,9 @@ public class ManagementController {
 
             zdravstveniKarton.setDatumRegistracije(Date.valueOf(LocalDate.now()));
 
-            zdravstveniKarton.setPacijent(pacijent);
-
             Pacijent kreiranPacijent = pacijentService.savePacijent(pacijent);
+
+            zdravstveniKarton.setPacijent(kreiranPacijent);
 
             zdravstveniKartonService.saveZdravstveniKarton(zdravstveniKarton);
 
@@ -163,15 +164,15 @@ public class ManagementController {
                 alergenZdravstveniKartonService.saveAlergenZdravstveniKarton(azk);
             }
 
-            s = "SELECT az FROM VakcinacijaKey az WHERE az.zdravstveniKartonId = :zk";
+            s = "SELECT az FROM Vakcinacija az WHERE az.zdravstveniKartonId = :zk";
 
-            TypedQuery<VakcinacijaKey> query2 = entityManager.createQuery(s, VakcinacijaKey.class);
+            TypedQuery<Vakcinacija> query2 = entityManager.createQuery(s, Vakcinacija.class);
 
             query2.setParameter("zk",zdravstveniKarton.getZdravstveniKartonId());
 
-            for(VakcinacijaKey vk : query2.getResultList()) {
-                vk.setObrisan(true);
-                vakcinacijaKeyService.saveVakcinacijaKey(vk);
+            for(Vakcinacija v: query2.getResultList()) {
+                v.setObrisan(true);
+                vakcinacijaService.saveVakcinacija(v);
             }
 
             s = "SELECT az FROM Operacija az WHERE az.zdravstveniKarton = :zk";
