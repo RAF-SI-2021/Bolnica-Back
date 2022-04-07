@@ -2,6 +2,8 @@ package raf.si.bolnica.management.requests;
 
 public class PacijentCRUDRequestValidator {
 
+    private PacijentCRUDRequestValidator() {}
+
     public static String checkValid(PacijentCRUDRequestDTO request) {
         if(request.getJmbg()==null) return  "JMBG je obavezno polje!";
         if(request.getIme()==null) return "Ime je obavezno polje!";

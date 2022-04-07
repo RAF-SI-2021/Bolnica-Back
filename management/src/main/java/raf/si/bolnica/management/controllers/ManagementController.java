@@ -3,8 +3,8 @@ package raf.si.bolnica.management.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
@@ -53,8 +53,8 @@ public class ManagementController {
 
     @PostMapping("/create-patient")
     public ResponseEntity<?> createPatient(@RequestBody PacijentCRUDRequestDTO request) {
-        if(loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
-                loggedInUser.getRoles().contains("ROLE_MED_SESTRA")) {
+        if(loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
+                loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
 
@@ -87,8 +87,8 @@ public class ManagementController {
 
     @PutMapping("/update-patient/{id}")
     public ResponseEntity<?> updatePatient(@RequestBody PacijentCRUDRequestDTO request,@PathVariable Long id) {
-        if(loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
-                loggedInUser.getRoles().contains("ROLE_MED_SESTRA")) {
+        if(loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
+                loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
 
@@ -113,7 +113,7 @@ public class ManagementController {
 
     @DeleteMapping("/remove-patient/{id}")
     public ResponseEntity<?> removePatient(@PathVariable Long id) {
-        if(loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA")) {
+        if(loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentById(id);
 

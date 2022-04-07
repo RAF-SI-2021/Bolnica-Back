@@ -4,6 +4,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
+import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
 import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.entities.enums.CountryCode;
@@ -21,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -65,7 +67,7 @@ public class PacijentCRUDTests {
 
         Set<String> roles = new TreeSet<>();
 
-        roles.add("ROLE_ADMIN");
+        roles.add(Constants.ADMIN);
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
@@ -73,7 +75,7 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> response = managementController.createPatient(request);
 
-        assert(response.getStatusCodeValue()!=200);
+        assertThat(response.getStatusCodeValue()!=200);
     }
 
     @Test
@@ -81,7 +83,7 @@ public class PacijentCRUDTests {
 
         Set<String> roles = new TreeSet<>();
 
-        roles.add("ROLE_VISA_MED_SESTRA");
+        roles.add(Constants.VISA_MED_SESTRA);
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
@@ -91,11 +93,11 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> response = managementController.createPatient(request);
 
-        assert(response.getStatusCodeValue()!=200);
+        assertThat(response.getStatusCodeValue()!=200);
 
-        assert(response.getBody() instanceof String);
+        assertThat(response.getBody() instanceof String);
 
-        assert((response.getBody()).equals("Pol je obavezno polje!"));
+        assertThat((response.getBody()).equals("Pol je obavezno polje!"));
     }
 
     @Test
@@ -103,7 +105,7 @@ public class PacijentCRUDTests {
 
         Set<String> roles = new TreeSet<>();
 
-        roles.add("ROLE_VISA_MED_SESTRA");
+        roles.add(Constants.MED_SESTRA);
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
@@ -115,9 +117,9 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> responseCreate = managementController.createPatient(request);
 
-        assert(responseCreate.getStatusCodeValue()==200);
+        assertThat(responseCreate.getStatusCodeValue()==200);
 
-        assert(responseCreate.getBody() instanceof PacijentCRUDResponseDTO);
+        assertThat(responseCreate.getBody() instanceof PacijentCRUDResponseDTO);
 
         Pacijent test = new Pacijent();
         test.setZdravstveniKarton(new ZdravstveniKarton());
@@ -146,7 +148,7 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> responseRemove = managementController.removePatient(Long.valueOf(1));
 
-        assert(responseRemove.getStatusCodeValue()==200);
+        assertThat(responseRemove.getStatusCodeValue()==200);
     }
 
     @Test
@@ -154,7 +156,7 @@ public class PacijentCRUDTests {
 
         Set<String> roles = new TreeSet<>();
 
-        roles.add("ROLE_VISA_MED_SESTRA");
+        roles.add(Constants.VISA_MED_SESTRA);
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
@@ -166,9 +168,9 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> responseCreate = managementController.createPatient(request);
 
-        assert(responseCreate.getStatusCodeValue()==200);
+        assertThat(responseCreate.getStatusCodeValue()==200);
 
-        assert(responseCreate.getBody() instanceof PacijentCRUDResponseDTO);
+        assertThat(responseCreate.getBody() instanceof PacijentCRUDResponseDTO);
 
         when(pacijentService.fetchPacijentById(Long.valueOf(1))).thenReturn(new Pacijent());
 
@@ -176,6 +178,6 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> responseUpdate = managementController.updatePatient(request,Long.valueOf(1));
 
-        assert(responseUpdate.getStatusCodeValue()==200);
+        assertThat(responseUpdate.getStatusCodeValue()==200);
     }
 }
