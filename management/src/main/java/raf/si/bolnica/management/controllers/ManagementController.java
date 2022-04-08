@@ -285,8 +285,77 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
+    @GetMapping("/fetch-pregledi/{lbp}")
+    public ResponseEntity<?> fetchPreglediLbp(@RequestBody PreglediRequestDTO preglediRequestDTO,
+                                                     @PathVariable UUID lbp,
+                                                     @RequestParam int page,
+                                                     @RequestParam int size) {
+        if(loggedInUser.getRoles().contains(Constants.NACELNIK) ||
+                loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
+
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(lbp);
+
+            if(pacijent == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            ZdravstveniKarton zk = pacijent.getZdravstveniKarton();
+
+
+
+            String preglediUpitString = "SELECT i FROM Pregled p WHERE p.zdravstveniKarton = :zk";
+
+            if(!loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV)) {
+                preglediUpitString = preglediUpitString + " AND p.indikatorPoverljivosti = false";
+            }
+
+            if(preglediRequestDTO.getOn() != null) {
+                preglediUpitString = preglediUpitString + " AND p.datumPregelda = :on";
+            }
+
+            if(preglediRequestDTO.getFrom() != null) {
+                preglediUpitString = preglediUpitString + " AND p.datumPregelda >= :from";
+            }
+
+            if(preglediRequestDTO.getTo() != null) {
+                preglediUpitString = preglediUpitString + " AND p.datumPregelda <= :to";
+            }
+
+            List<PregledResponseDTO> pregledi = new ArrayList<>();
+
+            TypedQuery<Pregled> upitPregledi = entityManager.createQuery(preglediUpitString, Pregled.class);
+
+            upitPregledi.setParameter("zk",zk);
+
+            if(preglediRequestDTO.getOn() != null) {
+                upitPregledi.setParameter("on",preglediRequestDTO.getOn());
+            }
+
+            if(preglediRequestDTO.getFrom() != null) {
+                upitPregledi.setParameter("from",preglediRequestDTO.getFrom());
+            }
+
+            if(preglediRequestDTO.getTo() != null) {
+                upitPregledi.setParameter("to",preglediRequestDTO.getTo());
+            }
+
+            upitPregledi.setFirstResult((page-1)*size);
+            upitPregledi.setMaxResults(size);
+
+            for(Pregled p: upitPregledi.getResultList()) {
+                pregledi.add(new PregledResponseDTO(p));
+            }
+
+            return ok(pregledi);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
     @GetMapping("/fetch-istorija-bolesti/{lbp}")
-    public ResponseEntity<?> fetchIstorijaBolestiLbp(@RequestBody IstorijaBolestiRequestDTO istorijaBolestiRequestDTO, @PathVariable UUID lbp) {
+    public ResponseEntity<?> fetchIstorijaBolestiLbp(@RequestBody IstorijaBolestiRequestDTO istorijaBolestiRequestDTO,
+                                                     @PathVariable UUID lbp,
+                                                     @RequestParam int page,
+                                                     @RequestParam int size) {
         if(loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
@@ -319,12 +388,12 @@ public class ManagementController {
             if(istorijaBolestiRequestDTO.getDijagnoza() != null) {
                 upitIstorija.setParameter("dijagnoza",istorijaBolestiRequestDTO.getDijagnoza());
             }
+            upitIstorija.setFirstResult((page-1)*size);
+            upitIstorija.setMaxResults(size);
 
             for(IstorijaBolesti i:upitIstorija.getResultList()) {
                 istorija.add(new IstorijaBolestiResponseDTO(i));
             }
-
-
 
             return ok(istorija);
         }
