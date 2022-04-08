@@ -12,6 +12,7 @@ public class ZakazaniPregled {
 
     @Id
     @Column(name = "zakazani_pregled_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long zakazaniPregledId;
 
     @Column(nullable = false)
