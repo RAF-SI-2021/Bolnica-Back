@@ -164,10 +164,11 @@ public class UserController {
     }
 
     @GetMapping(value = Constants.LIST_EMPLOYEES)
-    public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO) {
+    public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO,
+                                                                   @RequestParam int page,
+                                                                   @RequestParam int size) {
 
         String s = "SELECT u FROM User u";
-        boolean fst = true;
 
         HashMap<String,Object> param = new HashMap<>();
 
@@ -179,67 +180,54 @@ public class UserController {
             s = s + " INNER JOIN o.bolnica z";
         }
 
+        String nextOper = " WHERE ";
+
         if(requestDTO.getName()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
+            nextOper = " AND ";
             s = s + " u.name like :name ";
             param.put("name",requestDTO.getName());
         }
         if(requestDTO.getSurname()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
+            nextOper = " AND ";
             s = s + " u.surname like :surname ";
             param.put("surname",requestDTO.getSurname());
         }
         if(requestDTO.getObrisan()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
+            nextOper = " AND ";
             s = s + " u.obrisan = :obrisan ";
             param.put("obrisan",requestDTO.getObrisan());
         }
 
         if(requestDTO.getDepartment()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
+            nextOper = " AND ";
             s = s + " o.odeljenjeId = :odeljenje";
             param.put("odeljenje",requestDTO.getDepartment());
         }
 
         if(requestDTO.getHospital()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
             s = s + " z.zdravstvenaUstanovaId = :bolnica";
             param.put("bolnica",requestDTO.getHospital());
         }
 
-        //System.out.println(s);
+        System.out.println(s);
 
         TypedQuery<User> query
                 = entityManager.createQuery(
                 s, User.class);
         for(String t: param.keySet()) {
-            if(t.equals("obrisan")) query.setParameter(t,(Boolean)param.get(t));
-            else {
-                if(t.equals("odeljenje") || t.equals("bolnica"))  query.setParameter(t,(Long)param.get(t));
-                else query.setParameter(t,(String)param.get(t));
-            }
+            query.setParameter(t,param.get(t));
         }
+
+        query.setFirstResult((page-1)*size);
+        query.setMaxResults(size);
+
         List<User> users = query.getResultList();
+
 
         List<UserDataResponseDTO> userDataResponseDTOList = new ArrayList<>();
         for(User user: users) {
