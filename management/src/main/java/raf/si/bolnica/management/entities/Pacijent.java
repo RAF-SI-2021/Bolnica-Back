@@ -1,5 +1,6 @@
 package raf.si.bolnica.management.entities;
 
+import org.hibernate.annotations.Type;
 import raf.si.bolnica.management.entities.enums.*;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ public class Pacijent {
     private long pacijentId;
 
     @Column(nullable = false, unique = true)
+    @Type(type="org.hibernate.type.UUIDCharType")
     private UUID lbp;
 
     @Column(nullable = false)

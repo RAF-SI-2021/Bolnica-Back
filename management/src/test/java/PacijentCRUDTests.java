@@ -11,7 +11,7 @@ import raf.si.bolnica.management.entities.enums.CountryCode;
 import raf.si.bolnica.management.entities.enums.Pol;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
-import raf.si.bolnica.management.response.PacijentCRUDResponseDTO;
+import raf.si.bolnica.management.response.PacijentResponseDTO;
 import raf.si.bolnica.management.services.PacijentService;
 import raf.si.bolnica.management.services.ZdravstveniKartonService;
 
@@ -119,7 +119,7 @@ public class PacijentCRUDTests {
 
         assertThat(responseCreate.getStatusCodeValue()==200);
 
-        assertThat(responseCreate.getBody() instanceof PacijentCRUDResponseDTO);
+        assertThat(responseCreate.getBody() instanceof PacijentResponseDTO);
 
         Pacijent test = new Pacijent();
         test.setZdravstveniKarton(new ZdravstveniKarton());
@@ -170,7 +170,7 @@ public class PacijentCRUDTests {
 
         assertThat(responseCreate.getStatusCodeValue()==200);
 
-        assertThat(responseCreate.getBody() instanceof PacijentCRUDResponseDTO);
+        assertThat(responseCreate.getBody() instanceof PacijentResponseDTO);
 
         when(pacijentService.fetchPacijentById(Long.valueOf(1))).thenReturn(new Pacijent());
 
