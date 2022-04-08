@@ -164,7 +164,9 @@ public class UserController {
     }
 
     @GetMapping(value = Constants.LIST_EMPLOYEES)
-    public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO) {
+    public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO,
+                                                                   @RequestParam int page,
+                                                                   @RequestParam int size) {
 
         String s = "SELECT u FROM User u";
         boolean fst = true;
@@ -239,7 +241,12 @@ public class UserController {
                 else query.setParameter(t,(String)param.get(t));
             }
         }
+
+        query.setFirstResult((page-1)*size);
+        query.setMaxResults(size);
+
         List<User> users = query.getResultList();
+
 
         List<UserDataResponseDTO> userDataResponseDTOList = new ArrayList<>();
         for(User user: users) {
