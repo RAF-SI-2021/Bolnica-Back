@@ -3,6 +3,7 @@ package raf.si.bolnica.management.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.interceptors.UserInfoInterceptor;
@@ -11,7 +12,7 @@ import raf.si.bolnica.management.jwt.JwtProperties;
 import java.util.Base64;
 
 @Configuration
-public class SpringWebConfiguration implements WebMvcConfigurer {
+public class SpringWebConfiguration extends WebMvcConfigurationSupport {
 
     @Autowired
     private LoggedInUser loggedInUser;
