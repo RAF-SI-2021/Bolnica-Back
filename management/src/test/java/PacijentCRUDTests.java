@@ -1,8 +1,8 @@
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
@@ -11,7 +11,7 @@ import raf.si.bolnica.management.entities.enums.CountryCode;
 import raf.si.bolnica.management.entities.enums.Pol;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
-import raf.si.bolnica.management.response.PacijentCRUDResponseDTO;
+import raf.si.bolnica.management.response.PacijentResponseDTO;
 import raf.si.bolnica.management.services.PacijentService;
 import raf.si.bolnica.management.services.ZdravstveniKartonService;
 
@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PacijentCRUDTests {
 
     @Mock
@@ -75,7 +75,7 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> response = managementController.createPatient(request);
 
-        assertThat(response.getStatusCodeValue()!=200);
+        assertThat(response.getStatusCodeValue()).isNotEqualTo(200);
     }
 
     @Test
@@ -93,11 +93,11 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> response = managementController.createPatient(request);
 
-        assertThat(response.getStatusCodeValue()!=200);
+        assertThat(response.getStatusCodeValue()).isNotEqualTo(200);
 
-        assertThat(response.getBody() instanceof String);
+        assertThat(response.getBody()).isInstanceOf(String.class);
 
-        assertThat((response.getBody()).equals("Pol je obavezno polje!"));
+        assertThat(response.getBody()).isEqualTo("Pol je obavezno polje!");
     }
 
     @Test
@@ -105,7 +105,7 @@ public class PacijentCRUDTests {
 
         Set<String> roles = new TreeSet<>();
 
-        roles.add(Constants.MED_SESTRA);
+        roles.add(Constants.VISA_MED_SESTRA);
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
@@ -117,38 +117,22 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> responseCreate = managementController.createPatient(request);
 
-        assertThat(responseCreate.getStatusCodeValue()==200);
+        assertThat(responseCreate.getStatusCodeValue()).isEqualTo(200);
 
-        assertThat(responseCreate.getBody() instanceof PacijentCRUDResponseDTO);
+        assertThat(responseCreate.getBody()).isInstanceOf(PacijentResponseDTO.class);
 
         Pacijent test = new Pacijent();
         test.setZdravstveniKarton(new ZdravstveniKarton());
 
         when(pacijentService.fetchPacijentById(Long.valueOf(1))).thenReturn(test);
 
-        TypedQuery<AlergenZdravstveniKarton> query1 = mock(TypedQuery.class);
-        when(query1.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(any(String.class),eq(AlergenZdravstveniKarton.class))).thenReturn(query1);
-
-        TypedQuery<Vakcinacija> query2 = mock(TypedQuery.class);
-        when(query2.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(any(String.class),eq(Vakcinacija.class))).thenReturn(query2);
-
-        TypedQuery<Operacija> query3 = mock(TypedQuery.class);
-        when(query3.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(any(String.class),eq(Operacija.class))).thenReturn(query3);
-
-        TypedQuery<Pregled> query4 = mock(TypedQuery.class);
-        when(query4.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(any(String.class),eq(Pregled.class))).thenReturn(query4);
-
-        TypedQuery<IstorijaBolesti> query5 = mock(TypedQuery.class);
-        when(query5.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(any(String.class),eq(IstorijaBolesti.class))).thenReturn(query5);
+        TypedQuery query = mock(TypedQuery.class);
+        when(query.getResultList()).thenReturn(new LinkedList<>());
+        when(entityManager.createQuery(any(String.class),any(Class.class))).thenReturn(query);
 
         ResponseEntity<?> responseRemove = managementController.removePatient(Long.valueOf(1));
 
-        assertThat(responseRemove.getStatusCodeValue()==200);
+        assertThat(responseRemove.getStatusCodeValue()).isEqualTo(200);
     }
 
     @Test
@@ -168,9 +152,9 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> responseCreate = managementController.createPatient(request);
 
-        assertThat(responseCreate.getStatusCodeValue()==200);
+        assertThat(responseCreate.getStatusCodeValue()).isEqualTo(200);
 
-        assertThat(responseCreate.getBody() instanceof PacijentCRUDResponseDTO);
+        assertThat(responseCreate.getBody()).isInstanceOf(PacijentResponseDTO.class);
 
         when(pacijentService.fetchPacijentById(Long.valueOf(1))).thenReturn(new Pacijent());
 
@@ -178,6 +162,6 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> responseUpdate = managementController.updatePatient(request,Long.valueOf(1));
 
-        assertThat(responseUpdate.getStatusCodeValue()==200);
+        assertThat(responseUpdate.getStatusCodeValue()).isEqualTo(200);
     }
 }

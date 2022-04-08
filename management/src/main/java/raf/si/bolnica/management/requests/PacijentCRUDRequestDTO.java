@@ -1,20 +1,7 @@
 package raf.si.bolnica.management.requests;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import raf.si.bolnica.management.dto.PacijentCRUDDTO;
 import raf.si.bolnica.management.entities.Pacijent;
-import raf.si.bolnica.management.entities.enums.*;
-import raf.si.bolnica.management.response.PacijentCRUDResponseDTO;
-
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.UUID;
 
 public class PacijentCRUDRequestDTO extends PacijentCRUDDTO {
 
