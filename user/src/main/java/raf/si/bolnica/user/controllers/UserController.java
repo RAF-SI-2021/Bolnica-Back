@@ -169,7 +169,6 @@ public class UserController {
                                                                    @RequestParam int size) {
 
         String s = "SELECT u FROM User u";
-        boolean fst = true;
 
         HashMap<String,Object> param = new HashMap<>();
 
@@ -181,55 +180,41 @@ public class UserController {
             s = s + " INNER JOIN o.bolnica z";
         }
 
+        String nextOper = " WHERE ";
+
         if(requestDTO.getName()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
+            nextOper = " AND ";
             s = s + " u.name like :name ";
             param.put("name",requestDTO.getName());
         }
         if(requestDTO.getSurname()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
+            nextOper = " AND ";
             s = s + " u.surname like :surname ";
             param.put("surname",requestDTO.getSurname());
         }
         if(requestDTO.getObrisan()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
+            nextOper = " AND ";
             s = s + " u.obrisan = :obrisan ";
             param.put("obrisan",requestDTO.getObrisan());
         }
 
         if(requestDTO.getDepartment()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
+            nextOper = " AND ";
             s = s + " o.odeljenjeId = :odeljenje";
             param.put("odeljenje",requestDTO.getDepartment());
         }
 
         if(requestDTO.getHospital()!=null) {
-            if(fst) {
-                s = s + " WHERE ";
-                fst = false;
-            }
-            else s = s + " AND ";
+            s = s + nextOper;
             s = s + " z.zdravstvenaUstanovaId = :bolnica";
             param.put("bolnica",requestDTO.getHospital());
         }
 
-        //System.out.println(s);
+        System.out.println(s);
 
         TypedQuery<User> query
                 = entityManager.createQuery(
