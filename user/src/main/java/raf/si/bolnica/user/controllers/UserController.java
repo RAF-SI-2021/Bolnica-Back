@@ -235,11 +235,7 @@ public class UserController {
                 = entityManager.createQuery(
                 s, User.class);
         for(String t: param.keySet()) {
-            if(t.equals("obrisan")) query.setParameter(t,(Boolean)param.get(t));
-            else {
-                if(t.equals("odeljenje") || t.equals("bolnica"))  query.setParameter(t,(Long)param.get(t));
-                else query.setParameter(t,(String)param.get(t));
-            }
+            query.setParameter(t,param.get(t));
         }
 
         query.setFirstResult((page-1)*size);
