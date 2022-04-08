@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
-import raf.si.bolnica.management.requests.IstorijaBolestiRequestDTO;
-import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
-import raf.si.bolnica.management.requests.PacijentCRUDRequestValidator;
-import raf.si.bolnica.management.requests.PreglediRequestDTO;
+import raf.si.bolnica.management.requests.*;
 import raf.si.bolnica.management.response.*;
 import raf.si.bolnica.management.services.*;
 
@@ -396,6 +393,86 @@ public class ManagementController {
             }
 
             return ok(istorija);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+
+    @GetMapping("/filter-patients")
+    public ResponseEntity<?> filterPatients(@RequestBody FilterPatientsRequestDTO filterPatientsRequestDTO) {
+        if(loggedInUser.getRoles().contains(Constants.NACELNIK) ||
+                loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||
+                loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
+                loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
+
+            String pacijentUpitString = "SELECT p FROM Pacijent p";
+
+            int cnt = 0;
+
+            if(filterPatientsRequestDTO.getLbp()!=null) {
+                pacijentUpitString = pacijentUpitString + " WHERE p.lbp = :lbp";
+                cnt = cnt + 1;
+            }
+
+            if(filterPatientsRequestDTO.getJmbg()!=null) {
+                if(cnt==0) {
+                    pacijentUpitString = pacijentUpitString + " WHERE ";
+                }
+                else {
+                    pacijentUpitString = pacijentUpitString + " AND ";
+                }
+                pacijentUpitString = pacijentUpitString + "p.jmbg = :jmbg";
+                cnt = cnt + 1;
+            }
+
+            if(filterPatientsRequestDTO.getIme()!=null) {
+                if(cnt==0) {
+                    pacijentUpitString = pacijentUpitString + " WHERE ";
+                }
+                else {
+                    pacijentUpitString = pacijentUpitString + " AND ";
+                }
+                pacijentUpitString = pacijentUpitString + "p.ime = :ime";
+                cnt = cnt + 1;
+            }
+
+            if(filterPatientsRequestDTO.getPrezime()!=null) {
+                if(cnt==0) {
+                    pacijentUpitString = pacijentUpitString + " WHERE ";
+                }
+                else {
+                    pacijentUpitString = pacijentUpitString + " AND ";
+                }
+                pacijentUpitString = pacijentUpitString + "p.prezime = :prezime";
+            }
+
+            List<PacijentResponseDTO> pacijenti = new ArrayList<>();
+
+            TypedQuery<Pacijent> upitPacijent =
+                    entityManager.createQuery(pacijentUpitString, Pacijent.class);
+
+            if(filterPatientsRequestDTO.getLbp()!=null) {
+                upitPacijent.setParameter("lbp",filterPatientsRequestDTO.getLbp());
+            }
+
+            if(filterPatientsRequestDTO.getJmbg()!=null) {
+                upitPacijent.setParameter("jmbg",filterPatientsRequestDTO.getJmbg());
+            }
+
+            if(filterPatientsRequestDTO.getIme()!=null) {
+                upitPacijent.setParameter("ime",filterPatientsRequestDTO.getIme());
+            }
+
+            if(filterPatientsRequestDTO.getPrezime()!=null) {
+                upitPacijent.setParameter("prezime",filterPatientsRequestDTO.getPrezime());
+            }
+
+
+            for(Pacijent p: upitPacijent.getResultList()) {
+                pacijenti.add(new PacijentResponseDTO(p));
+            }
+
+            return ok(pacijenti);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
