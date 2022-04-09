@@ -9,6 +9,7 @@ import java.util.UUID;
 @Repository
 public interface PacijentRepository extends JpaRepository<Pacijent, Long> {
 
-    Pacijent getPacijentByLbp(UUID lbp);
+    Pacijent findByLbp(UUID lbp);
 
+    Pacijent findByPacijentId(Long id);
 }

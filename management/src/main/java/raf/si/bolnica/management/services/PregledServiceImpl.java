@@ -1,8 +1,8 @@
-package raf.si.bolnica.management.service;
+package raf.si.bolnica.management.services;
 
-import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.management.entities.IstorijaBolesti;
 import raf.si.bolnica.management.entities.Pacijent;
 import raf.si.bolnica.management.entities.Pregled;
@@ -14,18 +14,15 @@ import raf.si.bolnica.management.repositories.PregledRepository;
 import raf.si.bolnica.management.repositories.ZdravstveniKartonRepository;
 import raf.si.bolnica.management.requests.CreatePregledRequestDTO;
 
-import javax.swing.text.html.Option;
-import javax.transaction.Transactional;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Service
-@Transactional
+@Transactional("transactionManager")
 public class PregledServiceImpl implements PregledService{
 
     @Autowired
-    private PregledRepository pregledRepository;
+    PregledRepository pregledRepository;
 
     @Autowired
     private IstorijaBolestiRepository istorijaBolestiRepository;
@@ -36,16 +33,16 @@ public class PregledServiceImpl implements PregledService{
     @Autowired
     private PacijentRepository pacijentRepository;
 
-    @Override
-    public Pregled getPregledById(Long id) {
-        return pregledRepository.findById(id).orElse(null);
 
+    @Override
+    public Pregled savePregled(Pregled pregled) {
+        return pregledRepository.save(pregled);
     }
 
     @Override
-    public Pregled createPregled(CreatePregledRequestDTO requestDTO) {
+    public Pregled createPregledReport(CreatePregledRequestDTO requestDTO) {
 
-        Pacijent pacijent = pacijentRepository.getPacijentByLbp(requestDTO.getLbp());
+        Pacijent pacijent = pacijentRepository.findByLbp(requestDTO.getLbp());
         ZdravstveniKarton zdravstveniKarton = zdravstveniKartonRepository.findZdravstveniKartonByPacijent(pacijent);
 
         Pregled pregled = new Pregled();
