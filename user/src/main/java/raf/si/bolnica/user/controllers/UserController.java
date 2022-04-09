@@ -160,6 +160,27 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
+    @GetMapping(value = Constants.LIST_EMPLOYEES_BY_PBO)
+    public ResponseEntity<List<UserDataResponseDTO>> listEmployeesByPbo(@PathVariable Long pbo){
+        List<User> users = userService.fetchUsersByPBO(pbo);
+        // Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra.
+        String[] rolesPermited = {"ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC", "ROLE_VISA_MED_SESTRA", "ROLE_MED_SESTRA"};
+        if(users == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        for(int i = 0; i < 4; i++){
+            if(loggedInUser.getRoles().contains(rolesPermited[i])){
+                List<UserDataResponseDTO> userDataResponseDTOS = new ArrayList<>();
+                for(User user: users){
+                    userDataResponseDTOS.add(new UserDataResponseDTO(user));
+                }
+                return ok(userDataResponseDTOS);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
     @GetMapping(value = Constants.LIST_EMPLOYEES)
     public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO) {
 
