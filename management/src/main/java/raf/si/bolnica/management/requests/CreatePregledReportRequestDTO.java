@@ -1,12 +1,7 @@
 package raf.si.bolnica.management.requests;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import raf.si.bolnica.management.entities.enums.RezultatLecenja;
-
-import javax.persistence.Column;
-import java.sql.Date;
 import java.util.UUID;
 
 @Data

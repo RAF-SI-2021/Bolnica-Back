@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public class PregledReportRequestValidator {
 
+    private PregledReportRequestValidator() {}
+
     public static String validate(CreatePregledReportRequestDTO request) {
         if (request.getObjektivniNalaz() == null) return  "Objektivni nalaz je obavezno polje!";
         if (request.getLbp() == null) return  "Licni broj pacijenta(Lbp) je obavezno polje!";
