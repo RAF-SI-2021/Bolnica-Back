@@ -9,7 +9,9 @@ import raf.si.bolnica.management.controllers.ManagementController;
 import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.entities.enums.CountryCode;
 import raf.si.bolnica.management.entities.enums.Pol;
+import raf.si.bolnica.management.entities.enums.RezultatLecenja;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
+import raf.si.bolnica.management.requests.CreatePregledReportRequestDTO;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
 import raf.si.bolnica.management.response.PacijentResponseDTO;
 import raf.si.bolnica.management.services.PacijentService;
@@ -21,6 +23,7 @@ import java.sql.Date;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -77,6 +80,7 @@ public class PacijentCRUDTests {
 
         assertThat(response.getStatusCodeValue()).isNotEqualTo(200);
     }
+
 
     @Test
     public void testPacijentCreateInvalidRequest() {

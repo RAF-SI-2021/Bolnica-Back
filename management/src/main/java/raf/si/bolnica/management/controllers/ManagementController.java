@@ -3,7 +3,6 @@ package raf.si.bolnica.management.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.*;
@@ -52,17 +51,24 @@ public class ManagementController {
     private EntityManager entityManager;
 
     @PostMapping(value = "/create-pregled-report")
-    public ResponseEntity<?> createPregled(@RequestBody CreatePregledRequestDTO requestDTO) {
+    public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK); acceptedRoles.add(Constants.SPECIJALISTA); acceptedRoles.add(Constants.SPECIJLISTA_POV);
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
-            if (loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV)
-                    && requestDTO.getIndikatorPoverljivosti()) {
-                requestDTO.setIndikatorPoverljivosti(false);
+            String msg = PregledReportRequestValidator.validate(requestDTO);
+
+            if (!msg.equals("OK")) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
             }
 
-            Pregled pregledToReturn = pregledService.createPregledReport(requestDTO);
+            if (!loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV)
+                    && requestDTO.getIndikatorPoverljivosti()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nemate privilegije za postavljanje poverljivosti!");
+            }
+
+            Pregled pregledToSave = pregledService.createPregledReport(requestDTO);
+            Pregled pregledToReturn = this.pregledService.savePregled(pregledToSave);
             return ok(pregledToReturn);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

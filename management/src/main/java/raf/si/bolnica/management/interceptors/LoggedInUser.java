@@ -1,5 +1,6 @@
 package raf.si.bolnica.management.interceptors;
 
+import lombok.Data;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;

@@ -12,7 +12,7 @@ import raf.si.bolnica.management.repositories.IstorijaBolestiRepository;
 import raf.si.bolnica.management.repositories.PacijentRepository;
 import raf.si.bolnica.management.repositories.PregledRepository;
 import raf.si.bolnica.management.repositories.ZdravstveniKartonRepository;
-import raf.si.bolnica.management.requests.CreatePregledRequestDTO;
+import raf.si.bolnica.management.requests.CreatePregledReportRequestDTO;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -40,7 +40,7 @@ public class PregledServiceImpl implements PregledService{
     }
 
     @Override
-    public Pregled createPregledReport(CreatePregledRequestDTO requestDTO) {
+    public Pregled createPregledReport(CreatePregledReportRequestDTO requestDTO) {
 
         Pacijent pacijent = pacijentRepository.findByLbp(requestDTO.getLbp());
         ZdravstveniKarton zdravstveniKarton = zdravstveniKartonRepository.findZdravstveniKartonByPacijent(pacijent);
@@ -66,7 +66,7 @@ public class PregledServiceImpl implements PregledService{
 
             istorijaBolesti.setDijagnoza(pregled.getDijagnoza());
             istorijaBolesti.setRezultatLecenja(requestDTO.getRezultatLecenja());
-            istorijaBolesti.setOpisTekucegStanja(requestDTO.getOpisTekucgStanja());
+            istorijaBolesti.setOpisTekucegStanja(requestDTO.getOpisTekucegStanja());
             istorijaBolesti.setPodatakValidanOd(Date.valueOf(LocalDate.now()));
             istorijaBolesti.setPodatakValidanDo(Date.valueOf("31-12-9999"));
             istorijaBolesti.setPodaciValidni(true);
@@ -94,6 +94,6 @@ public class PregledServiceImpl implements PregledService{
             istorijaBolestiRepository.save(istorijaBolesti);
         }
 
-        return pregledRepository.save(pregled);
+        return pregled;
     }
 }
