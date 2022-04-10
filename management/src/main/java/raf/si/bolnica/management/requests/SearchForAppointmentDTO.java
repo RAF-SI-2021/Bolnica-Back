@@ -1,13 +1,14 @@
 package raf.si.bolnica.management.requests;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 public class SearchForAppointmentDTO {
 
-    private long lbz;
+    private UUID lbz;
     private Timestamp date;
 
-    public Long getLbz() {
+    public UUID getLbz() {
         return lbz;
     }
 
@@ -19,7 +20,7 @@ public class SearchForAppointmentDTO {
         this.date = date;
     }
 
-    public void setLbz(Long lbz) {
+    public void setLbz(UUID lbz) {
         this.lbz = lbz;
     }
 }

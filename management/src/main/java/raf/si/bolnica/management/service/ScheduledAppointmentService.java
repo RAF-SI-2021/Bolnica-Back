@@ -8,6 +8,7 @@ import raf.si.bolnica.management.requests.UpdateArrivalStatusDTO;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 
 public interface ScheduledAppointmentService {
@@ -15,6 +16,6 @@ public interface ScheduledAppointmentService {
         ZakazaniPregled setAppointment(CreateScheduledAppointmentRequestDTO createScheduledAppointmentRequestDTO);
         ZakazaniPregled updateAppointment(UpdateAppointmentStatusDTO updateAppointmentStatusDTO);
         ZakazaniPregled updateArrival(UpdateArrivalStatusDTO updateArrivalStatusDTO);
-        List<ZakazaniPregled> getAppointmentByLBZ(long lbz) ;
-        List<ZakazaniPregled> getAppointmentByLBZAndDate(long lbz, Timestamp date);
+        List<ZakazaniPregled> getAppointmentByLBZ(UUID lbz) ;
+        List<ZakazaniPregled> getAppointmentByLBZAndDate(UUID lbz, Timestamp date);
 }

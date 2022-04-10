@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Component
 @RequestScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -14,7 +15,7 @@ public class LoggedInUser {
 
     private Set<String> roles;
 
-    private Long lbz;
+    private UUID lbz;
 
     public LoggedInUser() {}
 
@@ -26,11 +27,11 @@ public class LoggedInUser {
         this.username = username;
     }
 
-    public Long getLBZ() {
+    public UUID getLBZ() {
         return lbz;
     }
 
-    public void setLBZ(Long lbz) {
+    public void setLBZ(UUID lbz) {
         this.lbz = lbz;
     }
 

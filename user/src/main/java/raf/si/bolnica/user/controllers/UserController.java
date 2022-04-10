@@ -27,6 +27,7 @@ import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -53,7 +54,7 @@ public class UserController {
     private EntityManager entityManager;
 
     @GetMapping(value = "/fetch-user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserResponseDTO> fetchAdminByUsername(@RequestParam String username) {
+    public ResponseEntity<UserResponseDTO> fetchUserByUsername(@RequestParam String username) {
         User user = userService.fetchUserByEmail(username);
         if (user != null) {
             UserResponseDTO userResponseDTO = new UserResponseDTO(user.getUserId(), user.getName(), user.getSurname(), user.getPassword(), user.getEmail(), user.getRoles());
@@ -96,7 +97,7 @@ public class UserController {
 
             User user = new User();
 
-            user.setLicniBrojZaposlenog(requestDTO.getLbz());
+            user.setLbz(UUID.randomUUID());
             user.setOdeljenje(odeljenje);
             user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
             user.setKorisnickoIme(username);
@@ -143,19 +144,10 @@ public class UserController {
     }
 
     @GetMapping(value = Constants.GET_EMPLOYEE)
-    public ResponseEntity<UserDataResponseDTO> getEmployee(@PathVariable Long lbz) {
+    public ResponseEntity<UserDataResponseDTO> getEmployee(@PathVariable String lbz) {
 
-        User user = userService.fetchUserByLBZ(lbz);
-
-
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-
-
-        if (loggedInUser.getRoles().contains("ROLE_ADMIN") || loggedInUser.getLBZ().equals(lbz)) {
-            System.out.println("test");
+        if (loggedInUser.getRoles().contains("ROLE_ADMIN") || loggedInUser.getLBZ().equals(UUID.fromString(lbz))) {
+            User user = userService.fetchUserByLBZ(UUID.fromString(lbz));
             UserDataResponseDTO userDataResponseDTO = new UserDataResponseDTO(user);
             return ok(userDataResponseDTO);
         }
@@ -164,18 +156,18 @@ public class UserController {
     }
 
     @GetMapping(value = Constants.LIST_EMPLOYEES_BY_PBO)
-    public ResponseEntity<List<UserDataResponseDTO>> listEmployeesByPbo(@PathVariable Long pbo){
+    public ResponseEntity<List<UserDataResponseDTO>> listEmployeesByPbo(@PathVariable Long pbo) {
         List<User> users = userService.fetchUsersByPBO(pbo);
         // Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra.
         String[] rolesPermited = {"ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC", "ROLE_VISA_MED_SESTRA", "ROLE_MED_SESTRA"};
-        if(users == null){
+        if (users == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        for(int i = 0; i < 4; i++){
-            if(loggedInUser.getRoles().contains(rolesPermited[i])){
+        for (int i = 0; i < 4; i++) {
+            if (loggedInUser.getRoles().contains(rolesPermited[i])) {
                 List<UserDataResponseDTO> userDataResponseDTOS = new ArrayList<>();
-                for(User user: users){
+                for (User user : users) {
                     userDataResponseDTOS.add(new UserDataResponseDTO(user));
                 }
                 return ok(userDataResponseDTOS);
@@ -188,70 +180,69 @@ public class UserController {
     public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO,
                                                                    @RequestParam int page,
                                                                    @RequestParam int size) {
+        if (!loggedInUser.getRoles().contains("ROLE_ADMIN"))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         String s = "SELECT u FROM User u";
 
-        HashMap<String,Object> param = new HashMap<>();
+        HashMap<String, Object> param = new HashMap<>();
 
-        if(requestDTO.getDepartment()!=null || requestDTO.getHospital()!=null) {
+        if (requestDTO.getDepartment() != null || requestDTO.getHospital() != null) {
             s = s + " INNER JOIN u.odeljenje o";
         }
 
-        if(requestDTO.getHospital()!=null) {
+        if (requestDTO.getHospital() != null) {
             s = s + " INNER JOIN o.bolnica z";
         }
 
         String nextOper = " WHERE ";
 
-        if(requestDTO.getName()!=null) {
+        if (requestDTO.getName() != null) {
             s = s + nextOper;
             nextOper = " AND ";
             s = s + " u.name like :name ";
-            param.put("name",requestDTO.getName());
+            param.put("name", requestDTO.getName());
         }
-        if(requestDTO.getSurname()!=null) {
+        if (requestDTO.getSurname() != null) {
             s = s + nextOper;
             nextOper = " AND ";
             s = s + " u.surname like :surname ";
-            param.put("surname",requestDTO.getSurname());
+            param.put("surname", requestDTO.getSurname());
         }
-        if(requestDTO.getObrisan()!=null) {
+        if (requestDTO.getObrisan() != null) {
             s = s + nextOper;
             nextOper = " AND ";
             s = s + " u.obrisan = :obrisan ";
-            param.put("obrisan",requestDTO.getObrisan());
+            param.put("obrisan", requestDTO.getObrisan());
         }
 
-        if(requestDTO.getDepartment()!=null) {
+        if (requestDTO.getDepartment() != null) {
             s = s + nextOper;
             nextOper = " AND ";
             s = s + " o.odeljenjeId = :odeljenje";
-            param.put("odeljenje",requestDTO.getDepartment());
+            param.put("odeljenje", requestDTO.getDepartment());
         }
 
-        if(requestDTO.getHospital()!=null) {
+        if (requestDTO.getHospital() != null) {
             s = s + nextOper;
             s = s + " z.zdravstvenaUstanovaId = :bolnica";
-            param.put("bolnica",requestDTO.getHospital());
+            param.put("bolnica", requestDTO.getHospital());
         }
-
-        System.out.println(s);
 
         TypedQuery<User> query
                 = entityManager.createQuery(
                 s, User.class);
-        for(String t: param.keySet()) {
-            query.setParameter(t,param.get(t));
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
         }
 
-        query.setFirstResult((page-1)*size);
+        query.setFirstResult((page - 1) * size);
         query.setMaxResults(size);
 
         List<User> users = query.getResultList();
 
-
         List<UserDataResponseDTO> userDataResponseDTOList = new ArrayList<>();
-        for(User user: users) {
+        for (User user : users) {
             UserDataResponseDTO userDataResponseDTO = new UserDataResponseDTO(user);
             userDataResponseDTOList.add(userDataResponseDTO);
         }
@@ -272,11 +263,9 @@ public class UserController {
 
             User user = userService.fetchUserByLBZ(requestDTO.getLbz());
 
-            if(user == null) {
+            if (user == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
-
-
 
             user.setOdeljenje(odeljenje);
             user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
@@ -295,15 +284,14 @@ public class UserController {
 
             User userToReturn = userService.saveEmployee(user);
             return ok(userToReturn);
-        }
-        else {
+        } else {
             User requestUser = userService.fetchUserByLBZ(requestDTO.getLbz());
-            if(loggedInUser.getLBZ().equals(requestUser.getLicniBrojZaposlenog())) {
+            if (loggedInUser.getLBZ().equals(requestUser.getLbz())) {
                 User user = userService.fetchUserByLBZ(requestDTO.getLbz());
-                if(requestDTO.getContact()!=null) {
+                if (requestDTO.getContact() != null) {
                     user.setKontaktTelefon(requestDTO.getContact());
                 }
-                if(requestDTO.getNewPassword()!=null && user.getPassword().equals(BCrypt.hashpw(requestDTO.getOldPassword(), BCrypt.gensalt()))) {
+                if (requestDTO.getNewPassword() != null && user.getPassword().equals(BCrypt.hashpw(requestDTO.getOldPassword(), BCrypt.gensalt()))) {
                     user.setPassword(BCrypt.hashpw(requestDTO.getNewPassword(), BCrypt.gensalt()));
                 }
                 user = userService.saveEmployee(user);

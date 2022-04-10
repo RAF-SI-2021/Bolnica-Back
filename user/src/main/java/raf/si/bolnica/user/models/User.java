@@ -3,6 +3,7 @@ package raf.si.bolnica.user.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -13,6 +14,7 @@ import java.sql.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 public class User {
@@ -23,7 +25,8 @@ public class User {
     private long userId;
 
     @Column(nullable = false, unique = true)
-    private long licniBrojZaposlenog;
+    @Type(type="org.hibernate.type.UUIDCharType")
+    private UUID lbz;
 
     @Column(nullable = false)
     private String name;
@@ -90,12 +93,12 @@ public class User {
         this.userId = userId;
     }
 
-    public long getLicniBrojZaposlenog() {
-        return licniBrojZaposlenog;
+    public UUID getLbz() {
+        return lbz;
     }
 
-    public void setLicniBrojZaposlenog(long licniBrojZaposlenog) {
-        this.licniBrojZaposlenog = licniBrojZaposlenog;
+    public void setLbz(UUID lbz) {
+        this.lbz = lbz;
     }
 
     public String getName() {

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -60,7 +61,7 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
     }
 
     @Override
-    public List<ZakazaniPregled> getAppointmentByLBZ(long lbz) {
+    public List<ZakazaniPregled> getAppointmentByLBZ(UUID lbz) {
         Timestamp date = Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
         List<ZakazaniPregled> allAppointments = scheduledAppointmentRepository.findByLBZLekara(lbz);
         List<ZakazaniPregled> appointments = new ArrayList<>();
@@ -74,7 +75,7 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
     }
 
     @Override
-    public List<ZakazaniPregled> getAppointmentByLBZAndDate(long lbz, Timestamp date) {
+    public List<ZakazaniPregled> getAppointmentByLBZAndDate(UUID lbz, Timestamp date) {
 
         return scheduledAppointmentRepository.findByLBZLekaraAndAndDatumIVremePregleda(lbz, date);
     }

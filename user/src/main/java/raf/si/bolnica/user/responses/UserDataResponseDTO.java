@@ -7,6 +7,7 @@ import lombok.Setter;
 import raf.si.bolnica.user.models.User;
 
 import java.sql.Date;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -26,7 +27,7 @@ public class UserDataResponseDTO {
 
     private String address;
 
-    private Long lbz;
+    private UUID lbz;
 
     private String city;
 
@@ -50,7 +51,7 @@ public class UserDataResponseDTO {
         dob = user.getDatumRodjenja();
         gender = user.getPol();
         jmbg = user.getJmbg();
-        lbz = user.getLicniBrojZaposlenog();
+        lbz = user.getLbz();
         profession = user.getZanimanje();
         email = user.getEmail();
         title = user.getTitula();

@@ -7,6 +7,7 @@ import raf.si.bolnica.user.models.Odeljenje;
 import raf.si.bolnica.user.models.User;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -15,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByKorisnickoIme(String korisnickoIme);
 
-    User findByLicniBrojZaposlenog(Long lbz);
+    User findByLbz(UUID lbz);
 
     List<User> findByOdeljenje(Odeljenje odeljenje);
 }

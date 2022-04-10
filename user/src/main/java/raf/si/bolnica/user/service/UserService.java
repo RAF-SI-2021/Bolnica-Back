@@ -4,6 +4,7 @@ import org.springframework.data.jpa.domain.Specification;
 import raf.si.bolnica.user.models.User;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
 
@@ -11,7 +12,7 @@ public interface UserService {
 
     User fetchUserByUsername(String username);
 
-    User fetchUserByLBZ(Long lbz);
+    User fetchUserByLBZ(UUID lbz);
 
     User saveEmployee(User user);
 

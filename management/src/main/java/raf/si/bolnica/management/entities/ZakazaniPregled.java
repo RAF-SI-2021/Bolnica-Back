@@ -5,6 +5,7 @@ import raf.si.bolnica.management.entities.enums.StatusPregleda;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 public class ZakazaniPregled {
@@ -27,16 +28,16 @@ public class ZakazaniPregled {
 
     //FKs
     @Column(nullable = false)
-    private long lBZLekara;
+    private UUID lBZLekara;
 
     @Column(nullable = false)
-    private long LBZSestre;
+    private UUID LBZSestre;
 
     @ManyToOne
     @JoinColumn(name = "pacijent_id")
     private Pacijent pacijent;
 
-    public long getLBZLekara() {
+    public UUID getLBZLekara() {
         return lBZLekara;
     }
 
@@ -44,7 +45,7 @@ public class ZakazaniPregled {
         return zakazaniPregledId;
     }
 
-    public long getLBZSestre() {
+    public UUID getLBZSestre() {
         return LBZSestre;
     }
 
@@ -72,11 +73,11 @@ public class ZakazaniPregled {
         this.datumIVremePregleda = datumIVremePregleda;
     }
 
-    public void setLBZLekara(long LBZLekara) {
+    public void setLBZLekara(UUID LBZLekara) {
         this.lBZLekara = LBZLekara;
     }
 
-    public void setLBZSestre(long LBZSestre) {
+    public void setLBZSestre(UUID LBZSestre) {
         this.LBZSestre = LBZSestre;
     }
 

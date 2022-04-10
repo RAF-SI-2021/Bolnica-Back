@@ -8,21 +8,21 @@ public class CreateScheduledAppointmentRequestDTO {
 
 
     //Employee (nurse) that makes appointment
-    private long appointmentEmployeeId;
+    private UUID appointmentEmployeeId;
 
     private Timestamp dateAndTimeOfAppointment;
 
     private String note;
 
     //Employee (doctor) that will be conducting examination
-    private long examinationEmployeeId;
+    private UUID examinationEmployeeId;
 
 
-    public long getAppointmentEmployeeId() {
+    public UUID getAppointmentEmployeeId() {
         return appointmentEmployeeId;
     }
 
-    public void setAppointmentEmployeeId(long appointmentEmployeeId) {
+    public void setAppointmentEmployeeId(UUID appointmentEmployeeId) {
         this.appointmentEmployeeId = appointmentEmployeeId;
     }
 
@@ -42,11 +42,11 @@ public class CreateScheduledAppointmentRequestDTO {
         this.note = note;
     }
 
-    public long getExaminationEmployeeId() {
+    public UUID getExaminationEmployeeId() {
         return examinationEmployeeId;
     }
 
-    public void setExaminationEmployeeId(long examinationEmployeeId) {
+    public void setExaminationEmployeeId(UUID examinationEmployeeId) {
         this.examinationEmployeeId = examinationEmployeeId;
     }
 }

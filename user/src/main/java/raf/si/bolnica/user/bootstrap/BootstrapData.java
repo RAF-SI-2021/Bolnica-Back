@@ -17,6 +17,7 @@ import java.sql.Date;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Component
 public class BootstrapData implements CommandLineRunner {
@@ -90,7 +91,7 @@ public class BootstrapData implements CommandLineRunner {
         user.setOdeljenje(odeljenje);
 
         //admin user fields
-        user.setLicniBrojZaposlenog(123);
+        user.setLbz(UUID.randomUUID());
         user.setName("admin");
         user.setSurname("adminic");
         user.setDatumRodjenja(new Date(System.currentTimeMillis()));

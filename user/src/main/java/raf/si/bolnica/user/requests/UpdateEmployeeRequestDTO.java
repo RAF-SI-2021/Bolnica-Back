@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class UpdateEmployeeRequestDTO {
 
     private String jmbg;
 
-    private Long lbz;
+    private UUID lbz;
 
     private String address;
 

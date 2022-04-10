@@ -27,6 +27,5 @@ public class PacijentCRUDRequestDTO extends PacijentCRUDDTO {
         pacijent.setPol(this.getPol());
         pacijent.setMestoStanovanja(this.getMestoStanovanja());
         pacijent.setMestoRodjenja(this.getMestoRodjenja());
-
     }
 }

@@ -3,6 +3,7 @@ package raf.si.bolnica.management.entities;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.UUID;
 
 @Entity
 public class Pregled {
@@ -44,7 +45,7 @@ public class Pregled {
     private ZdravstveniKarton zdravstveniKarton;
 
     @Column(nullable = false)
-    private long zaposleniId;
+    private UUID zaposleniId;
 
     public long getPregledId() {
         return pregledId;
@@ -158,11 +159,11 @@ public class Pregled {
         this.zdravstveniKarton = zdravstveniKarton;
     }
 
-    public long getZaposleniId() {
+    public UUID getZaposleniId() {
         return zaposleniId;
     }
 
-    public void setZaposleniId(long zaposleniId) {
+    public void setZaposleniId(UUID zaposleniId) {
         this.zaposleniId = zaposleniId;
     }
 }

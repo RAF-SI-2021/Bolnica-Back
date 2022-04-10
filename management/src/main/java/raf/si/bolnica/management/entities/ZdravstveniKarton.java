@@ -40,8 +40,6 @@ public class ZdravstveniKarton {
     @JoinColumn(name = "pacijent")
     private Pacijent pacijent;
 
-
-
     public long getZdravstveniKartonId() {
         return zdravstveniKartonId;
     }

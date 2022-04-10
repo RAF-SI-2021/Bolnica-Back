@@ -114,11 +114,11 @@ public class ManagementController {
 
             request.updatePacijentWithData(pacijent);
 
+            Pacijent kreiranPacijent = pacijentService.savePacijent(pacijent);
+
             ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();
 
             zdravstveniKarton.setDatumRegistracije(Date.valueOf(LocalDate.now()));
-
-            Pacijent kreiranPacijent = pacijentService.savePacijent(pacijent);
 
             zdravstveniKarton.setPacijent(kreiranPacijent);
 
@@ -238,13 +238,13 @@ public class ManagementController {
     }
 
     @GetMapping("/fetch-patient/{lbp}")
-    public ResponseEntity<?> fetchPatientLbp(@PathVariable UUID lbp) {
+    public ResponseEntity<?> fetchPatientLbp(@PathVariable String lbp) {
         if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||
                 loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
                 loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
 
-            Pacijent pacijent = pacijentService.fetchPacijentByLbp(lbp);
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
             if (pacijent == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -256,11 +256,11 @@ public class ManagementController {
     }
 
     @GetMapping("/fetch-zdravstveni-karton/{lbp}")
-    public ResponseEntity<?> fetchZdravstveniKartonLbp(@PathVariable UUID lbp) {
+    public ResponseEntity<?> fetchZdravstveniKartonLbp(@PathVariable String lbp) {
         if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
-            Pacijent pacijent = pacijentService.fetchPacijentByLbp(lbp);
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
             if (pacijent == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -272,11 +272,11 @@ public class ManagementController {
     }
 
     @GetMapping("/fetch-patient-data/{lbp}")
-    public ResponseEntity<?> fetchPatientDataLbp(@PathVariable UUID lbp) {
+    public ResponseEntity<?> fetchPatientDataLbp(@PathVariable String lbp) {
         if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
-            Pacijent pacijent = pacijentService.fetchPacijentByLbp(lbp);
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
             if (pacijent == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -333,8 +333,8 @@ public class ManagementController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
-        if (requestDTO.getAppointmentEmployeeId() == 0 || requestDTO.getDateAndTimeOfAppointment() == null
-                || requestDTO.getExaminationEmployeeId() == 0) {
+        if (requestDTO.getAppointmentEmployeeId() == null || requestDTO.getDateAndTimeOfAppointment() == null
+                || requestDTO.getExaminationEmployeeId() == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
@@ -412,13 +412,13 @@ public class ManagementController {
 
     @GetMapping("/fetch-istorija-bolesti/{lbp}")
     public ResponseEntity<?> fetchIstorijaBolestiLbp(@RequestBody IstorijaBolestiRequestDTO istorijaBolestiRequestDTO,
-                                                     @PathVariable UUID lbp,
+                                                     @PathVariable String lbp,
                                                      @RequestParam int page,
                                                      @RequestParam int size) {
         if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
-            Pacijent pacijent = pacijentService.fetchPacijentByLbp(lbp);
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
             if (pacijent == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

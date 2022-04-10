@@ -11,6 +11,7 @@ import raf.si.bolnica.user.repositories.UserRepository;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional("transactionManager")
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
     public User fetchUserByUsername(String username) { return userRepository.findByKorisnickoIme(username); }
 
     @Override
-    public User fetchUserByLBZ(Long lbz) { return userRepository.findByLicniBrojZaposlenog(lbz); }
+    public User fetchUserByLBZ(UUID lbz) { return userRepository.findByLbz(lbz); }
 
     @Override
     public User saveEmployee(User user) {

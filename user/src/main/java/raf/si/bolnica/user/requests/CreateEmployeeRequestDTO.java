@@ -26,8 +26,6 @@ public class CreateEmployeeRequestDTO {
 
     private String address;
 
-    private Long lbz;
-
     private String city;
 
     private String contact;

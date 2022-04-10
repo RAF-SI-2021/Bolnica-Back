@@ -9,7 +9,7 @@ public class CreatePregledReportRequestDTO {
 
     private UUID lbp;
 
-    private long zaposleniId = -1;
+    private UUID zaposleniId;
 
     private Boolean indikatorPoverljivosti;
 
