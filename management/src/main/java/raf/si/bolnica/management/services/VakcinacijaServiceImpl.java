@@ -14,7 +14,7 @@ public class VakcinacijaServiceImpl implements VakcinacijaService {
     VakcinacijaRepository vakcinacijaRepository;
 
     @Override
-    public Vakcinacija saveVakcinacija(Vakcinacija vakcinacija) {
+    public Vakcinacija save(Vakcinacija vakcinacija) {
         return vakcinacijaRepository.save(vakcinacija);
     }
 }
