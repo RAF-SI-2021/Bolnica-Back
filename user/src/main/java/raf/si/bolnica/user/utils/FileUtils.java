@@ -1,6 +1,7 @@
 package raf.si.bolnica.user.utils;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +15,7 @@ public class FileUtils {
     public static List<String> readUserTitles() {
         Scanner titlesFile = null;
         try {
-            titlesFile = new Scanner(new File("Titule.txt")).useDelimiter("\n");
+            titlesFile = new Scanner(ResourceUtils.getFile("classpath*:Titule.txt")).useDelimiter("\n");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -39,7 +40,7 @@ public class FileUtils {
     public static List<String> readUserProfessions() {
         Scanner professionFile = null;
         try {
-            professionFile = new Scanner(new File("Zanimanja.txt")).useDelimiter("\n");
+            professionFile = new Scanner(ResourceUtils.getFile("classpath*:Zanimanja.txt")).useDelimiter("\n");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

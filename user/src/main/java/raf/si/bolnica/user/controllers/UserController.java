@@ -11,7 +11,9 @@ import raf.si.bolnica.user.constants.Constants;
 import raf.si.bolnica.user.exceptionHandler.user.UserExceptionHandler;
 import raf.si.bolnica.user.interceptors.LoggedInUser;
 import raf.si.bolnica.user.models.Odeljenje;
+import raf.si.bolnica.user.models.Role;
 import raf.si.bolnica.user.models.User;
+import raf.si.bolnica.user.repositories.RoleRepository;
 import raf.si.bolnica.user.requests.CreateEmployeeRequestDTO;
 import raf.si.bolnica.user.requests.ListEmployeesRequestDTO;
 import raf.si.bolnica.user.requests.UpdateEmployeeRequestDTO;
@@ -24,10 +26,7 @@ import raf.si.bolnica.user.service.EmailService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -37,6 +36,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private UserExceptionHandler userExceptionHandler;
@@ -113,7 +115,12 @@ public class UserController {
             user.setTitula(requestDTO.getTitle());
             user.setZanimanje(requestDTO.getProfession());
 
+            Set<Role> roles = new HashSet<>();
+            roles.add(roleRepository.findByName("ROLE_ADMIN"));
+            user.setRoles(roles);
+
             User userToReturn = userService.saveEmployee(user);
+
             return ok(userToReturn);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -176,7 +183,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @GetMapping(value = Constants.LIST_EMPLOYEES)
+    @PostMapping(value = Constants.LIST_EMPLOYEES)
     public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO,
                                                                    @RequestParam int page,
                                                                    @RequestParam int size) {
