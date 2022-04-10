@@ -81,11 +81,14 @@ public class ManagementController {
         //Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra
         String[] roles = {"ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC","ROLE_VISA_MED_SESTA", "ROLE_MED_SESTRA"};
         for( int i = 0; i < 4; i++){
-            if(searchForAppointmentDTO.getDate() == null){
-                return ResponseEntity.ok(appointmentService.getAppointmentByLBZ(searchForAppointmentDTO.getLbz()));
-            } else {
-                return ResponseEntity.ok(appointmentService.getAppointmentByLBZAndDate(searchForAppointmentDTO.getLbz(), searchForAppointmentDTO.getDate()));
+            if(loggedInUser.getRoles().contains(roles[i])){
+                if(searchForAppointmentDTO.getDate() == null){
+                    return ResponseEntity.ok(appointmentService.getAppointmentByLBZ(searchForAppointmentDTO.getLbz()));
+                } else {
+                    return ResponseEntity.ok(appointmentService.getAppointmentByLBZAndDate(searchForAppointmentDTO.getLbz(), searchForAppointmentDTO.getDate()));
+                }
             }
+
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
