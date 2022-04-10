@@ -10,6 +10,7 @@ import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.*;
 import raf.si.bolnica.management.response.*;
 import raf.si.bolnica.management.services.*;
+import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -69,6 +70,32 @@ public class ManagementController {
 
     @Autowired
     private ScheduledAppointmentService appointmentService;
+
+    @PostMapping(value = "/create-pregled-report")
+    public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK);
+        acceptedRoles.add(Constants.SPECIJALISTA);
+        acceptedRoles.add(Constants.SPECIJLISTA_POV);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+
+            String msg = PregledReportRequestValidator.validate(requestDTO);
+
+            if (!msg.equals("OK")) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
+            }
+
+            if (!loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV)
+                    && requestDTO.getIndikatorPoverljivosti()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nemate privilegije za postavljanje poverljivosti!");
+            }
+
+            Pregled pregledToSave = pregledService.createPregledReport(requestDTO);
+            Pregled pregledToReturn = this.pregledService.savePregled(pregledToSave);
+            return ok(pregledToReturn);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 
     @PostMapping("/create-patient")
     public ResponseEntity<?> createPatient(@RequestBody PacijentCRUDRequestDTO request) {
@@ -158,7 +185,7 @@ public class ManagementController {
 
             for (AlergenZdravstveniKarton azk : query1.getResultList()) {
                 azk.setObrisan(true);
-                alergenZdravstveniKartonService.saveAlergenZdravstveniKarton(azk);
+                alergenZdravstveniKartonService.save(azk);
             }
 
             s = "SELECT az FROM Vakcinacija az WHERE az.zdravstveniKarton = :zk";
@@ -169,7 +196,7 @@ public class ManagementController {
 
             for (Vakcinacija v : query2.getResultList()) {
                 v.setObrisan(true);
-                vakcinacijaService.saveVakcinacija(v);
+                vakcinacijaService.save(v);
             }
 
             s = "SELECT az FROM Operacija az WHERE az.zdravstveniKarton = :zk";
@@ -342,15 +369,15 @@ public class ManagementController {
             }
 
             if (preglediRequestDTO.getOn() != null) {
-                preglediUpitString = preglediUpitString + " AND p.datumPregelda = :on";
+                preglediUpitString = preglediUpitString + " AND p.datumPregleda = :on";
             }
 
             if (preglediRequestDTO.getFrom() != null) {
-                preglediUpitString = preglediUpitString + " AND p.datumPregelda >= :from";
+                preglediUpitString = preglediUpitString + " AND p.datumPregleda >= :from";
             }
 
             if (preglediRequestDTO.getTo() != null) {
-                preglediUpitString = preglediUpitString + " AND p.datumPregelda <= :to";
+                preglediUpitString = preglediUpitString + " AND p.datumPregleda <= :to";
             }
 
             List<PregledResponseDTO> pregledi = new ArrayList<>();
@@ -540,12 +567,12 @@ public class ManagementController {
     }
 
     @GetMapping(value = "/list-appointments-by-lbz")
-    public ResponseEntity<List<?>> listAppointmentsByLBZ(@RequestBody SearchForAppointmentDTO searchForAppointmentDTO){
+    public ResponseEntity<List<?>> listAppointmentsByLBZ(@RequestBody SearchForAppointmentDTO searchForAppointmentDTO) {
         //Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra
-        String[] roles = {"ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC","ROLE_VISA_MED_SESTA", "ROLE_MED_SESTRA"};
-        for( int i = 0; i < 4; i++){
-            if(loggedInUser.getRoles().contains(roles[i])){
-                if(searchForAppointmentDTO.getDate() == null){
+        String[] roles = {"ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC", "ROLE_VISA_MED_SESTA", "ROLE_MED_SESTRA"};
+        for (int i = 0; i < 4; i++) {
+            if (loggedInUser.getRoles().contains(roles[i])) {
+                if (searchForAppointmentDTO.getDate() == null) {
                     return ResponseEntity.ok(appointmentService.getAppointmentByLBZ(searchForAppointmentDTO.getLbz()));
                 } else {
                     return ResponseEntity.ok(appointmentService.getAppointmentByLBZAndDate(searchForAppointmentDTO.getLbz(), searchForAppointmentDTO.getDate()));

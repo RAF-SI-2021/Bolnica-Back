@@ -3,15 +3,20 @@ package raf.si.bolnica.management.bootstrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import raf.si.bolnica.management.entities.Pacijent;
 import raf.si.bolnica.management.entities.Vakcina;
-import raf.si.bolnica.management.repositories.AlergenZdravstveniKartonRepository;
-import raf.si.bolnica.management.repositories.PacijentRepository;
-import raf.si.bolnica.management.repositories.VakcinaRepository;
+import raf.si.bolnica.management.entities.ZdravstveniKarton;
+import raf.si.bolnica.management.entities.enums.CountryCode;
+import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
+import raf.si.bolnica.management.entities.enums.Pol;
+import raf.si.bolnica.management.entities.enums.RhFaktor;
+import raf.si.bolnica.management.repositories.*;
 import raf.si.bolnica.management.entities.Alergen;
-import raf.si.bolnica.management.repositories.AlergenRepository;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class BootstrapData implements CommandLineRunner {
@@ -28,13 +33,15 @@ public class BootstrapData implements CommandLineRunner {
     @Autowired
     private PacijentRepository pacijentRepository;
 
+    @Autowired
+    private ZdravstveniKartonRepository zdravstveniKartonRepository;
 
     @Override
     public void run(String... args) throws Exception {
         String[] nazivi = {"PRIORIX", "HIBERIX", "INFLUVAC", "SYNFLORIX", "BCG VAKCINA"};
         String[] opisi = {"Vakcina protiv morbila (malih boginja)", "Kapsulirani antigen hemofilus influence tip B", "Virusne vakcine protiv influence (grip)", "Vakcine protiv pneumokoka", "Vakcine protiv tuberkuloze"};
         String[] tipovi = {"Virusne vakcine", "Bakterijske vakcine", "Virusne vakcine", "Bakterijske vakcine", "Bakterijske vakcine"};
-        String[] proizvodjaci = {"GlaxoSmithKline Biologicals S.A., Belgija", "GlaxoSmithKline Biologicals S.A., Belgija", "Abbott Biologicals B.V., Holandija","GlaxoSmithKline Biologicals S.A., Belgija", "Institut za virusologiju, vakcine i serume \"Torlak\", Republika Srbija"};
+        String[] proizvodjaci = {"GlaxoSmithKline Biologicals S.A., Belgija", "GlaxoSmithKline Biologicals S.A., Belgija", "Abbott Biologicals B.V., Holandija", "GlaxoSmithKline Biologicals S.A., Belgija", "Institut za virusologiju, vakcine i serume \"Torlak\", Republika Srbija"};
 
         for (int i = 0; i < 5; i++) {
             Vakcina vakcina = new Vakcina();
@@ -50,7 +57,7 @@ public class BootstrapData implements CommandLineRunner {
         alergens.add(new Alergen("Jaja"));
         alergens.add(new Alergen("Orašasti plodovi"));
         alergens.add(new Alergen("Plodovi mora"));
-        alergens.add( new Alergen("Pšenica"));
+        alergens.add(new Alergen("Pšenica"));
         alergens.add(new Alergen("Soja"));
         alergens.add(new Alergen("Riba"));
         alergens.add(new Alergen("Penicilin"));
@@ -59,9 +66,29 @@ public class BootstrapData implements CommandLineRunner {
         alergens.add(new Alergen("Karbamazepin"));
         alergens.add(new Alergen("Ibuprofen"));
 
-        for (Alergen alergen:alergens) {
+        for (Alergen alergen : alergens) {
             alergenRepository.save(alergen);
         }
 
+        Pacijent pacijent = new Pacijent();
+        pacijent.setJmbg("123456789");
+        pacijent.setLbp(UUID.fromString("237e9877-e79b-12d4-a765-321741963000"));
+        pacijent.setIme("Pacijent");
+        pacijent.setImeRoditelja("Pacijent");
+        pacijent.setPrezime("Pacijent");
+        pacijent.setPol(Pol.MUSKI);
+        pacijent.setDatumRodjenja(Date.valueOf("1990-01-01"));
+        pacijent.setMestoRodjenja("Loznica");
+        pacijent.setZemljaDrzavljanstva(CountryCode.SRB);
+        pacijent.setZemljaStanovanja(CountryCode.SRB);
+        pacijent.setEmail("pacijent@gmail.com");
+        pacijentRepository.save(pacijent);
+
+        ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();
+        zdravstveniKarton.setRhFaktor(RhFaktor.MINUS);
+        zdravstveniKarton.setKrvnaGrupa(KrvnaGrupa.AB);
+        zdravstveniKarton.setPacijent(pacijent);
+        zdravstveniKarton.setDatumRegistracije(Date.valueOf("2010-01-01"));
+        zdravstveniKartonRepository.save(zdravstveniKarton);
     }
 }

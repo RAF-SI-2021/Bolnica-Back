@@ -4,5 +4,5 @@ import raf.si.bolnica.management.entities.Vakcinacija;
 
 public interface VakcinacijaService {
 
-    Vakcinacija saveVakcinacija(Vakcinacija vakcinacija);
+    Vakcinacija save(Vakcinacija vakcinacija);
 }
