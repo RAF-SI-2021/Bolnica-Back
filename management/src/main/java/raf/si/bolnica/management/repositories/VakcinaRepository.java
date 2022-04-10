@@ -7,5 +7,6 @@ import raf.si.bolnica.management.entities.Vakcina;
 @Repository
 public interface VakcinaRepository extends JpaRepository<Vakcina, Long> {
 
+    Vakcina findVakcinaByNaziv(String naziv);
 
 }

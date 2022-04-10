@@ -13,7 +13,7 @@ import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
 import raf.si.bolnica.management.response.PacijentResponseDTO;
 import raf.si.bolnica.management.services.PacijentService;
-import raf.si.bolnica.management.services.ZdravstveniKartonService;
+import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

@@ -14,7 +14,7 @@ public class AlergenZdravstveniKartonServiceImpl implements AlergenZdravstveniKa
     AlergenZdravstveniKartonRepository alergenZdravstveniKartonRepository;
 
     @Override
-    public AlergenZdravstveniKarton saveAlergenZdravstveniKarton(AlergenZdravstveniKarton alergenZdravstveniKarton) {
+    public AlergenZdravstveniKarton save(AlergenZdravstveniKarton alergenZdravstveniKarton) {
         return alergenZdravstveniKartonRepository.save(alergenZdravstveniKarton);
     }
 }

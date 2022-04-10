@@ -4,7 +4,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
 import raf.si.bolnica.management.entities.IstorijaBolesti;
@@ -19,9 +18,8 @@ import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
 import raf.si.bolnica.management.requests.PreglediRequestDTO;
 import raf.si.bolnica.management.response.PacijentPodaciResponseDTO;
 import raf.si.bolnica.management.response.PacijentResponseDTO;
-import raf.si.bolnica.management.response.PregledResponseDTO;
 import raf.si.bolnica.management.services.PacijentService;
-import raf.si.bolnica.management.services.ZdravstveniKartonService;
+import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.*;
 
