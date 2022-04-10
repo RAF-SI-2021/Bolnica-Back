@@ -13,6 +13,12 @@ import raf.si.bolnica.management.requests.UpdateAppointmentStatusDTO;
 import raf.si.bolnica.management.requests.UpdateArrivalStatusDTO;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -51,6 +57,26 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
         appointmentForUpdate.setPrispecePacijenta(PrispecePacijenta.valueOf(updateArrivalStatusDTO.getArrivalStatus()));
 
         return scheduledAppointmentRepository.save(appointmentForUpdate);
+    }
+
+    @Override
+    public List<ZakazaniPregled> getAppointmentByLBZ(long lbz) {
+        Timestamp date = Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
+        List<ZakazaniPregled> allAppointments = scheduledAppointmentRepository.findByLBZLekara(lbz);
+        List<ZakazaniPregled> appointments = new ArrayList<>();
+        for(ZakazaniPregled appointment : allAppointments){
+            if(appointment.getDatumIVremePregleda().after(date)){
+                appointments.add(appointment);
+            }
+        }
+
+        return appointments;
+    }
+
+    @Override
+    public List<ZakazaniPregled> getAppointmentByLBZAndDate(long lbz, Timestamp date) {
+
+        return scheduledAppointmentRepository.findByLBZLekaraAndAndDatumIVremePregleda(lbz, date);
     }
 
 }

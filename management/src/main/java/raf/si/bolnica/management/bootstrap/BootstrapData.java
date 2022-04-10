@@ -16,7 +16,7 @@ public class BootstrapData implements CommandLineRunner {
 
     @Autowired
     private VakcinaRepository vakcinaRepository;
-  
+
     @Autowired
     private AlergenRepository alergenRepository;
 
@@ -36,7 +36,7 @@ public class BootstrapData implements CommandLineRunner {
             vakcina.setTip(tipovi[i]);
             vakcinaRepository.save(vakcina);
         }
-      
+
         List<Alergen> alergens = new ArrayList<Alergen>();
         alergens.add(new Alergen("Mleko"));
         alergens.add(new Alergen("Jaja"));
@@ -54,7 +54,6 @@ public class BootstrapData implements CommandLineRunner {
         for (Alergen alergen:alergens) {
             alergenRepository.save(alergen);
         }
-      
-        alergenRepository.save(new Alergen("Mleko"));
+
     }
 }
