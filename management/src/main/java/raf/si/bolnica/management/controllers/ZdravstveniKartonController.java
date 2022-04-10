@@ -43,7 +43,7 @@ public class ZdravstveniKartonController {
 
             ZdravstveniKarton zdravstveniKartonToReturn = zdravstveniKartonService.saveZdravstveniKarton(zdravstveniKarton);
 
-            return ok().build();
+            return ResponseEntity.ok(zdravstveniKartonToReturn);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }

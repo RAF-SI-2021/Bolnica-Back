@@ -65,7 +65,7 @@ public class AlergentController {
                 AlergenZdravstveniKarton alergenZdravstveniKartonToReturn =
                         alergenZdravstveniKartonService.save(alergenZdravstveniKarton);
 
-                return ok().build();
+                return ResponseEntity.ok(alergenZdravstveniKartonToReturn);
             }
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

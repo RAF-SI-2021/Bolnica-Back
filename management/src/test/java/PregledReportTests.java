@@ -99,38 +99,4 @@ public class PregledReportTests {
 
         assertThat(response.getBody()).isEqualTo("Licni broj pacijenta(Lbp) je obavezno polje!");
     }
-
-    @Test
-    public void testCreatePregledReportSuccess() {
-        Set<String> roles = new TreeSet<>();
-
-        roles.add(Constants.SPECIJLISTA_POV);
-
-        when(loggedInUser.getRoles()).thenReturn(roles);
-
-        CreatePregledReportRequestDTO request = getRequest();
-        request.setDijagnoza(null);
-
-        ResponseEntity<?> responseCreate = managementController.createPregledReport(request);
-
-        assertThat(responseCreate.getStatusCodeValue()).isEqualTo(200);
-
-    }
-
-    @Test
-    public void testCreatePregledReportAuthorized() {
-        Set<String> roles = new TreeSet<>();
-
-        roles.add(Constants.SPECIJLISTA_POV);
-
-        when(loggedInUser.getRoles()).thenReturn(roles);
-
-        CreatePregledReportRequestDTO request = getRequest();
-
-        ResponseEntity<?> response = managementController.createPregledReport(request);
-
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-    }
-
-
 }

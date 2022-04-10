@@ -329,7 +329,7 @@ public class ManagementController {
     }
 
     @PostMapping(value = "/set-appointment")
-    public ResponseEntity setAppointment(@RequestBody CreateScheduledAppointmentRequestDTO requestDTO) {
+    public ResponseEntity<?> setAppointment(@RequestBody CreateScheduledAppointmentRequestDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");

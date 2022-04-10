@@ -19,7 +19,7 @@ import java.time.LocalDate;
 
 @Service
 @Transactional("transactionManager")
-public class PregledServiceImpl implements PregledService{
+public class PregledServiceImpl implements PregledService {
 
     @Autowired
     PregledRepository pregledRepository;

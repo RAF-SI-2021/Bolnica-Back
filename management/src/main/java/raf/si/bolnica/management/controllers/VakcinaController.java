@@ -64,7 +64,7 @@ public class VakcinaController {
 
                 Vakcinacija vakcinacijaToReturn = vakcinacijaService.save(vakcinacija);
 
-                return ok().build();
+                return ResponseEntity.ok(vakcinacijaToReturn);
             }
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
