@@ -1,9 +1,9 @@
 package raf.si.bolnica.management.service;
 
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import raf.si.bolnica.management.entities.Pacijent;
 import raf.si.bolnica.management.entities.ZakazaniPregled;
 import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
@@ -28,7 +28,7 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
     @Autowired
     private ScheduledAppointmentRepository scheduledAppointmentRepository;
 
-    public ZakazaniPregled setAppointment(UUID lbz, CreateScheduledAppointmentRequestDTO appointmentRequestDTO) {
+    public ZakazaniPregled setAppointment(UUID lbz, Pacijent pacijent, CreateScheduledAppointmentRequestDTO appointmentRequestDTO) {
         ZakazaniPregled appointment = new ZakazaniPregled();
 
 
@@ -37,22 +37,23 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
         appointment.setLBZSestre(lbz);
         appointment.setNapomena(appointmentRequestDTO.getNote());
         appointment.setDatumIVremePregleda(appointmentRequestDTO.getDateAndTimeOfAppointment());
+        appointment.setPacijent(pacijent);
 
         return scheduledAppointmentRepository.save(appointment);
     }
 
     @Override
     public ZakazaniPregled updateAppointment(UpdateAppointmentStatusDTO updateAppointmentStatusDTO) {
-        ZakazaniPregled  appointmentForUpdate =
+        ZakazaniPregled appointmentForUpdate =
                 scheduledAppointmentRepository.getZakazaniPregledByZakazaniPregledId(updateAppointmentStatusDTO.getAppointmentId());
 
-            appointmentForUpdate.setStatusPregleda(StatusPregleda.valueOf(updateAppointmentStatusDTO.getAppointmentStatus()));
+        appointmentForUpdate.setStatusPregleda(StatusPregleda.valueOf(updateAppointmentStatusDTO.getAppointmentStatus()));
         return scheduledAppointmentRepository.save(appointmentForUpdate);
     }
 
     @Override
     public ZakazaniPregled updateArrival(UpdateArrivalStatusDTO updateArrivalStatusDTO) {
-        ZakazaniPregled  appointmentForUpdate =
+        ZakazaniPregled appointmentForUpdate =
                 scheduledAppointmentRepository.getZakazaniPregledByZakazaniPregledId(updateArrivalStatusDTO.getAppointmentId());
         appointmentForUpdate.setPrispecePacijenta(PrispecePacijenta.valueOf(updateArrivalStatusDTO.getArrivalStatus()));
 
@@ -64,8 +65,8 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
         Timestamp date = Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
         List<ZakazaniPregled> allAppointments = scheduledAppointmentRepository.findByLBZLekara(lbz);
         List<ZakazaniPregled> appointments = new ArrayList<>();
-        for(ZakazaniPregled appointment : allAppointments){
-            if(appointment.getDatumIVremePregleda().after(date)){
+        for (ZakazaniPregled appointment : allAppointments) {
+            if (appointment.getDatumIVremePregleda().after(date)) {
                 appointments.add(appointment);
             }
         }

@@ -13,6 +13,8 @@ public class CreateScheduledAppointmentRequestDTO {
     //Employee (doctor) that will be conducting examination
     private UUID examinationEmployeeId;
 
+    private UUID patient;
+
     public Timestamp getDateAndTimeOfAppointment() {
         return dateAndTimeOfAppointment;
     }
@@ -35,6 +37,14 @@ public class CreateScheduledAppointmentRequestDTO {
 
     public void setExaminationEmployeeId(UUID examinationEmployeeId) {
         this.examinationEmployeeId = examinationEmployeeId;
+    }
+
+    public UUID getPatient() {
+        return patient;
+    }
+
+    public void setPatient(UUID patient) {
+        this.patient = patient;
     }
 }
 
