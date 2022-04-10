@@ -4,18 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import raf.si.bolnica.management.entities.Operacija;
-import raf.si.bolnica.management.entities.Pregled;
 import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
 import raf.si.bolnica.management.entities.enums.RhFaktor;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
 import java.sql.Date;
-import java.util.Set;
 
 @Getter
 @Setter
