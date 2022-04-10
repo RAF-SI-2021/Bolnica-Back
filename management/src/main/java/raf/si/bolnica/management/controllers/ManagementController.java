@@ -3,7 +3,6 @@ package raf.si.bolnica.management.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.*;
@@ -11,6 +10,7 @@ import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.*;
 import raf.si.bolnica.management.response.*;
 import raf.si.bolnica.management.services.*;
+import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -139,7 +139,7 @@ public class ManagementController {
 
             for(AlergenZdravstveniKarton azk : query1.getResultList()) {
                 azk.setObrisan(true);
-                alergenZdravstveniKartonService.saveAlergenZdravstveniKarton(azk);
+                alergenZdravstveniKartonService.save(azk);
             }
 
             s = "SELECT az FROM Vakcinacija az WHERE az.zdravstveniKarton = :zk";
@@ -150,7 +150,7 @@ public class ManagementController {
 
             for(Vakcinacija v: query2.getResultList()) {
                 v.setObrisan(true);
-                vakcinacijaService.saveVakcinacija(v);
+                vakcinacijaService.save(v);
             }
 
             s = "SELECT az FROM Operacija az WHERE az.zdravstveniKarton = :zk";
