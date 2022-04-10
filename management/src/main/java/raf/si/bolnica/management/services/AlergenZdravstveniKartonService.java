@@ -4,5 +4,5 @@ import raf.si.bolnica.management.entities.AlergenZdravstveniKarton;
 
 public interface AlergenZdravstveniKartonService {
 
-    AlergenZdravstveniKarton saveAlergenZdravstveniKarton(AlergenZdravstveniKarton alergenZdravstveniKarton);
+    AlergenZdravstveniKarton save(AlergenZdravstveniKarton alergenZdravstveniKarton);
 }
