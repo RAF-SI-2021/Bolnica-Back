@@ -5,9 +5,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import raf.si.bolnica.user.models.Odeljenje;
 import raf.si.bolnica.user.models.User;
 import raf.si.bolnica.user.repositories.UserRepository;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,6 +18,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private OdeljenjeServiceImpl odeljenjeService;
 
     @Override
     public User fetchUserByEmail(String email) { return userRepository.findByEmail(email); }
@@ -44,6 +49,13 @@ public class UserServiceImpl implements UserService {
             sb.append(chars.charAt(randomIndex));
         }
         return sb.toString();
+    }
+
+    @Override
+    public List<User> fetchUsersByPBO(Long id) {
+        Odeljenje odeljenje = odeljenjeService.fetchOdeljenjeById(id);
+
+        return userRepository.findByOdeljenje(odeljenje);
     }
 
     @Override

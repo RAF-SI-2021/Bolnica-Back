@@ -1,6 +1,5 @@
 package raf.si.bolnica.management.entities;
 
-import net.bytebuddy.implementation.bind.annotation.Default;
 import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
 
@@ -28,7 +27,7 @@ public class ZakazaniPregled {
 
     //FKs
     @Column(nullable = false)
-    private long LBZLekara;
+    private long lBZLekara;
 
     @Column(nullable = false)
     private long LBZSestre;
@@ -38,7 +37,7 @@ public class ZakazaniPregled {
     private Pacijent pacijent;
 
     public long getLBZLekara() {
-        return LBZLekara;
+        return lBZLekara;
     }
 
     public long getZakazaniPregledId() {
@@ -74,7 +73,7 @@ public class ZakazaniPregled {
     }
 
     public void setLBZLekara(long LBZLekara) {
-        this.LBZLekara = LBZLekara;
+        this.lBZLekara = LBZLekara;
     }
 
     public void setLBZSestre(long LBZSestre) {

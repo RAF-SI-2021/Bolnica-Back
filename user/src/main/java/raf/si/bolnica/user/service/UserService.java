@@ -17,6 +17,8 @@ public interface UserService {
 
     String generateNewPassword(User user);
 
+    List<User> fetchUsersByPBO(Long id);
+
     void savePassword(User user, String password);
 
     void deleteById(Long id);
