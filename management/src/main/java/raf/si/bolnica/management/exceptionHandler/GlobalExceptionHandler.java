@@ -12,13 +12,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = MissingRequestFieldsException.class)
     public ResponseEntity<ErrorResponse> handleMissingRequestFieldsException(MissingRequestFieldsException e) {
-        e.printStackTrace();
         return new ResponseEntity<>(e.getErrorResponse(), e.getErrorResponse().getResponseStatus());
     }
 
     @ExceptionHandler(value = AllergenNotExistException.class)
     public ResponseEntity<ErrorResponse> handleAllergenAlreadyExist(AllergenNotExistException e) {
-        e.printStackTrace();
         return new ResponseEntity<>(e.getErrorResponse(), e.getErrorResponse().getResponseStatus());
     }
 }
