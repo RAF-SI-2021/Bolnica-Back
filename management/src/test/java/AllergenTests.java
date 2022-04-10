@@ -135,7 +135,7 @@ public class AllergenTests {
 
         ResponseEntity<?> response = alergentController.addAllergenToPatient(request);
 
-        assertThat(response.getStatusCodeValue() == 400);
+        assertThat(response.getStatusCodeValue()).isEqualTo(400);
     }
 
     @Test
@@ -153,7 +153,7 @@ public class AllergenTests {
 
         ResponseEntity<?> response = alergentController.addAllergenToPatient(request);
 
-        assertThat(response.getStatusCodeValue() == 200);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
     }
 
 

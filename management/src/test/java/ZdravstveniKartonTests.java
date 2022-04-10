@@ -86,7 +86,7 @@ public class ZdravstveniKartonTests {
 
         ResponseEntity<?> response = zdravstveniKartonController.updatePatientMedicalRecord(request);
 
-        assertThat(response.getStatusCodeValue() == 403);
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class ZdravstveniKartonTests {
 
         ResponseEntity<?> response = zdravstveniKartonController.updatePatientMedicalRecord(request);
 
-        assertThat(response.getStatusCodeValue() == 400);
+        assertThat(response.getStatusCodeValue()).isEqualTo(400);
     }
 
     @Test
@@ -136,7 +136,7 @@ public class ZdravstveniKartonTests {
 
         ResponseEntity<?> response = zdravstveniKartonController.updatePatientMedicalRecord(request);
 
-        assertThat(response.getStatusCodeValue() == 200);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
     }
 
 }
