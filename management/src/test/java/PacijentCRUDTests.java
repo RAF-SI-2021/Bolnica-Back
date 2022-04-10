@@ -65,22 +65,6 @@ public class PacijentCRUDTests {
         return request;
     }
 
-    @Test
-    public void testPacijentCreateUnauthorized() {
-
-        Set<String> roles = new TreeSet<>();
-
-        roles.add(Constants.ADMIN);
-
-        when(loggedInUser.getRoles()).thenReturn(roles);
-
-        PacijentCRUDRequestDTO request = getRequest();
-
-        ResponseEntity<?> response = managementController.createPatient(request);
-
-        assertThat(response.getStatusCodeValue()).isNotEqualTo(200);
-    }
-
 
     @Test
     public void testPacijentCreateInvalidRequest() {

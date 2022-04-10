@@ -63,21 +63,6 @@ public class PregledReportTests {
     }
 
     @Test
-    public void testCreatePregledReportUnauthorized() {
-        Set<String> roles = new TreeSet<>();
-
-        roles.add(Constants.ADMIN);
-
-        when(loggedInUser.getRoles()).thenReturn(roles);
-
-        CreatePregledReportRequestDTO request = getRequest();
-
-        ResponseEntity<?> response = managementController.createPregledReport(request);
-
-        assertThat(response.getStatusCodeValue()).isEqualTo(403);
-    }
-
-    @Test
     public void testCreatePregledReportInvalidRequest() {
         Set<String> roles = new TreeSet<>();
 
