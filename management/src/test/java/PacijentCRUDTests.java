@@ -128,13 +128,13 @@ public class PacijentCRUDTests {
         Pacijent test = new Pacijent();
         test.setZdravstveniKarton(new ZdravstveniKarton());
 
-        when(pacijentService.fetchPacijentById(Long.valueOf(1))).thenReturn(test);
+        when(pacijentService.fetchPacijentById(1L)).thenReturn(test);
 
         TypedQuery query = mock(TypedQuery.class);
         when(query.getResultList()).thenReturn(new LinkedList<>());
         when(entityManager.createQuery(any(String.class),any(Class.class))).thenReturn(query);
 
-        ResponseEntity<?> responseRemove = managementController.removePatient(Long.valueOf(1));
+        ResponseEntity<?> responseRemove = managementController.removePatient(1L);
 
         assertThat(responseRemove.getStatusCodeValue()).isEqualTo(200);
     }
@@ -160,11 +160,11 @@ public class PacijentCRUDTests {
 
         assertThat(responseCreate.getBody()).isInstanceOf(PacijentResponseDTO.class);
 
-        when(pacijentService.fetchPacijentById(Long.valueOf(1))).thenReturn(new Pacijent());
+        when(pacijentService.fetchPacijentById(1L)).thenReturn(new Pacijent());
 
         request.setBrojDece(5);
 
-        ResponseEntity<?> responseUpdate = managementController.updatePatient(request,Long.valueOf(1));
+        ResponseEntity<?> responseUpdate = managementController.updatePatient(request, 1L);
 
         assertThat(responseUpdate.getStatusCodeValue()).isEqualTo(200);
     }

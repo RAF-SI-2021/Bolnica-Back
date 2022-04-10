@@ -1,6 +1,8 @@
 package raf.si.bolnica.management.entities;
 
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.UUID;
@@ -45,6 +47,7 @@ public class Pregled {
     private ZdravstveniKarton zdravstveniKarton;
 
     @Column(nullable = false)
+    @Type(type="org.hibernate.type.UUIDCharType")
     private UUID zaposleniId;
 
     public long getPregledId() {

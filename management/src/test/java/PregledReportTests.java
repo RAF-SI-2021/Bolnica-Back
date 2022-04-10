@@ -37,9 +37,6 @@ public class PregledReportTests {
     @Mock
     LoggedInUser loggedInUser;
 
-    @Mock
-    EntityManager entityManager;
-
     @InjectMocks
     ManagementController managementController;
 
