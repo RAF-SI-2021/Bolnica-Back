@@ -33,6 +33,8 @@ public class UserExceptionHandler {
 
     public final Consumer<String> validateUserTitle = (userTitle) -> {
         List<String> titles = FileUtils.readUserTitles();
+        System.out.println(titles);
+        System.out.println(userTitle);
         if (!titles.contains(userTitle))
             throw new InvalidRegistrationException(Constants.RegistrationInvalidFields.MESSAGE_USER_TITLE_INVALID, Constants.RegistrationInvalidFields.DEVELOPER_MESSAGE_USER_TITLE_INVALID);
     };

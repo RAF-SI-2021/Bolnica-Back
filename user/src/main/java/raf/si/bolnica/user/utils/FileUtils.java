@@ -1,5 +1,6 @@
 package raf.si.bolnica.user.utils;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
@@ -15,8 +16,8 @@ public class FileUtils {
     public static List<String> readUserTitles() {
         Scanner titlesFile = null;
         try {
-            titlesFile = new Scanner(ResourceUtils.getFile("classpath*:Titule.txt")).useDelimiter("\n");
-        } catch (FileNotFoundException e) {
+            titlesFile = new Scanner(new ClassPathResource("Titule.txt").getInputStream()).useDelimiter("\n");
+        } catch (Exception e) {
             e.printStackTrace();
         }
         assert titlesFile != null;
@@ -30,7 +31,7 @@ public class FileUtils {
 
         while (titlesFile.hasNext()) {
             title = titlesFile.next();
-            titleList.add(title.substring(0,title.length()-1));
+            titleList.add(title);
         }
         titlesFile.close();
 
@@ -40,8 +41,8 @@ public class FileUtils {
     public static List<String> readUserProfessions() {
         Scanner professionFile = null;
         try {
-            professionFile = new Scanner(ResourceUtils.getFile("classpath*:Zanimanja.txt")).useDelimiter("\n");
-        } catch (FileNotFoundException e) {
+            professionFile = new Scanner(new ClassPathResource("Zanimanja.txt").getInputStream()).useDelimiter("\n");
+        } catch (Exception e) {
             e.printStackTrace();
         }
         assert professionFile != null;
