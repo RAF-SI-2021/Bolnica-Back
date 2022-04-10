@@ -5,10 +5,11 @@ import java.util.UUID;
 
 public class SearchForAppointmentDTO {
 
-    private UUID lbz;
+    private String lbz;
+
     private Timestamp date;
 
-    public UUID getLbz() {
+    public String getLbz() {
         return lbz;
     }
 
@@ -20,7 +21,7 @@ public class SearchForAppointmentDTO {
         this.date = date;
     }
 
-    public void setLbz(UUID lbz) {
+    public void setLbz(String lbz) {
         this.lbz = lbz;
     }
 }

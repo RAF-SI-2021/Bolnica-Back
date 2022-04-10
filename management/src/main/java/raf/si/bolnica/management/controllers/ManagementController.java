@@ -576,9 +576,9 @@ public class ManagementController {
         for (int i = 0; i < 4; i++) {
             if (loggedInUser.getRoles().contains(roles[i])) {
                 if (searchForAppointmentDTO.getDate() == null) {
-                    return ResponseEntity.ok(appointmentService.getAppointmentByLBZ(searchForAppointmentDTO.getLbz()));
+                    return ResponseEntity.ok(appointmentService.getAppointmentByLBZ(UUID.fromString(searchForAppointmentDTO.getLbz())));
                 } else {
-                    return ResponseEntity.ok(appointmentService.getAppointmentByLBZAndDate(searchForAppointmentDTO.getLbz(), searchForAppointmentDTO.getDate()));
+                    return ResponseEntity.ok(appointmentService.getAppointmentByLBZAndDate(UUID.fromString(searchForAppointmentDTO.getLbz()), searchForAppointmentDTO.getDate()));
                 }
             }
 
