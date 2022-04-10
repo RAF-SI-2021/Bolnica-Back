@@ -1,5 +1,6 @@
 package raf.si.bolnica.management.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
 
@@ -35,6 +36,7 @@ public class ZakazaniPregled {
 
     @ManyToOne
     @JoinColumn(name = "pacijent_id")
+    @JsonIgnore
     private Pacijent pacijent;
 
     public UUID getLBZLekara() {

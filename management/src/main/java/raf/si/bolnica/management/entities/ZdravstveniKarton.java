@@ -1,5 +1,6 @@
 package raf.si.bolnica.management.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
 import raf.si.bolnica.management.entities.enums.RhFaktor;
 
@@ -27,12 +28,15 @@ public class ZdravstveniKarton {
     private Boolean obrisan = false;
 
     @OneToMany(mappedBy = "zdravstveniKarton")
+    @JsonIgnore
     private Set<Operacija> operacije;
 
     @OneToMany(mappedBy = "zdravstveniKarton")
+    @JsonIgnore
     private Set<Pregled> pregledi;
 
     @OneToMany(mappedBy = "zdravstveniKarton", cascade = CascadeType.ALL)
+    @JsonIgnore
     Set<AlergenZdravstveniKarton> alergenZdravstveniKarton;
 
     // FKs
