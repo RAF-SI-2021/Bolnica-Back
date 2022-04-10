@@ -178,7 +178,7 @@ class PacijentQueriesTests {
 
         when(query1.getResultList()).thenReturn(pregledi);
 
-        ResponseEntity<?> response = managementController.fetchPreglediLbp(new PreglediRequestDTO(),p.getLbp(),1,2);
+        ResponseEntity<?> response = managementController.fetchPreglediLbp(new PreglediRequestDTO(),p.getLbp().toString(),1,2);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
 

@@ -74,6 +74,7 @@ public class ManagementController {
     @PostMapping(value = "/create-pregled-report")
     public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
         acceptedRoles.add(Constants.NACELNIK);
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);
@@ -99,8 +100,8 @@ public class ManagementController {
 
     @PostMapping("/create-patient")
     public ResponseEntity<?> createPatient(@RequestBody PacijentCRUDRequestDTO request) {
-        if (loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
-                loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || (loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
+                loggedInUser.getRoles().contains(Constants.MED_SESTRA))) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
 
@@ -133,7 +134,7 @@ public class ManagementController {
 
     @PutMapping("/update-patient/{id}")
     public ResponseEntity<?> updatePatient(@RequestBody PacijentCRUDRequestDTO request, @PathVariable Long id) {
-        if (loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
                 loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
@@ -159,7 +160,7 @@ public class ManagementController {
 
     @DeleteMapping("/remove-patient/{id}")
     public ResponseEntity<?> removePatient(@PathVariable Long id) {
-        if (loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA)) {
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentById(id);
 
@@ -239,7 +240,7 @@ public class ManagementController {
 
     @GetMapping("/fetch-patient/{lbp}")
     public ResponseEntity<?> fetchPatientLbp(@PathVariable String lbp) {
-        if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||
                 loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
                 loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
@@ -273,7 +274,7 @@ public class ManagementController {
 
     @GetMapping("/fetch-patient-data/{lbp}")
     public ResponseEntity<?> fetchPatientDataLbp(@PathVariable String lbp) {
-        if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
@@ -331,6 +332,7 @@ public class ManagementController {
     @PostMapping(value = "/set-appointment")
     public ResponseEntity<?> setAppointment(@RequestBody CreateScheduledAppointmentRequestDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_ADMIN");
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
         if (requestDTO.getDateAndTimeOfAppointment() == null || requestDTO.getExaminationEmployeeId() == null) {
@@ -346,13 +348,13 @@ public class ManagementController {
 
     @GetMapping("/fetch-pregledi/{lbp}")
     public ResponseEntity<?> fetchPreglediLbp(@RequestBody PreglediRequestDTO preglediRequestDTO,
-                                              @PathVariable UUID lbp,
+                                              @PathVariable String lbp,
                                               @RequestParam int page,
                                               @RequestParam int size) {
-        if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
-            Pacijent pacijent = pacijentService.fetchPacijentByLbp(lbp);
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
             if (pacijent == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -414,7 +416,7 @@ public class ManagementController {
                                                      @PathVariable String lbp,
                                                      @RequestParam int page,
                                                      @RequestParam int size) {
-        if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
@@ -460,7 +462,7 @@ public class ManagementController {
 
     @GetMapping("/filter-patients")
     public ResponseEntity<?> filterPatients(@RequestBody FilterPatientsRequestDTO filterPatientsRequestDTO) {
-        if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||
                 loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
                 loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
@@ -539,6 +541,7 @@ public class ManagementController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
         acceptedRoles.add("ROLE_DR_SPEC");
+        acceptedRoles.add("ROLE_ADMIN");
         if (requestDTO.getAppointmentStatus() == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -555,6 +558,7 @@ public class ManagementController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
+        acceptedRoles.add("ROLE_ADMIN");
         if (requestDTO.getArrivalStatus() == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -568,7 +572,7 @@ public class ManagementController {
     @GetMapping(value = "/list-appointments-by-lbz")
     public ResponseEntity<List<?>> listAppointmentsByLBZ(@RequestBody SearchForAppointmentDTO searchForAppointmentDTO) {
         //Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra
-        String[] roles = {"ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC", "ROLE_VISA_MED_SESTA", "ROLE_MED_SESTRA"};
+        String[] roles = {"ROLE_ADMIN", "ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC", "ROLE_VISA_MED_SESTA", "ROLE_MED_SESTRA"};
         for (int i = 0; i < 4; i++) {
             if (loggedInUser.getRoles().contains(roles[i])) {
                 if (searchForAppointmentDTO.getDate() == null) {
