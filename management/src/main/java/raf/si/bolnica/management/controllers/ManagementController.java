@@ -460,7 +460,7 @@ public class ManagementController {
     }
 
 
-    @GetMapping("/filter-patients")
+    @PostMapping("/filter-patients")
     public ResponseEntity<?> filterPatients(@RequestBody FilterPatientsRequestDTO filterPatientsRequestDTO) {
         if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
                 loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||
@@ -569,7 +569,7 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @GetMapping(value = "/list-appointments-by-lbz")
+    @PostMapping(value = "/list-appointments-by-lbz")
     public ResponseEntity<List<?>> listAppointmentsByLBZ(@RequestBody SearchForAppointmentDTO searchForAppointmentDTO) {
         //Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra
         String[] roles = {"ROLE_ADMIN", "ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC", "ROLE_VISA_MED_SESTA", "ROLE_MED_SESTRA"};
