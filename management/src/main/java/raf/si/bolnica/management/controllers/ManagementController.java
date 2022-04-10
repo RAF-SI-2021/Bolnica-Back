@@ -51,6 +51,31 @@ public class ManagementController {
     @Autowired
     private EntityManager entityManager;
 
+    @PostMapping(value = "/create-pregled-report")
+    public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK); acceptedRoles.add(Constants.SPECIJALISTA); acceptedRoles.add(Constants.SPECIJLISTA_POV);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+
+            String msg = PregledReportRequestValidator.validate(requestDTO);
+
+            if (!msg.equals("OK")) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
+            }
+
+            if (!loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV)
+                    && requestDTO.getIndikatorPoverljivosti()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nemate privilegije za postavljanje poverljivosti!");
+            }
+
+            Pregled pregledToSave = pregledService.createPregledReport(requestDTO);
+            Pregled pregledToReturn = this.pregledService.savePregled(pregledToSave);
+            return ok(pregledToReturn);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+
     @PostMapping("/create-patient")
     public ResponseEntity<?> createPatient(@RequestBody PacijentCRUDRequestDTO request) {
         if(loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
@@ -307,15 +332,15 @@ public class ManagementController {
             }
 
             if(preglediRequestDTO.getOn() != null) {
-                preglediUpitString = preglediUpitString + " AND p.datumPregelda = :on";
+                preglediUpitString = preglediUpitString + " AND p.datumPregleda = :on";
             }
 
             if(preglediRequestDTO.getFrom() != null) {
-                preglediUpitString = preglediUpitString + " AND p.datumPregelda >= :from";
+                preglediUpitString = preglediUpitString + " AND p.datumPregleda >= :from";
             }
 
             if(preglediRequestDTO.getTo() != null) {
-                preglediUpitString = preglediUpitString + " AND p.datumPregelda <= :to";
+                preglediUpitString = preglediUpitString + " AND p.datumPregleda <= :to";
             }
 
             List<PregledResponseDTO> pregledi = new ArrayList<>();
