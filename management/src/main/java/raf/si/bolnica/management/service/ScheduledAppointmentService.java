@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public interface ScheduledAppointmentService {
 
-        ZakazaniPregled setAppointment(CreateScheduledAppointmentRequestDTO createScheduledAppointmentRequestDTO);
+        ZakazaniPregled setAppointment(UUID lbz, CreateScheduledAppointmentRequestDTO createScheduledAppointmentRequestDTO);
         ZakazaniPregled updateAppointment(UpdateAppointmentStatusDTO updateAppointmentStatusDTO);
         ZakazaniPregled updateArrival(UpdateArrivalStatusDTO updateArrivalStatusDTO);
         List<ZakazaniPregled> getAppointmentByLBZ(UUID lbz) ;

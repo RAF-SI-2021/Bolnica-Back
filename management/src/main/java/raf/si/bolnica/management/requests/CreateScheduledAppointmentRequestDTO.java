@@ -6,25 +6,12 @@ import java.util.UUID;
 
 public class CreateScheduledAppointmentRequestDTO {
 
-
-    //Employee (nurse) that makes appointment
-    private UUID appointmentEmployeeId;
-
     private Timestamp dateAndTimeOfAppointment;
 
     private String note;
 
     //Employee (doctor) that will be conducting examination
     private UUID examinationEmployeeId;
-
-
-    public UUID getAppointmentEmployeeId() {
-        return appointmentEmployeeId;
-    }
-
-    public void setAppointmentEmployeeId(UUID appointmentEmployeeId) {
-        this.appointmentEmployeeId = appointmentEmployeeId;
-    }
 
     public Timestamp getDateAndTimeOfAppointment() {
         return dateAndTimeOfAppointment;

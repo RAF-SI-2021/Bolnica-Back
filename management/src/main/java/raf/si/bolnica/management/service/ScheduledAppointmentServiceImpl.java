@@ -28,14 +28,13 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
     @Autowired
     private ScheduledAppointmentRepository scheduledAppointmentRepository;
 
-    public ZakazaniPregled setAppointment(CreateScheduledAppointmentRequestDTO appointmentRequestDTO) {
-        System.out.println(appointmentRequestDTO.getAppointmentEmployeeId());
+    public ZakazaniPregled setAppointment(UUID lbz, CreateScheduledAppointmentRequestDTO appointmentRequestDTO) {
         ZakazaniPregled appointment = new ZakazaniPregled();
 
 
         appointment.setStatusPregleda(StatusPregleda.ZAKAZANO);
         appointment.setLBZLekara(appointmentRequestDTO.getExaminationEmployeeId());
-        appointment.setLBZSestre(appointmentRequestDTO.getAppointmentEmployeeId());
+        appointment.setLBZSestre(lbz);
         appointment.setNapomena(appointmentRequestDTO.getNote());
         appointment.setDatumIVremePregleda(appointmentRequestDTO.getDateAndTimeOfAppointment());
 

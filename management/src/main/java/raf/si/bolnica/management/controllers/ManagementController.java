@@ -333,13 +333,12 @@ public class ManagementController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
-        if (requestDTO.getAppointmentEmployeeId() == null || requestDTO.getDateAndTimeOfAppointment() == null
-                || requestDTO.getExaminationEmployeeId() == null) {
+        if (requestDTO.getDateAndTimeOfAppointment() == null || requestDTO.getExaminationEmployeeId() == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
-            ZakazaniPregled appointmentToReturn = appointmentService.setAppointment(requestDTO);
+            ZakazaniPregled appointmentToReturn = appointmentService.setAppointment(loggedInUser.getLBZ(), requestDTO);
             return ResponseEntity.ok(appointmentToReturn);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
