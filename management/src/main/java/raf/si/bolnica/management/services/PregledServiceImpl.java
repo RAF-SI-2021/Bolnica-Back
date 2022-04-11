@@ -16,6 +16,7 @@ import raf.si.bolnica.management.requests.CreatePregledReportRequestDTO;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.UUID;
 
 @Service
@@ -50,7 +51,7 @@ public class PregledServiceImpl implements PregledService {
 
         pregled.setZdravstveniKarton(zdravstveniKarton);
         pregled.setZaposleniId(UUID.fromString(requestDTO.getZaposleniId()));
-        pregled.setDatumPregleda(Date.valueOf(LocalDate.now()));
+        pregled.setDatumPregleda(new Date(Calendar.getInstance().getTime().getTime()));
         pregled.setDijagnoza(requestDTO.getDijagnoza());
         pregled.setGlavneTegobe(requestDTO.getGlavneTegobe());
         pregled.setLicnaAnamneza(requestDTO.getLicnaAnamneza());
@@ -68,7 +69,7 @@ public class PregledServiceImpl implements PregledService {
             istorijaBolesti.setDijagnoza(pregled.getDijagnoza());
             istorijaBolesti.setRezultatLecenja(requestDTO.getRezultatLecenja());
             istorijaBolesti.setOpisTekucegStanja(requestDTO.getOpisTekucegStanja());
-            istorijaBolesti.setPodatakValidanOd(Date.valueOf(LocalDate.now()));
+            istorijaBolesti.setPodatakValidanOd(new Date(Calendar.getInstance().getTime().getTime()));
             istorijaBolesti.setPodatakValidanDo(Date.valueOf("9999-12-31"));
             istorijaBolesti.setPodaciValidni(true);
 
@@ -76,7 +77,7 @@ public class PregledServiceImpl implements PregledService {
 
                 IstorijaBolesti istorijaBolestiAktuelna = istorijaBolestiRepository.
                         getIstorijaBolestiByZdravstveniKartonAndPodaciValidni(pregled.getZdravstveniKarton(), true);
-                istorijaBolestiAktuelna.setPodatakValidanDo(Date.valueOf(LocalDate.now()));
+                istorijaBolestiAktuelna.setPodatakValidanDo(new Date(Calendar.getInstance().getTime().getTime()));
                 istorijaBolestiAktuelna.setPodaciValidni(false);
                 istorijaBolestiRepository.save(istorijaBolestiAktuelna);
 
@@ -84,7 +85,7 @@ public class PregledServiceImpl implements PregledService {
                 istorijaBolesti.setDatumPocetkaZdravstvenogProblema(istorijaBolestiAktuelna.getDatumPocetkaZdravstvenogProblema());
                 if (requestDTO.getRezultatLecenja() != RezultatLecenja.U_TOKU
                         && requestDTO.getRezultatLecenja() != null) {
-                    istorijaBolesti.setDatumZavrsetkaZdravstvenogProblema(Date.valueOf(LocalDate.now()));
+                    istorijaBolesti.setDatumZavrsetkaZdravstvenogProblema(new Date(Calendar.getInstance().getTime().getTime()));
                 }
 
             } else {

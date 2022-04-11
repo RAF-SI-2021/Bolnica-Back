@@ -119,7 +119,7 @@ public class ManagementController {
 
             ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();
 
-            zdravstveniKarton.setDatumRegistracije(Date.valueOf(LocalDate.now()));
+            zdravstveniKarton.setDatumRegistracije(new Date(Calendar.getInstance().getTime().getTime()));
 
             zdravstveniKarton.setPacijent(kreiranPacijent);
 
