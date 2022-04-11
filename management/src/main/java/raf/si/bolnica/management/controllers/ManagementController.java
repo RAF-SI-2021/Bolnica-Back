@@ -411,7 +411,7 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @GetMapping("/fetch-istorija-bolesti/{lbp}")
+    @PostMapping("/fetch-istorija-bolesti/{lbp}")
     public ResponseEntity<?> fetchIstorijaBolestiLbp(@RequestBody IstorijaBolestiRequestDTO istorijaBolestiRequestDTO,
                                                      @PathVariable String lbp,
                                                      @RequestParam int page,
