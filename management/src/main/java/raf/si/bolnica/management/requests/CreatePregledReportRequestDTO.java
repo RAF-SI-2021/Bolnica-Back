@@ -7,9 +7,9 @@ import java.util.UUID;
 @Data
 public class CreatePregledReportRequestDTO {
 
-    private UUID lbp;
+    private String lbp;
 
-    private UUID zaposleniId;
+    private String zaposleniId;
 
     private Boolean indikatorPoverljivosti;
 

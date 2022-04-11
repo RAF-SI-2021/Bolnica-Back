@@ -44,8 +44,8 @@ public class PregledReportTests {
     CreatePregledReportRequestDTO getRequest() {
         CreatePregledReportRequestDTO request = new CreatePregledReportRequestDTO();
 
-        request.setZaposleniId(UUID.randomUUID());
-        request.setLbp(UUID.randomUUID());
+        request.setZaposleniId(UUID.randomUUID().toString());
+        request.setLbp(UUID.randomUUID().toString());
         request.setDijagnoza("dijagnoza");
         request.setGlavneTegobe("glavnetegobe");
         request.setIndikatorPoverljivosti(false);

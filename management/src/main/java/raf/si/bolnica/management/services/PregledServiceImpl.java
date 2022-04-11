@@ -16,6 +16,7 @@ import raf.si.bolnica.management.requests.CreatePregledReportRequestDTO;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 @Transactional("transactionManager")
@@ -42,13 +43,13 @@ public class PregledServiceImpl implements PregledService {
     @Override
     public Pregled createPregledReport(CreatePregledReportRequestDTO requestDTO) {
 
-        Pacijent pacijent = pacijentRepository.findByLbp(requestDTO.getLbp());
+        Pacijent pacijent = pacijentRepository.findByLbp(UUID.fromString(requestDTO.getLbp()));
         ZdravstveniKarton zdravstveniKarton = zdravstveniKartonRepository.findZdravstveniKartonByPacijent(pacijent);
 
         Pregled pregled = new Pregled();
 
         pregled.setZdravstveniKarton(zdravstveniKarton);
-        pregled.setZaposleniId(requestDTO.getZaposleniId());
+        pregled.setZaposleniId(UUID.fromString(requestDTO.getZaposleniId()));
         pregled.setDatumPregleda(Date.valueOf(LocalDate.now()));
         pregled.setDijagnoza(requestDTO.getDijagnoza());
         pregled.setGlavneTegobe(requestDTO.getGlavneTegobe());
@@ -68,7 +69,7 @@ public class PregledServiceImpl implements PregledService {
             istorijaBolesti.setRezultatLecenja(requestDTO.getRezultatLecenja());
             istorijaBolesti.setOpisTekucegStanja(requestDTO.getOpisTekucegStanja());
             istorijaBolesti.setPodatakValidanOd(Date.valueOf(LocalDate.now()));
-            istorijaBolesti.setPodatakValidanDo(Date.valueOf("31-12-9999"));
+            istorijaBolesti.setPodatakValidanDo(Date.valueOf("9999-12-31"));
             istorijaBolesti.setPodaciValidni(true);
 
             if (pregled.getSadasnjaBolest() != null) {
