@@ -258,7 +258,6 @@ class PacijentQueriesTests {
 
     }
 
-    /*
     @Test
     public void testCreateFetchPatientZdravstveniKarton() {
         Set<String> roles = new TreeSet<>();
@@ -271,7 +270,8 @@ class PacijentQueriesTests {
 
         PacijentCRUDRequestDTO request = getRequest();
 
-        when(pacijentService.savePacijent(any(Pacijent.class))).thenReturn(new Pacijent());
+        when(pacijentService.savePacijent(any(Pacijent.class))).thenAnswer(i -> i.getArguments()[0]);
+
 
         when(zdravstveniKartonService.saveZdravstveniKarton(any(ZdravstveniKarton.class))).thenReturn(new ZdravstveniKarton());
 
@@ -283,6 +283,7 @@ class PacijentQueriesTests {
 
         UUID lbp = ((PacijentResponseDTO) Objects.requireNonNull(responseCreate.getBody())).getLbp();
 
+
         Pacijent p = new Pacijent();
 
         ZdravstveniKarton zk = new ZdravstveniKarton();
@@ -293,7 +294,7 @@ class PacijentQueriesTests {
 
         zk.setPacijent(p);
 
-//        when(pacijentService.fetchPacijentByLbp(lbp)).thenReturn(p);
+        when(pacijentService.fetchPacijentByLbp(lbp)).thenReturn(p);
 
         ResponseEntity<?> responseFetchPatient = managementController.fetchPatientLbp(lbp.toString());
 
@@ -307,5 +308,5 @@ class PacijentQueriesTests {
 
         assertThat(responseFetchZdravstveniKarton.getStatusCodeValue()).isEqualTo(200);
     }
-     */
+
 }
