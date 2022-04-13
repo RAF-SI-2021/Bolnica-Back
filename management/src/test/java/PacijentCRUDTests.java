@@ -7,8 +7,7 @@ import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
 import raf.si.bolnica.management.entities.*;
-import raf.si.bolnica.management.entities.enums.CountryCode;
-import raf.si.bolnica.management.entities.enums.Pol;
+import raf.si.bolnica.management.entities.enums.*;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
 import raf.si.bolnica.management.response.PacijentResponseDTO;
@@ -59,6 +58,9 @@ public class PacijentCRUDTests {
         request.setMestoRodjenja("Loznica");
         request.setZemljaDrzavljanstva(CountryCode.SRB);
         request.setZemljaStanovanja(CountryCode.SRB);
+        request.setStepenStrucneSpreme(StrucnaSprema.VISE);
+        request.setBracniStatus(BracniStatus.SAMAC);
+        request.setPorodicniStatus(PorodicniStatus.JEDAN_RODITELJ);
 
         return request;
     }
@@ -106,6 +108,16 @@ public class PacijentCRUDTests {
         assertThat(responseCreate.getStatusCodeValue()).isEqualTo(200);
 
         assertThat(responseCreate.getBody()).isInstanceOf(PacijentResponseDTO.class);
+
+        PacijentResponseDTO response = (PacijentResponseDTO) responseCreate.getBody();
+
+        assertThat(response).isNotNull();
+
+        assertThat(response.getBracniStatus()).isEqualTo(request.getBracniStatus());
+
+        assertThat(response.getPorodicniStatus()).isEqualTo(request.getPorodicniStatus());
+
+        assertThat(response.getStepenStrucneSpreme()).isEqualTo(request.getStepenStrucneSpreme());
 
         Pacijent test = new Pacijent();
         test.setZdravstveniKarton(new ZdravstveniKarton());

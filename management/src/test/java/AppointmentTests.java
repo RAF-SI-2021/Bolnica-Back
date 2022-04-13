@@ -5,6 +5,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
+import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
+import raf.si.bolnica.management.entities.enums.StatusPregleda;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.CreateScheduledAppointmentRequestDTO;
 import raf.si.bolnica.management.requests.SearchForAppointmentDTO;
@@ -53,7 +55,7 @@ public class AppointmentTests {
         roles.add(Constants.VISA_MED_SESTRA);
         when(loggedInUser.getRoles()).thenReturn(roles);
         UpdateAppointmentStatusDTO requestDTO = new UpdateAppointmentStatusDTO();
-        requestDTO.setAppointmentStatus("status");
+        requestDTO.setAppointmentStatus(StatusPregleda.U_TOKU.toString());
         managementController.updateAppointmentStatus(requestDTO);
     }
 
@@ -63,7 +65,7 @@ public class AppointmentTests {
         roles.add(Constants.VISA_MED_SESTRA);
         when(loggedInUser.getRoles()).thenReturn(roles);
         UpdateArrivalStatusDTO requestDTO = new UpdateArrivalStatusDTO();
-        requestDTO.setArrivalStatus("status");
+        requestDTO.setArrivalStatus(PrispecePacijenta.PRIMLJEN.toString());
         managementController.updateArrivalStatus(requestDTO);
     }
 
