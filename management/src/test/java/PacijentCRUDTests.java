@@ -106,6 +106,27 @@ public class PacijentCRUDTests {
     }
 
     @Test
+    public void testPacijentUpdateRemoveNoPatient() {
+
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.VISA_MED_SESTRA);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+
+        PacijentCRUDRequestDTO request = getRequest();
+
+        ResponseEntity<?> response = managementController.removePatient(1L);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+
+        response = managementController.updatePatient(request,1L);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
     public void testPacijentUnauthorizedRequest() {
 
         Set<String> roles = new TreeSet<>();

@@ -93,10 +93,20 @@ public class AllergenTests {
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
-        AddAllergentToPatientRequestDTO request = getRequestWithMissingField();
+        AddAllergentToPatientRequestDTO request1 = getRequest();
+        request1.setLbp(null);
 
         Throwable thrown = catchThrowable(() -> {
-            ResponseEntity<?> response = alergentController.addAllergenToPatient(request);
+            ResponseEntity<?> response = alergentController.addAllergenToPatient(request1);
+        });
+
+        assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
+
+        AddAllergentToPatientRequestDTO request2 = getRequest();
+        request2.setNaziv(null);
+
+        thrown = catchThrowable(() -> {
+            ResponseEntity<?> response = alergentController.addAllergenToPatient(request2);
         });
 
         assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);

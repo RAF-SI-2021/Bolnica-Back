@@ -106,10 +106,29 @@ public class VaccineTests {
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
-        AddVaccineToPatientRequestDTO request = getRequestWithMissingField();
+        AddVaccineToPatientRequestDTO request1 = getRequest();
+        request1.setNaziv(null);
 
         Throwable thrown = catchThrowable(() -> {
-            ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request);
+            ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request1);
+        });
+
+        assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
+
+        AddVaccineToPatientRequestDTO request2 = getRequest();
+        request2.setLbp(null);
+
+        thrown = catchThrowable(() -> {
+            ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request2);
+        });
+
+        assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
+
+        AddVaccineToPatientRequestDTO request3 = getRequest();
+        request3.setDatumVakcinacije(null);
+
+        thrown = catchThrowable(() -> {
+            ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request3);
         });
 
         assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);

@@ -99,10 +99,29 @@ public class ZdravstveniKartonTests {
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
-        UpdateMedicalRecordBloodTypeRhFactorRequestDTO request = getRequestWithMissingField();
+        UpdateMedicalRecordBloodTypeRhFactorRequestDTO request1 = getRequest();
+        request1.setLbp(null);
 
         Throwable thrown = catchThrowable(() -> {
-            ResponseEntity<?> response = zdravstveniKartonController.updatePatientMedicalRecord(request);
+            ResponseEntity<?> response = zdravstveniKartonController.updatePatientMedicalRecord(request1);
+        });
+
+        assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
+
+        UpdateMedicalRecordBloodTypeRhFactorRequestDTO request2 = getRequest();
+        request2.setKrvnaGrupa(null);
+
+        thrown = catchThrowable(() -> {
+            ResponseEntity<?> response = zdravstveniKartonController.updatePatientMedicalRecord(request2);
+        });
+
+        assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
+
+        UpdateMedicalRecordBloodTypeRhFactorRequestDTO request3 = getRequest();
+        request3.setRhFaktor(null);
+
+        thrown = catchThrowable(() -> {
+            ResponseEntity<?> response = zdravstveniKartonController.updatePatientMedicalRecord(request3);
         });
 
         assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
