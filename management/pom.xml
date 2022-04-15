@@ -163,16 +163,19 @@
 							<formats>
 								<format>XML</format>
 							</formats>
-							<excludes>
-								<exclude>raf/si/bolnica/management/**/LoggedInUser.class</exclude>
-								<exclude>raf/si/bolnica/management/**/UserInfoInterceptor.class</exclude>
-								<exclude>raf/si/bolnica/management/**/BootstrapData.class</exclude>
-								<exclude>raf/si/bolnica/management/**/SpringWebConfiguration.class</exclude>
-								<exclude>raf/si/bolnica/management/**/JwtProperties.class</exclude>
-							</excludes>
 						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>raf/si/bolnica/management/**/LoggedInUser.class</exclude>
+						<exclude>raf/si/bolnica/management/**/UserInfoInterceptor.class</exclude>
+						<exclude>**/bootstrap/*</exclude>
+						<exclude>raf/si/bolnica/management/**/SpringWebConfiguration.class</exclude>
+						<exclude>raf/si/bolnica/management/**/JwtProperties.class</exclude>
+					</excludes>
+				</configuration>
+
 			</plugin>
 		</plugins>
 	</build>
