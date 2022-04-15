@@ -53,7 +53,6 @@ public class AlergentController {
                 );
             } else {
                 ZdravstveniKarton zdravstveniKarton = zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(UUID.fromString(requestDTO.getLbp()));
-                System.out.println(zdravstveniKarton);
 
                 if (zdravstveniKarton == null) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

@@ -11,7 +11,7 @@ import raf.si.bolnica.management.entities.enums.*;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
 import raf.si.bolnica.management.response.PacijentResponseDTO;
-import raf.si.bolnica.management.services.PacijentService;
+import raf.si.bolnica.management.services.*;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.EntityManager;
@@ -39,6 +39,21 @@ public class PacijentCRUDTests {
 
     @Mock
     ZdravstveniKartonService zdravstveniKartonService;
+
+    @Mock
+    AlergenZdravstveniKartonService alergenZdravstveniKartonService;
+
+    @Mock
+    VakcinacijaService vakcinacijaService;
+
+    @Mock
+    OperacijaService operacijaService;
+
+    @Mock
+    PregledService pregledService;
+
+    @Mock
+    IstorijaBolestiService istorijaBolestiService;
 
     @Mock
     EntityManager entityManager;
@@ -124,13 +139,65 @@ public class PacijentCRUDTests {
 
         when(pacijentService.fetchPacijentById(1L)).thenReturn(test);
 
-        TypedQuery query = mock(TypedQuery.class);
-        when(query.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(any(String.class),any(Class.class))).thenReturn(query);
+        LinkedList<AlergenZdravstveniKarton> list1= new LinkedList<>();
+        list1.add(new AlergenZdravstveniKarton());
+        TypedQuery query1 = mock(TypedQuery.class);
+        when(query1.getResultList()).thenReturn(list1);
+
+        LinkedList<Vakcinacija> list2= new LinkedList<>();
+        list2.add(new Vakcinacija());
+        TypedQuery query2 = mock(TypedQuery.class);
+        when(query2.getResultList()).thenReturn(list2);
+
+        LinkedList<Operacija> list3= new LinkedList<>();
+        list3.add(new Operacija());
+        TypedQuery query3 = mock(TypedQuery.class);
+        when(query3.getResultList()).thenReturn(list3);
+
+        LinkedList<Pregled> list4= new LinkedList<>();
+        list4.add(new Pregled());
+        TypedQuery query4 = mock(TypedQuery.class);
+        when(query4.getResultList()).thenReturn(list4);
+
+        LinkedList<IstorijaBolesti> list5= new LinkedList<>();
+        list5.add(new IstorijaBolesti());
+        TypedQuery query5 = mock(TypedQuery.class);
+        when(query5.getResultList()).thenReturn(list5);
+
+
+        when(entityManager.createQuery(any(String.class),any(Class.class))).thenAnswer(i -> {
+            if(i.getArguments()[1].equals(AlergenZdravstveniKarton.class)) return query1;
+            else if(i.getArguments()[1].equals(Vakcinacija.class)) return query2;
+            else if(i.getArguments()[1].equals(Operacija.class)) return query3;
+            else if(i.getArguments()[1].equals(Pregled.class)) return query4;
+            else if(i.getArguments()[1].equals(IstorijaBolesti.class)) return query5;
+            else return null;
+        });
+
 
         ResponseEntity<?> responseRemove = managementController.removePatient(1L);
 
         assertThat(responseRemove.getStatusCodeValue()).isEqualTo(200);
+
+        for(AlergenZdravstveniKarton azk:list1) {
+            assertThat(azk.getObrisan()).isEqualTo(true);
+        }
+
+        for(Vakcinacija vak:list2) {
+            assertThat(vak.getObrisan()).isEqualTo(true);
+        }
+
+        for(Operacija op:list3) {
+            assertThat(op.getObrisan()).isEqualTo(true);
+        }
+
+        for(Pregled p:list4) {
+            assertThat(p.getObrisan()).isEqualTo(true);
+        }
+
+        for(IstorijaBolesti ib:list5) {
+            assertThat(ib.getObrisan()).isEqualTo(true);
+        }
     }
 
     @Test

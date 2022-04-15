@@ -145,15 +145,38 @@ public class AllergenTests {
         roles.add(Constants.NACELNIK_ODELJENJA);
 
         when(loggedInUser.getRoles()).thenReturn(roles);
-        when(alergenService.findAlergenByNaziv(any(String.class))).thenReturn(new Alergen());
-        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(new ZdravstveniKarton());
-        when(alergenZdravstveniKartonService.save(any(AlergenZdravstveniKarton.class))).thenReturn(new AlergenZdravstveniKarton());
+
+        int alergenId = 12;
+        int alergenZdravstveniKartonId = 15;
+
+        when(alergenService.findAlergenByNaziv(any(String.class))).thenAnswer(i -> {
+            Alergen a = new Alergen((String)i.getArguments()[0]);
+            a.setAlergenId(alergenId);
+            return a;
+        });
+
+        ZdravstveniKarton zk = new ZdravstveniKarton();
+
+        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(zk);
+        when(alergenZdravstveniKartonService.save(any(AlergenZdravstveniKarton.class))).thenAnswer(i -> {
+            AlergenZdravstveniKarton azk = (AlergenZdravstveniKarton) i.getArguments()[0];
+            azk.setId(Long.valueOf(alergenZdravstveniKartonId));
+            return azk;
+        });
 
         AddAllergentToPatientRequestDTO request = getRequest();
 
         ResponseEntity<?> response = alergentController.addAllergenToPatient(request);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isInstanceOf(AlergenZdravstveniKarton.class);
+
+        AlergenZdravstveniKarton alergenZdravstveniKarton = (AlergenZdravstveniKarton)response.getBody();
+
+        assertThat(alergenZdravstveniKarton.getAlergen().getNaziv()).isEqualTo(request.getNaziv());
+        assertThat(alergenZdravstveniKarton.getAlergen().getAlergenId()).isEqualTo(alergenId);
+        assertThat(alergenZdravstveniKarton.getZdravstveniKarton()).isEqualTo(zk);
+        assertThat(alergenZdravstveniKarton.getId()).isEqualTo(alergenZdravstveniKartonId);
     }
 
 
