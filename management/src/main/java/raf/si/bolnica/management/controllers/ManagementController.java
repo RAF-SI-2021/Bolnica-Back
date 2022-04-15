@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.*;
+import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
+import raf.si.bolnica.management.entities.enums.StatusPregleda;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.*;
 import raf.si.bolnica.management.response.*;
@@ -15,7 +17,10 @@ import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonSer
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -30,7 +35,7 @@ import raf.si.bolnica.management.requests.CreateScheduledAppointmentRequestDTO;
 import raf.si.bolnica.management.requests.SearchForAppointmentDTO;
 import raf.si.bolnica.management.requests.UpdateAppointmentStatusDTO;
 import raf.si.bolnica.management.requests.UpdateArrivalStatusDTO;
-import raf.si.bolnica.management.service.ScheduledAppointmentService;
+import raf.si.bolnica.management.services.ScheduledAppointmentService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -340,7 +345,16 @@ public class ManagementController {
         }
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(requestDTO.getPatient());
-            ZakazaniPregled appointmentToReturn = appointmentService.setAppointment(loggedInUser.getLBZ(), pacijent, requestDTO);
+            ZakazaniPregled appointment = new ZakazaniPregled();
+
+
+            appointment.setStatusPregleda(StatusPregleda.ZAKAZANO);
+            appointment.setLBZLekara(requestDTO.getExaminationEmployeeId());
+            appointment.setLBZSestre(loggedInUser.getLBZ());
+            appointment.setNapomena(requestDTO.getNote());
+            appointment.setDatumIVremePregleda(requestDTO.getDateAndTimeOfAppointment());
+            appointment.setPacijent(pacijent);
+            ZakazaniPregled appointmentToReturn = appointmentService.saveAppointment(appointment);
             return ResponseEntity.ok(appointmentToReturn);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -546,7 +560,10 @@ public class ManagementController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-            ZakazaniPregled appointmentToReturn = appointmentService.updateAppointment(requestDTO);
+            ZakazaniPregled appointmentForUpdate = appointmentService.fetchById(requestDTO.getAppointmentId());
+            appointmentForUpdate.setStatusPregleda(StatusPregleda.valueOf(requestDTO.getAppointmentStatus()));
+
+            ZakazaniPregled appointmentToReturn = appointmentService.saveAppointment(appointmentForUpdate);
             return ResponseEntity.ok(appointmentToReturn);
         }
 
@@ -563,7 +580,10 @@ public class ManagementController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-            ZakazaniPregled appointmentToReturn = appointmentService.updateArrival(requestDTO);
+            ZakazaniPregled appointmentForUpdate = appointmentService.fetchById(requestDTO.getAppointmentId());
+            appointmentForUpdate.setPrispecePacijenta(PrispecePacijenta.valueOf(requestDTO.getArrivalStatus()));
+
+            ZakazaniPregled appointmentToReturn = appointmentService.saveAppointment(appointmentForUpdate);
             return ResponseEntity.ok(appointmentToReturn);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -576,7 +596,16 @@ public class ManagementController {
         for (int i = 0; i < 4; i++) {
             if (loggedInUser.getRoles().contains(roles[i])) {
                 if (searchForAppointmentDTO.getDate() == null) {
-                    return ResponseEntity.ok(appointmentService.getAppointmentByLBZ(UUID.fromString(searchForAppointmentDTO.getLbz())));
+
+                    Timestamp date = Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
+                    List<ZakazaniPregled> allAppointments = appointmentService.getAppointmentByLBZ(UUID.fromString(searchForAppointmentDTO.getLbz()));
+                    List<ZakazaniPregled> appointments = new ArrayList<>();
+                    for (ZakazaniPregled appointment : allAppointments) {
+                        if (appointment.getDatumIVremePregleda().after(date)) {
+                            appointments.add(appointment);
+                        }
+                    }
+                    return ResponseEntity.ok(appointments);
                 } else {
                     return ResponseEntity.ok(appointmentService.getAppointmentByLBZAndDate(UUID.fromString(searchForAppointmentDTO.getLbz()), searchForAppointmentDTO.getDate()));
                 }

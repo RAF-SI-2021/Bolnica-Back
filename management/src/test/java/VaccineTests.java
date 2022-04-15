@@ -155,16 +155,42 @@ public class VaccineTests {
 
         roles.add(Constants.NACELNIK_ODELJENJA);
 
+        Vakcina v = new Vakcina();
+        long vakcinaId = 12;
+
         when(loggedInUser.getRoles()).thenReturn(roles);
-        when(vakcinaService.findVakcinaByNaziv(any(String.class))).thenReturn(new Vakcina());
-        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(new ZdravstveniKarton());
-        when(vakcinacijaService.save(any(Vakcinacija.class))).thenReturn(new Vakcinacija());
+        when(vakcinaService.findVakcinaByNaziv(any(String.class))).thenAnswer(i -> {
+            v.setNaziv((String)i.getArguments()[0]);
+            v.setOpis("opis");
+            v.setProizvodjac("proizvodjac");
+            v.setTip("tip");
+            v.setVakcinaId(vakcinaId);
+            return v;
+        });
+        ZdravstveniKarton zk = new ZdravstveniKarton();
+        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(zk);
+        when(vakcinacijaService.save(any(Vakcinacija.class))).thenAnswer( i -> {
+            return i.getArguments()[0];
+                }
+        );
 
         AddVaccineToPatientRequestDTO request = getRequest();
 
         ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(Vakcinacija.class);
+
+        Vakcinacija vk = (Vakcinacija) response.getBody();
+
+        assertThat(vk.getVakcina().getVakcinaId()).isEqualTo(v.getVakcinaId());
+        assertThat(vk.getVakcina().getNaziv()).isEqualTo(v.getNaziv());
+        assertThat(vk.getDatumVakcinacije()).isEqualTo(request.getDatumVakcinacije());
+        assertThat(vk.getVakcina().getOpis()).isEqualTo(v.getOpis());
+        assertThat(vk.getVakcina().getProizvodjac()).isEqualTo(v.getProizvodjac());
+        assertThat(vk.getVakcina().getTip()).isEqualTo(v.getTip());
+        assertThat(vk.getZdravstveniKarton()).isEqualTo(zk);
     }
 
 }
