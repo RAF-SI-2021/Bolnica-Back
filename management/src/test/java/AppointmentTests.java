@@ -19,9 +19,8 @@ import raf.si.bolnica.management.services.PacijentService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.time.temporal.TemporalAmount;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -87,8 +86,25 @@ public class AppointmentTests {
         when(loggedInUser.getRoles()).thenReturn(roles);
         SearchForAppointmentDTO requestDTO = new SearchForAppointmentDTO();
         requestDTO.setLbz(UUID.randomUUID().toString());
+        List<ZakazaniPregled> appointments = new LinkedList<>();
+        ZakazaniPregled zp1 = new ZakazaniPregled();
+        zp1.setZakazaniPregledId(1);
+        zp1.setDatumIVremePregleda(Timestamp.valueOf(LocalDateTime.now().minusDays(2)));
+        ZakazaniPregled zp2 = new ZakazaniPregled();
+        zp2.setZakazaniPregledId(2);
+        zp2.setDatumIVremePregleda(Timestamp.valueOf(LocalDateTime.now().plusDays(2)));
+        appointments.add(zp1);
+        appointments.add(zp2);
+        when(appointmentService.getAppointmentByLBZ(any(UUID.class))).thenReturn(appointments);
         ResponseEntity<?> response = managementController.listAppointmentsByLBZ(requestDTO);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(List.class);
+
+        List<ZakazaniPregled> l = (List)response.getBody();
+
+        assertThat(l.size()).isEqualTo(1);
+        assertThat(l.get(0).getZakazaniPregledId()).isEqualTo(zp2.getZakazaniPregledId());
     }
 }

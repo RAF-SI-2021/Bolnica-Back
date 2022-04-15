@@ -86,7 +86,7 @@ public class PacijentCRUDTests {
 
         Set<String> roles = new TreeSet<>();
 
-        roles.add(Constants.VISA_MED_SESTRA);
+        roles.add(Constants.MED_SESTRA);
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
@@ -101,6 +101,23 @@ public class PacijentCRUDTests {
         assertThat(response.getBody()).isInstanceOf(String.class);
 
         assertThat(response.getBody()).isEqualTo("Pol je obavezno polje!");
+    }
+
+    @Test
+    public void testPacijentCreateUnauthorizedRequest() {
+
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.SPECIJALISTA);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+
+        PacijentCRUDRequestDTO request = getRequest();
+
+        ResponseEntity<?> response = managementController.createPatient(request);
+
+        assertThat(response.getStatusCodeValue()).isNotEqualTo(200);
     }
 
     @Test

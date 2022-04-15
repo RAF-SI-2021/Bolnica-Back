@@ -105,8 +105,7 @@ public class ManagementController {
 
     @PostMapping("/create-patient")
     public ResponseEntity<?> createPatient(@RequestBody PacijentCRUDRequestDTO request) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || (loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
-                loggedInUser.getRoles().contains(Constants.MED_SESTRA))) {
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || (loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||  loggedInUser.getRoles().contains(Constants.MED_SESTRA))) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
 
@@ -139,8 +138,7 @@ public class ManagementController {
 
     @PutMapping("/update-patient/{id}")
     public ResponseEntity<?> updatePatient(@RequestBody PacijentCRUDRequestDTO request, @PathVariable Long id) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
-                loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||  loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
 
@@ -245,10 +243,7 @@ public class ManagementController {
 
     @GetMapping("/fetch-patient/{lbp}")
     public ResponseEntity<?> fetchPatientLbp(@PathVariable String lbp) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
-                loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||
-                loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
-                loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||  loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||  loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -263,8 +258,7 @@ public class ManagementController {
 
     @GetMapping("/fetch-zdravstveni-karton/{lbp}")
     public ResponseEntity<?> fetchZdravstveniKartonLbp(@PathVariable String lbp) {
-        if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||
-                loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
+        if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -279,8 +273,7 @@ public class ManagementController {
 
     @GetMapping("/fetch-patient-data/{lbp}")
     public ResponseEntity<?> fetchPatientDataLbp(@PathVariable String lbp) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
-                loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -430,8 +423,7 @@ public class ManagementController {
                                                      @PathVariable String lbp,
                                                      @RequestParam int page,
                                                      @RequestParam int size) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
-                loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -476,10 +468,7 @@ public class ManagementController {
 
     @PostMapping("/filter-patients")
     public ResponseEntity<?> filterPatients(@RequestBody FilterPatientsRequestDTO filterPatientsRequestDTO) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
-                loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||
-                loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||
-                loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
+        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||  loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||  loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
 
             String pacijentUpitString = "SELECT p FROM Pacijent p";
 

@@ -38,8 +38,7 @@ public class AlergentController {
 
     @PostMapping(value = Constants.ADD_ALLERGEN_TO_PATIENT)
     public ResponseEntity<?> addAllergenToPatient(@RequestBody AddAllergentToPatientRequestDTO requestDTO) {
-        if (loggedInUser.getRoles().contains("ROLE_DR_SPEC_ODELJENJA") ||
-                loggedInUser.getRoles().contains("ROLE_NACELNIK_ODELJENJA")) {
+        if (loggedInUser.getRoles().contains("ROLE_DR_SPEC_ODELJENJA") || loggedInUser.getRoles().contains("ROLE_NACELNIK_ODELJENJA")) {
 
             if (requestDTO.getNaziv() == null || requestDTO.getLbp() == null)
                 throw new MissingRequestFieldsException(Constants.MissingRequestFields.MESSAGE, Constants.MissingRequestFields.DEVELOPER_MESSAGE);
