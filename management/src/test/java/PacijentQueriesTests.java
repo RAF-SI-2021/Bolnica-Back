@@ -127,17 +127,17 @@ class PacijentQueriesTests {
 
         String s = UUID.randomUUID().toString();
 
-        assertThat(managementController.fetchPatientDataLbp(s)).isNotEqualTo(200);
+        assertThat(managementController.fetchPatientDataLbp(s).getStatusCodeValue()).isNotEqualTo(200);
 
-        assertThat(managementController.fetchPreglediLbp(new PreglediRequestDTO(),s,1,2)).isNotEqualTo(200);
+        assertThat(managementController.fetchPreglediLbp(new PreglediRequestDTO(),s,1,2).getStatusCodeValue()).isNotEqualTo(200);
 
-        assertThat(managementController.fetchIstorijaBolestiLbp(new IstorijaBolestiRequestDTO(),s,1,2)).isNotEqualTo(200);
+        assertThat(managementController.fetchIstorijaBolestiLbp(new IstorijaBolestiRequestDTO(),s,1,2).getStatusCodeValue()).isNotEqualTo(200);
 
-        assertThat(managementController.filterPatients(new FilterPatientsRequestDTO())).isNotEqualTo(200);
+        assertThat(managementController.filterPatients(new FilterPatientsRequestDTO()).getStatusCodeValue()).isNotEqualTo(200);
 
-        assertThat(managementController.fetchPatientLbp(s)).isNotEqualTo(200);
+        assertThat(managementController.fetchPatientLbp(s).getStatusCodeValue()).isNotEqualTo(200);
 
-        assertThat(managementController.fetchZdravstveniKartonLbp(s)).isNotEqualTo(200);
+        assertThat(managementController.fetchZdravstveniKartonLbp(s).getStatusCodeValue()).isNotEqualTo(200);
     }
 
     @Test
