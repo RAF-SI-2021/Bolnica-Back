@@ -1,8 +1,8 @@
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.AlergentController;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AllergenTests {
 
     @Mock
@@ -82,7 +82,7 @@ public class AllergenTests {
 
         ResponseEntity<?> response = alergentController.addAllergenToPatient(request);
 
-        assertThat(response.getStatusCodeValue() == 403);
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
     }
 
     @Test

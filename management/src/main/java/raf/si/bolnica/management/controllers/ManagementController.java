@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
+import raf.si.bolnica.management.entities.enums.RezultatLecenja;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.*;
@@ -96,8 +97,58 @@ public class ManagementController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nemate privilegije za postavljanje poverljivosti!");
             }
 
-            Pregled pregledToSave = pregledService.createPregledReport(requestDTO);
-            Pregled pregledToReturn = this.pregledService.savePregled(pregledToSave);
+
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(requestDTO.getLbp()));
+            ZdravstveniKarton zdravstveniKarton = zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(UUID.fromString(requestDTO.getLbp()));
+
+            Pregled pregled = new Pregled();
+
+            pregled.setZdravstveniKarton(zdravstveniKarton);
+            pregled.setZaposleniId(UUID.fromString(requestDTO.getZaposleniId()));
+            pregled.setDatumPregleda(new Date(Calendar.getInstance().getTime().getTime()));
+            pregled.setDijagnoza(requestDTO.getDijagnoza());
+            pregled.setGlavneTegobe(requestDTO.getGlavneTegobe());
+            pregled.setLicnaAnamneza(requestDTO.getLicnaAnamneza());
+            pregled.setMisljenjePacijenta(requestDTO.getMisljenjePacijenta());
+            pregled.setObjektivniNalaz(requestDTO.getObjektivniNalaz());
+            pregled.setSavet(requestDTO.getSavet());
+            pregled.setPorodicnaAnamneza(requestDTO.getPorodicnaAnamneza());
+            pregled.setSadasnjaBolest(requestDTO.getSadasnjaBolest());
+            pregled.setPredlozenaTerapija(requestDTO.getPredlozenaTerapija());
+
+
+            if (pregled.getDijagnoza() != null) {
+                IstorijaBolesti istorijaBolesti = new IstorijaBolesti();
+
+                istorijaBolesti.setDijagnoza(pregled.getDijagnoza());
+                istorijaBolesti.setRezultatLecenja(requestDTO.getRezultatLecenja());
+                istorijaBolesti.setOpisTekucegStanja(requestDTO.getOpisTekucegStanja());
+                istorijaBolesti.setPodatakValidanOd(new Date(Calendar.getInstance().getTime().getTime()));
+                istorijaBolesti.setPodatakValidanDo(Date.valueOf("9999-12-31"));
+                istorijaBolesti.setPodaciValidni(true);
+
+                if (pregled.getSadasnjaBolest() != null) {
+
+                    IstorijaBolesti istorijaBolestiAktuelna = istorijaBolestiService.fetchByZdravstveniKartonPodaciValidni(pregled.getZdravstveniKarton(), true);
+                    istorijaBolestiAktuelna.setPodatakValidanDo(new Date(Calendar.getInstance().getTime().getTime()));
+                    istorijaBolestiAktuelna.setPodaciValidni(false);
+                    istorijaBolestiService.saveIstorijaBolesti(istorijaBolestiAktuelna);
+
+                    istorijaBolesti.setIndikatorPoverljivosti(istorijaBolestiAktuelna.getIndikatorPoverljivosti());
+                    istorijaBolesti.setDatumPocetkaZdravstvenogProblema(istorijaBolestiAktuelna.getDatumPocetkaZdravstvenogProblema());
+                    if (requestDTO.getRezultatLecenja() != RezultatLecenja.U_TOKU
+                            && requestDTO.getRezultatLecenja() != null) {
+                        istorijaBolesti.setDatumZavrsetkaZdravstvenogProblema(new Date(Calendar.getInstance().getTime().getTime()));
+                    }
+
+                } else {
+                    istorijaBolesti.setIndikatorPoverljivosti(pregled.getIndikatorPoverljivosti());
+                    istorijaBolesti.setDatumPocetkaZdravstvenogProblema(Date.valueOf(LocalDate.now()));
+                }
+
+                istorijaBolestiService.saveIstorijaBolesti(istorijaBolesti);
+            }
+            Pregled pregledToReturn = this.pregledService.savePregled(pregled);
             return ok(pregledToReturn);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

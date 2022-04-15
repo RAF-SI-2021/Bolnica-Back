@@ -16,6 +16,8 @@ import raf.si.bolnica.management.services.AlergenZdravstveniKartonService;
 import raf.si.bolnica.management.services.alergen.AlergenService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -38,7 +40,10 @@ public class AlergentController {
 
     @PostMapping(value = Constants.ADD_ALLERGEN_TO_PATIENT)
     public ResponseEntity<?> addAllergenToPatient(@RequestBody AddAllergentToPatientRequestDTO requestDTO) {
-        if (loggedInUser.getRoles().contains("ROLE_DR_SPEC_ODELJENJA") || loggedInUser.getRoles().contains("ROLE_NACELNIK_ODELJENJA")) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
+        acceptedRoles.add(Constants.SPECIJALISTA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             if (requestDTO.getNaziv() == null || requestDTO.getLbp() == null)
                 throw new MissingRequestFieldsException(Constants.MissingRequestFields.MESSAGE, Constants.MissingRequestFields.DEVELOPER_MESSAGE);

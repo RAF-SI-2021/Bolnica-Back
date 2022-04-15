@@ -1,16 +1,15 @@
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
+import raf.si.bolnica.management.entities.IstorijaBolesti;
 import raf.si.bolnica.management.entities.Pacijent;
 import raf.si.bolnica.management.entities.Pregled;
+import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.entities.enums.CountryCode;
 import raf.si.bolnica.management.entities.enums.Pol;
 import raf.si.bolnica.management.entities.enums.RezultatLecenja;
@@ -18,7 +17,10 @@ import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.CreatePregledReportRequestDTO;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
 import raf.si.bolnica.management.response.PacijentResponseDTO;
+import raf.si.bolnica.management.services.IstorijaBolestiService;
+import raf.si.bolnica.management.services.PacijentService;
 import raf.si.bolnica.management.services.PregledService;
+import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -29,9 +31,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PregledReportTests {
 
     @Mock
@@ -39,6 +42,15 @@ public class PregledReportTests {
 
     @Mock
     PregledService pregledService;
+
+    @Mock
+    PacijentService pacijentService;
+
+    @Mock
+    ZdravstveniKartonService zdravstveniKartonService;
+
+    @Mock
+    IstorijaBolestiService istorijaBolestiService;
 
     @InjectMocks
     ManagementController managementController;
@@ -111,6 +123,10 @@ public class PregledReportTests {
         when(loggedInUser.getRoles()).thenReturn(roles);
 
         CreatePregledReportRequestDTO request = getRequest();
+
+        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(new ZdravstveniKarton());
+
+        when(istorijaBolestiService.fetchByZdravstveniKartonPodaciValidni(any(ZdravstveniKarton.class),eq(true))).thenReturn(new IstorijaBolesti());
 
         ResponseEntity<?> response = managementController.createPregledReport(request);
 
