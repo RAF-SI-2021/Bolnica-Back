@@ -105,7 +105,11 @@ public class ManagementController {
 
     @PostMapping("/create-patient")
     public ResponseEntity<?> createPatient(@RequestBody PacijentCRUDRequestDTO request) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || (loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||  loggedInUser.getRoles().contains(Constants.MED_SESTRA))) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
 
@@ -138,7 +142,11 @@ public class ManagementController {
 
     @PutMapping("/update-patient/{id}")
     public ResponseEntity<?> updatePatient(@RequestBody PacijentCRUDRequestDTO request, @PathVariable Long id) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||  loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
 
@@ -163,7 +171,10 @@ public class ManagementController {
 
     @DeleteMapping("/remove-patient/{id}")
     public ResponseEntity<?> removePatient(@PathVariable Long id) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA)) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentById(id);
 
@@ -243,7 +254,13 @@ public class ManagementController {
 
     @GetMapping("/fetch-patient/{lbp}")
     public ResponseEntity<?> fetchPatientLbp(@PathVariable String lbp) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||  loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||  loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.NACELNIK);
+        acceptedRoles.add(Constants.SPECIJALISTA);
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -258,7 +275,10 @@ public class ManagementController {
 
     @GetMapping("/fetch-zdravstveni-karton/{lbp}")
     public ResponseEntity<?> fetchZdravstveniKartonLbp(@PathVariable String lbp) {
-        if (loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK);
+        acceptedRoles.add(Constants.SPECIJALISTA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -273,7 +293,11 @@ public class ManagementController {
 
     @GetMapping("/fetch-patient-data/{lbp}")
     public ResponseEntity<?> fetchPatientDataLbp(@PathVariable String lbp) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.NACELNIK);
+        acceptedRoles.add(Constants.SPECIJALISTA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -358,8 +382,11 @@ public class ManagementController {
                                               @PathVariable String lbp,
                                               @RequestParam int page,
                                               @RequestParam int size) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||
-                loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.NACELNIK);
+        acceptedRoles.add(Constants.SPECIJALISTA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -423,7 +450,11 @@ public class ManagementController {
                                                      @PathVariable String lbp,
                                                      @RequestParam int page,
                                                      @RequestParam int size) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA)) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.NACELNIK);
+        acceptedRoles.add(Constants.SPECIJALISTA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -468,44 +499,34 @@ public class ManagementController {
 
     @PostMapping("/filter-patients")
     public ResponseEntity<?> filterPatients(@RequestBody FilterPatientsRequestDTO filterPatientsRequestDTO) {
-        if (loggedInUser.getRoles().contains(Constants.ADMIN) || loggedInUser.getRoles().contains(Constants.NACELNIK) ||  loggedInUser.getRoles().contains(Constants.SPECIJALISTA) ||  loggedInUser.getRoles().contains(Constants.VISA_MED_SESTRA) ||  loggedInUser.getRoles().contains(Constants.MED_SESTRA)) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.NACELNIK);
+        acceptedRoles.add(Constants.SPECIJALISTA);
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             String pacijentUpitString = "SELECT p FROM Pacijent p";
 
             int cnt = 0;
 
-            if (filterPatientsRequestDTO.getLbp() != null) {
-                pacijentUpitString = pacijentUpitString + " WHERE p.lbp = :lbp";
-                cnt = cnt + 1;
-            }
+            Map<String,Object> mp = new HashMap<>();
+            mp.put("lbp",filterPatientsRequestDTO.getLbp());
+            mp.put("jmbg",filterPatientsRequestDTO.getJmbg());
+            mp.put("ime",filterPatientsRequestDTO.getIme());
+            mp.put("prezime",filterPatientsRequestDTO.getPrezime());
 
-            if (filterPatientsRequestDTO.getJmbg() != null) {
-                if (cnt == 0) {
-                    pacijentUpitString = pacijentUpitString + " WHERE ";
-                } else {
-                    pacijentUpitString = pacijentUpitString + " AND ";
+            for(String key:mp.keySet()) {
+                if(mp.get(key)!=null) {
+                    if (cnt == 0) {
+                        pacijentUpitString = pacijentUpitString + " WHERE ";
+                    } else {
+                        pacijentUpitString = pacijentUpitString + " AND ";
+                    }
+                    pacijentUpitString = pacijentUpitString + "p." + key + " = :" + key;
+                    cnt = cnt + 1;
                 }
-                pacijentUpitString = pacijentUpitString + "p.jmbg = :jmbg";
-                cnt = cnt + 1;
-            }
-
-            if (filterPatientsRequestDTO.getIme() != null) {
-                if (cnt == 0) {
-                    pacijentUpitString = pacijentUpitString + " WHERE ";
-                } else {
-                    pacijentUpitString = pacijentUpitString + " AND ";
-                }
-                pacijentUpitString = pacijentUpitString + "p.ime = :ime";
-                cnt = cnt + 1;
-            }
-
-            if (filterPatientsRequestDTO.getPrezime() != null) {
-                if (cnt == 0) {
-                    pacijentUpitString = pacijentUpitString + " WHERE ";
-                } else {
-                    pacijentUpitString = pacijentUpitString + " AND ";
-                }
-                pacijentUpitString = pacijentUpitString + "p.prezime = :prezime";
             }
 
             List<PacijentResponseDTO> pacijenti = new ArrayList<>();
@@ -513,20 +534,10 @@ public class ManagementController {
             TypedQuery<Pacijent> upitPacijent =
                     entityManager.createQuery(pacijentUpitString, Pacijent.class);
 
-            if (filterPatientsRequestDTO.getLbp() != null) {
-                upitPacijent.setParameter("lbp", filterPatientsRequestDTO.getLbp());
-            }
-
-            if (filterPatientsRequestDTO.getJmbg() != null) {
-                upitPacijent.setParameter("jmbg", filterPatientsRequestDTO.getJmbg());
-            }
-
-            if (filterPatientsRequestDTO.getIme() != null) {
-                upitPacijent.setParameter("ime", filterPatientsRequestDTO.getIme());
-            }
-
-            if (filterPatientsRequestDTO.getPrezime() != null) {
-                upitPacijent.setParameter("prezime", filterPatientsRequestDTO.getPrezime());
+            for(String key:mp.keySet()) {
+                if(mp.get(key)!=null) {
+                    upitPacijent.setParameter(key,mp.get(key));
+                }
             }
 
 

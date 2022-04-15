@@ -61,6 +61,8 @@ public class PacijentCRUDTests {
     @InjectMocks
     ManagementController managementController;
 
+
+
     PacijentCRUDRequestDTO getRequest() {
         PacijentCRUDRequestDTO request = new PacijentCRUDRequestDTO();
 
@@ -104,7 +106,7 @@ public class PacijentCRUDTests {
     }
 
     @Test
-    public void testPacijentCreateUnauthorizedRequest() {
+    public void testPacijentUnauthorizedRequest() {
 
         Set<String> roles = new TreeSet<>();
 
@@ -112,12 +114,14 @@ public class PacijentCRUDTests {
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
-
         PacijentCRUDRequestDTO request = getRequest();
 
-        ResponseEntity<?> response = managementController.createPatient(request);
+        assertThat(managementController.createPatient(request).getStatusCodeValue()).isNotEqualTo(200);
 
-        assertThat(response.getStatusCodeValue()).isNotEqualTo(200);
+        assertThat(managementController.removePatient(1L).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.updatePatient(request, 1L).getStatusCodeValue()).isNotEqualTo(200);
+
     }
 
     @Test
