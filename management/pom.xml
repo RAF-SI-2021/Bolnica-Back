@@ -166,7 +166,7 @@
 						</configuration>
 					</execution>
 				</executions>
-				<configuration>
+				<!--configuration>
 					<excludes>
 						<exclude>raf/si/bolnica/management/**/LoggedInUser.class</exclude>
 						<exclude>raf/si/bolnica/management/**/UserInfoInterceptor.class</exclude>
@@ -174,7 +174,7 @@
 						<exclude>raf/si/bolnica/management/**/SpringWebConfiguration.class</exclude>
 						<exclude>raf/si/bolnica/management/**/JwtProperties.class</exclude>
 					</excludes>
-				</configuration>
+				</configuration-->
 
 			</plugin>
 		</plugins>
