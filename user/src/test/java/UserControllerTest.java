@@ -122,11 +122,9 @@ class UserControllerTest {
 
         User u = getUser();
 
-        String toDelete = u.getKorisnickoIme();
+        when(userService.fetchUserByLBZ(u.getLbz())).thenReturn(u);
 
-        when(userService.fetchUserByUsername(u.getKorisnickoIme())).thenReturn(u);
-
-        ResponseEntity<?> response = userController.removeEmployee(toDelete);
+        ResponseEntity<?> response = userController.removeEmployee(u.getLbz().toString());
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
     }
