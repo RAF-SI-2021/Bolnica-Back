@@ -120,6 +120,50 @@ class PacijentQueriesTests {
     }
 
     @Test
+    public void testUnauthorizedQueries() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.SPECIJLISTA_POV);
+
+        String s = UUID.randomUUID().toString();
+
+        assertThat(managementController.fetchPatientDataLbp(s).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.fetchPreglediLbp(new PreglediRequestDTO(),s,1,2).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.fetchIstorijaBolestiLbp(new IstorijaBolestiRequestDTO(),s,1,2).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.filterPatients(new FilterPatientsRequestDTO()).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.fetchPatientLbp(s).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.fetchZdravstveniKartonLbp(s).getStatusCodeValue()).isNotEqualTo(200);
+    }
+
+    @Test
+    public void testPacijentQueriesNoPatient() {
+
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+
+        String s = UUID.randomUUID().toString();
+
+        assertThat(managementController.fetchPatientDataLbp(s).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.fetchPreglediLbp(new PreglediRequestDTO(),s,1,2).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.fetchIstorijaBolestiLbp(new IstorijaBolestiRequestDTO(),s,1,2).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.fetchPatientLbp(s).getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(managementController.fetchZdravstveniKartonLbp(s).getStatusCodeValue()).isNotEqualTo(200);
+    }
+
+    @Test
     public void testFetchPatientData() {
         Set<String> roles = new TreeSet<>();
 
@@ -243,12 +287,16 @@ class PacijentQueriesTests {
 
         TypedQuery query = mock(TypedQuery.class);
         when(query.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(eq("SELECT p FROM Pacijent p"),
+        when(entityManager.createQuery(eq("SELECT p FROM Pacijent p WHERE p.ime = :ime AND p.prezime = :prezime"),
                 any(Class.class))).thenReturn(query);
 
         when(query.getResultList()).thenReturn(pacijenti);
 
-        ResponseEntity<?> response = managementController.filterPatients(new FilterPatientsRequestDTO());
+        FilterPatientsRequestDTO requestDTO = new FilterPatientsRequestDTO();
+        requestDTO.setIme("ime");
+        requestDTO.setPrezime("prezime");
+
+        ResponseEntity<?> response = managementController.filterPatients(requestDTO);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
 
@@ -258,7 +306,6 @@ class PacijentQueriesTests {
 
     }
 
-    /*
     @Test
     public void testCreateFetchPatientZdravstveniKarton() {
         Set<String> roles = new TreeSet<>();
@@ -271,7 +318,8 @@ class PacijentQueriesTests {
 
         PacijentCRUDRequestDTO request = getRequest();
 
-        when(pacijentService.savePacijent(any(Pacijent.class))).thenReturn(new Pacijent());
+        when(pacijentService.savePacijent(any(Pacijent.class))).thenAnswer(i -> i.getArguments()[0]);
+
 
         when(zdravstveniKartonService.saveZdravstveniKarton(any(ZdravstveniKarton.class))).thenReturn(new ZdravstveniKarton());
 
@@ -283,6 +331,7 @@ class PacijentQueriesTests {
 
         UUID lbp = ((PacijentResponseDTO) Objects.requireNonNull(responseCreate.getBody())).getLbp();
 
+
         Pacijent p = new Pacijent();
 
         ZdravstveniKarton zk = new ZdravstveniKarton();
@@ -293,7 +342,7 @@ class PacijentQueriesTests {
 
         zk.setPacijent(p);
 
-//        when(pacijentService.fetchPacijentByLbp(lbp)).thenReturn(p);
+        when(pacijentService.fetchPacijentByLbp(lbp)).thenReturn(p);
 
         ResponseEntity<?> responseFetchPatient = managementController.fetchPatientLbp(lbp.toString());
 
@@ -307,5 +356,5 @@ class PacijentQueriesTests {
 
         assertThat(responseFetchZdravstveniKarton.getStatusCodeValue()).isEqualTo(200);
     }
-     */
+
 }

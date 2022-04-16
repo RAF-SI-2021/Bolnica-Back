@@ -1,4 +1,4 @@
-package raf.si.bolnica.management.service;
+package raf.si.bolnica.management.services;
 
 import raf.si.bolnica.management.entities.Pacijent;
 import raf.si.bolnica.management.entities.Pregled;
@@ -14,9 +14,8 @@ import java.util.UUID;
 
 public interface ScheduledAppointmentService {
 
-        ZakazaniPregled setAppointment(UUID lbz, Pacijent pacijent, CreateScheduledAppointmentRequestDTO createScheduledAppointmentRequestDTO);
-        ZakazaniPregled updateAppointment(UpdateAppointmentStatusDTO updateAppointmentStatusDTO);
-        ZakazaniPregled updateArrival(UpdateArrivalStatusDTO updateArrivalStatusDTO);
+        ZakazaniPregled saveAppointment(ZakazaniPregled appointment);
         List<ZakazaniPregled> getAppointmentByLBZ(UUID lbz) ;
         List<ZakazaniPregled> getAppointmentByLBZAndDate(UUID lbz, Timestamp date);
+        ZakazaniPregled fetchById(long id);
 }

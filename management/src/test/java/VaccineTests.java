@@ -1,8 +1,10 @@
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.VakcinaController;
@@ -31,7 +33,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class VaccineTests {
 
     @Mock
@@ -104,10 +106,29 @@ public class VaccineTests {
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
-        AddVaccineToPatientRequestDTO request = getRequestWithMissingField();
+        AddVaccineToPatientRequestDTO request1 = getRequest();
+        request1.setNaziv(null);
 
         Throwable thrown = catchThrowable(() -> {
-            ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request);
+            ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request1);
+        });
+
+        assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
+
+        AddVaccineToPatientRequestDTO request2 = getRequest();
+        request2.setLbp(null);
+
+        thrown = catchThrowable(() -> {
+            ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request2);
+        });
+
+        assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
+
+        AddVaccineToPatientRequestDTO request3 = getRequest();
+        request3.setDatumVakcinacije(null);
+
+        thrown = catchThrowable(() -> {
+            ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request3);
         });
 
         assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
@@ -155,16 +176,42 @@ public class VaccineTests {
 
         roles.add(Constants.NACELNIK_ODELJENJA);
 
+        Vakcina v = new Vakcina();
+        long vakcinaId = 12;
+
         when(loggedInUser.getRoles()).thenReturn(roles);
-        when(vakcinaService.findVakcinaByNaziv(any(String.class))).thenReturn(new Vakcina());
-        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(new ZdravstveniKarton());
-        when(vakcinacijaService.save(any(Vakcinacija.class))).thenReturn(new Vakcinacija());
+        when(vakcinaService.findVakcinaByNaziv(any(String.class))).thenAnswer(i -> {
+            v.setNaziv((String)i.getArguments()[0]);
+            v.setOpis("opis");
+            v.setProizvodjac("proizvodjac");
+            v.setTip("tip");
+            v.setVakcinaId(vakcinaId);
+            return v;
+        });
+        ZdravstveniKarton zk = new ZdravstveniKarton();
+        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(zk);
+        when(vakcinacijaService.save(any(Vakcinacija.class))).thenAnswer( i -> {
+            return i.getArguments()[0];
+                }
+        );
 
         AddVaccineToPatientRequestDTO request = getRequest();
 
         ResponseEntity<?> response = vakcinaController.addVaccineToPatient(request);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(Vakcinacija.class);
+
+        Vakcinacija vk = (Vakcinacija) response.getBody();
+
+        assertThat(vk.getVakcina().getVakcinaId()).isEqualTo(v.getVakcinaId());
+        assertThat(vk.getVakcina().getNaziv()).isEqualTo(v.getNaziv());
+        assertThat(vk.getDatumVakcinacije()).isEqualTo(request.getDatumVakcinacije());
+        assertThat(vk.getVakcina().getOpis()).isEqualTo(v.getOpis());
+        assertThat(vk.getVakcina().getProizvodjac()).isEqualTo(v.getProizvodjac());
+        assertThat(vk.getVakcina().getTip()).isEqualTo(v.getTip());
+        assertThat(vk.getZdravstveniKarton()).isEqualTo(zk);
     }
 
 }

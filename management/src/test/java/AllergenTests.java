@@ -1,8 +1,8 @@
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.AlergentController;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AllergenTests {
 
     @Mock
@@ -82,7 +82,7 @@ public class AllergenTests {
 
         ResponseEntity<?> response = alergentController.addAllergenToPatient(request);
 
-        assertThat(response.getStatusCodeValue() == 403);
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
     }
 
     @Test
@@ -93,10 +93,20 @@ public class AllergenTests {
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
-        AddAllergentToPatientRequestDTO request = getRequestWithMissingField();
+        AddAllergentToPatientRequestDTO request1 = getRequest();
+        request1.setLbp(null);
 
         Throwable thrown = catchThrowable(() -> {
-            ResponseEntity<?> response = alergentController.addAllergenToPatient(request);
+            ResponseEntity<?> response = alergentController.addAllergenToPatient(request1);
+        });
+
+        assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
+
+        AddAllergentToPatientRequestDTO request2 = getRequest();
+        request2.setNaziv(null);
+
+        thrown = catchThrowable(() -> {
+            ResponseEntity<?> response = alergentController.addAllergenToPatient(request2);
         });
 
         assertThat(thrown).isInstanceOf(MissingRequestFieldsException.class);
@@ -145,15 +155,38 @@ public class AllergenTests {
         roles.add(Constants.NACELNIK_ODELJENJA);
 
         when(loggedInUser.getRoles()).thenReturn(roles);
-        when(alergenService.findAlergenByNaziv(any(String.class))).thenReturn(new Alergen());
-        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(new ZdravstveniKarton());
-        when(alergenZdravstveniKartonService.save(any(AlergenZdravstveniKarton.class))).thenReturn(new AlergenZdravstveniKarton());
+
+        int alergenId = 12;
+        int alergenZdravstveniKartonId = 15;
+
+        when(alergenService.findAlergenByNaziv(any(String.class))).thenAnswer(i -> {
+            Alergen a = new Alergen((String)i.getArguments()[0]);
+            a.setAlergenId(alergenId);
+            return a;
+        });
+
+        ZdravstveniKarton zk = new ZdravstveniKarton();
+
+        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(zk);
+        when(alergenZdravstveniKartonService.save(any(AlergenZdravstveniKarton.class))).thenAnswer(i -> {
+            AlergenZdravstveniKarton azk = (AlergenZdravstveniKarton) i.getArguments()[0];
+            azk.setId(Long.valueOf(alergenZdravstveniKartonId));
+            return azk;
+        });
 
         AddAllergentToPatientRequestDTO request = getRequest();
 
         ResponseEntity<?> response = alergentController.addAllergenToPatient(request);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isInstanceOf(AlergenZdravstveniKarton.class);
+
+        AlergenZdravstveniKarton alergenZdravstveniKarton = (AlergenZdravstveniKarton)response.getBody();
+
+        assertThat(alergenZdravstveniKarton.getAlergen().getNaziv()).isEqualTo(request.getNaziv());
+        assertThat(alergenZdravstveniKarton.getAlergen().getAlergenId()).isEqualTo(alergenId);
+        assertThat(alergenZdravstveniKarton.getZdravstveniKarton()).isEqualTo(zk);
+        assertThat(alergenZdravstveniKarton.getId()).isEqualTo(alergenZdravstveniKartonId);
     }
 
 
