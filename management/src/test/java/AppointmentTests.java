@@ -47,7 +47,8 @@ public class AppointmentTests {
         when(loggedInUser.getRoles()).thenReturn(roles);
         CreateScheduledAppointmentRequestDTO requestDTO = new CreateScheduledAppointmentRequestDTO();
         requestDTO.setDateAndTimeOfAppointment(Timestamp.valueOf(LocalDateTime.now()));
-        requestDTO.setExaminationEmployeeId(UUID.randomUUID());
+        requestDTO.setLbz(UUID.randomUUID().toString());
+        requestDTO.setLbp(UUID.randomUUID().toString());
         ResponseEntity<?> response = managementController.setAppointment(requestDTO);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);

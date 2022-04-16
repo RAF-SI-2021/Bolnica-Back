@@ -59,7 +59,7 @@ public class PregledReportTests {
     CreatePregledReportRequestDTO getRequest() {
         CreatePregledReportRequestDTO request = new CreatePregledReportRequestDTO();
 
-        request.setZaposleniId(UUID.randomUUID().toString());
+        request.setLbz(UUID.randomUUID().toString());
         request.setLbp(UUID.randomUUID().toString());
         request.setDijagnoza("dijagnoza");
         request.setGlavneTegobe("glavnetegobe");
@@ -94,7 +94,7 @@ public class PregledReportTests {
 
         assertThat(response.getBody()).isInstanceOf(String.class);
 
-        assertThat(response.getBody()).isEqualTo("Licni broj pacijenta(Lbp) je obavezno polje!");
+        assertThat(response.getBody()).isEqualTo("LBP je obavezno polje!");
     }
 
     @Test
@@ -126,7 +126,7 @@ public class PregledReportTests {
 
         when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(new ZdravstveniKarton());
 
-        when(istorijaBolestiService.fetchByZdravstveniKartonPodaciValidni(any(ZdravstveniKarton.class),eq(true))).thenReturn(new IstorijaBolesti());
+        when(istorijaBolestiService.fetchByZdravstveniKartonPodaciValidni(any(ZdravstveniKarton.class), eq(true))).thenReturn(new IstorijaBolesti());
 
         ResponseEntity<?> response = managementController.createPregledReport(request);
 

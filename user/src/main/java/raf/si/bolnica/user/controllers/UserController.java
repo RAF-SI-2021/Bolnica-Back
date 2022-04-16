@@ -121,17 +121,17 @@ public class UserController {
 
             User userToReturn = userService.saveEmployee(user);
 
-            return ok(userToReturn);
+            return ok(new UserDataResponseDTO(userToReturn));
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
 
     @DeleteMapping(value = Constants.REMOVE_EMPLOYEE)
-    public ResponseEntity<?> removeEmployee(@RequestParam String username) {
+    public ResponseEntity<?> removeEmployee(@RequestParam String lbz) {
         if (loggedInUser.getRoles().contains("ROLE_ADMIN")) {
 
-            User user = userService.fetchUserByUsername(username);
+            User user = userService.fetchUserByLBZ(UUID.fromString(lbz));
 
             if (user == null) {
                 return ResponseEntity.status(403).build();
@@ -142,7 +142,6 @@ public class UserController {
             }
 
             user.setObrisan(true);
-
             userService.saveEmployee(user);
 
             return ok().build();
@@ -164,18 +163,16 @@ public class UserController {
 
     @GetMapping(value = Constants.LIST_EMPLOYEES_BY_PBO)
     public ResponseEntity<List<UserDataResponseDTO>> listEmployeesByPbo(@PathVariable Long pbo) {
-        List<User> users = userService.fetchUsersByPBO(pbo);
         // Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra.
         String[] rolesPermited = {"ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC", "ROLE_VISA_MED_SESTRA", "ROLE_MED_SESTRA"};
-        if (users == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
 
         for (int i = 0; i < 4; i++) {
             if (loggedInUser.getRoles().contains(rolesPermited[i])) {
+                List<User> users = userService.fetchUsersByPBO(pbo);
                 List<UserDataResponseDTO> userDataResponseDTOS = new ArrayList<>();
                 for (User user : users) {
-                    userDataResponseDTOS.add(new UserDataResponseDTO(user));
+                    if (!user.isObrisan())
+                        userDataResponseDTOS.add(new UserDataResponseDTO(user));
                 }
                 return ok(userDataResponseDTOS);
             }
@@ -216,12 +213,11 @@ public class UserController {
             s = s + " u.surname like :surname ";
             param.put("surname", requestDTO.getSurname());
         }
-        if (requestDTO.getObrisan() != null) {
-            s = s + nextOper;
-            nextOper = " AND ";
-            s = s + " u.obrisan = :obrisan ";
-            param.put("obrisan", requestDTO.getObrisan());
-        }
+
+        s = s + nextOper;
+        nextOper = " AND ";
+        s = s + " u.obrisan = :obrisan ";
+        param.put("obrisan", false);
 
         if (requestDTO.getDepartment() != null) {
             s = s + nextOper;

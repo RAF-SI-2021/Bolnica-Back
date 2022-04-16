@@ -1,5 +1,6 @@
 package raf.si.bolnica.management.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
 import raf.si.bolnica.management.entities.enums.*;
 
@@ -82,6 +83,7 @@ public class Pacijent {
 
     // FKs
     @OneToOne(mappedBy = "pacijent")
+    @JsonIgnore
     private ZdravstveniKarton zdravstveniKarton;
 
     public long getPacijentId() {

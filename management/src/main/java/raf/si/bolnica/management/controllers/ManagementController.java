@@ -77,7 +77,7 @@ public class ManagementController {
     @Autowired
     private ScheduledAppointmentService appointmentService;
 
-    @PostMapping(value = "/create-pregled-report")
+    @PostMapping(value = "/create-examination-report")
     public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.ADMIN);
@@ -97,14 +97,12 @@ public class ManagementController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nemate privilegije za postavljanje poverljivosti!");
             }
 
-
-            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(requestDTO.getLbp()));
             ZdravstveniKarton zdravstveniKarton = zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(UUID.fromString(requestDTO.getLbp()));
 
             Pregled pregled = new Pregled();
 
             pregled.setZdravstveniKarton(zdravstveniKarton);
-            pregled.setZaposleniId(UUID.fromString(requestDTO.getZaposleniId()));
+            pregled.setLbz(UUID.fromString(requestDTO.getLbz()));
             pregled.setDatumPregleda(new Date(Calendar.getInstance().getTime().getTime()));
             pregled.setDijagnoza(requestDTO.getDijagnoza());
             pregled.setGlavneTegobe(requestDTO.getGlavneTegobe());
@@ -115,7 +113,6 @@ public class ManagementController {
             pregled.setPorodicnaAnamneza(requestDTO.getPorodicnaAnamneza());
             pregled.setSadasnjaBolest(requestDTO.getSadasnjaBolest());
             pregled.setPredlozenaTerapija(requestDTO.getPredlozenaTerapija());
-
 
             if (pregled.getDijagnoza() != null) {
                 IstorijaBolesti istorijaBolesti = new IstorijaBolesti();
@@ -191,8 +188,8 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @PutMapping("/update-patient/{id}")
-    public ResponseEntity<?> updatePatient(@RequestBody PacijentCRUDRequestDTO request, @PathVariable Long id) {
+    @PutMapping("/update-patient/{lbp}")
+    public ResponseEntity<?> updatePatient(@RequestBody PacijentCRUDRequestDTO request, @PathVariable String lbp) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.ADMIN);
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
@@ -205,7 +202,7 @@ public class ManagementController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
             }
 
-            Pacijent pacijent = pacijentService.fetchPacijentById(id);
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
             if (pacijent == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -220,14 +217,13 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @DeleteMapping("/remove-patient/{id}")
-    public ResponseEntity<?> removePatient(@PathVariable Long id) {
+    @DeleteMapping("/remove-patient/{lbp}")
+    public ResponseEntity<?> removePatient(@PathVariable String lbp) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.ADMIN);
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-
-            Pacijent pacijent = pacijentService.fetchPacijentById(id);
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
             if (pacijent == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -408,17 +404,17 @@ public class ManagementController {
         acceptedRoles.add("ROLE_ADMIN");
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
-        if (requestDTO.getDateAndTimeOfAppointment() == null || requestDTO.getExaminationEmployeeId() == null) {
+        if (requestDTO.getDateAndTimeOfAppointment() == null || requestDTO.getLbz() == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-            Pacijent pacijent = pacijentService.fetchPacijentByLbp(requestDTO.getPatient());
+            Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(requestDTO.getLbp()));
             ZakazaniPregled appointment = new ZakazaniPregled();
 
 
             appointment.setStatusPregleda(StatusPregleda.ZAKAZANO);
-            appointment.setLBZLekara(requestDTO.getExaminationEmployeeId());
-            appointment.setLBZSestre(loggedInUser.getLBZ());
+            appointment.setLbzLekara(UUID.fromString(requestDTO.getLbz()));
+            appointment.setLbzSestre(loggedInUser.getLBZ());
             appointment.setNapomena(requestDTO.getNote());
             appointment.setDatumIVremePregleda(requestDTO.getDateAndTimeOfAppointment());
             appointment.setPacijent(pacijent);
@@ -428,7 +424,7 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @GetMapping("/fetch-pregledi/{lbp}")
+    @PostMapping("/fetch-examinations/{lbp}")
     public ResponseEntity<?> fetchPreglediLbp(@RequestBody PreglediRequestDTO preglediRequestDTO,
                                               @PathVariable String lbp,
                                               @RequestParam int page,
@@ -448,7 +444,7 @@ public class ManagementController {
             ZdravstveniKarton zk = pacijent.getZdravstveniKarton();
 
 
-            String preglediUpitString = "SELECT i FROM Pregled p WHERE p.zdravstveniKarton = :zk";
+            String preglediUpitString = "SELECT p FROM Pregled p WHERE p.zdravstveniKarton = :zk";
 
             if (!loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV)) {
                 preglediUpitString = preglediUpitString + " AND p.indikatorPoverljivosti = false";
@@ -562,14 +558,14 @@ public class ManagementController {
 
             int cnt = 0;
 
-            Map<String,Object> mp = new HashMap<>();
-            mp.put("lbp",filterPatientsRequestDTO.getLbp());
-            mp.put("jmbg",filterPatientsRequestDTO.getJmbg());
-            mp.put("ime",filterPatientsRequestDTO.getIme());
-            mp.put("prezime",filterPatientsRequestDTO.getPrezime());
+            Map<String, Object> mp = new HashMap<>();
+            mp.put("lbp", filterPatientsRequestDTO.getLbp());
+            mp.put("jmbg", filterPatientsRequestDTO.getJmbg());
+            mp.put("ime", filterPatientsRequestDTO.getIme());
+            mp.put("prezime", filterPatientsRequestDTO.getPrezime());
 
-            for(String key:mp.keySet()) {
-                if(mp.get(key)!=null) {
+            for (String key : mp.keySet()) {
+                if (mp.get(key) != null) {
                     if (cnt == 0) {
                         pacijentUpitString = pacijentUpitString + " WHERE ";
                     } else {
@@ -585,9 +581,9 @@ public class ManagementController {
             TypedQuery<Pacijent> upitPacijent =
                     entityManager.createQuery(pacijentUpitString, Pacijent.class);
 
-            for(String key:mp.keySet()) {
-                if(mp.get(key)!=null) {
-                    upitPacijent.setParameter(key,mp.get(key));
+            for (String key : mp.keySet()) {
+                if (mp.get(key) != null) {
+                    upitPacijent.setParameter(key, mp.get(key));
                 }
             }
 
@@ -601,7 +597,7 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @PostMapping(value = "/update-appointment-status")
+    @PutMapping(value = "/update-appointment-status")
     public ResponseEntity<?> updateAppointmentStatus(@RequestBody UpdateAppointmentStatusDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
@@ -621,7 +617,7 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @PostMapping(value = "/update-arrival-status")
+    @PutMapping(value = "/update-arrival-status")
     public ResponseEntity<?> updateArrivalStatus(@RequestBody UpdateArrivalStatusDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");

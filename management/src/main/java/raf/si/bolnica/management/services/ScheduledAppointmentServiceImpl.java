@@ -36,7 +36,7 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
 
     @Override
     public List<ZakazaniPregled> getAppointmentByLBZ(UUID lbz) {
-        return scheduledAppointmentRepository.findByLBZLekara(lbz);
+        return scheduledAppointmentRepository.findByLbzLekara(lbz);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
 
     @Override
     public List<ZakazaniPregled> getAppointmentByLBZAndDate(UUID lbz, Timestamp date) {
-        return scheduledAppointmentRepository.findByLBZLekaraAndAndDatumIVremePregleda(lbz, date);
+        return scheduledAppointmentRepository.findByLbzLekaraAndAndDatumIVremePregleda(lbz, date);
     }
 
 }

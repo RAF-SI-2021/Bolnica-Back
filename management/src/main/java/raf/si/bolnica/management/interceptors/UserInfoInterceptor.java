@@ -25,7 +25,7 @@ public class UserInfoInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String authenticationHeader = request.getHeader("Authorization");
         if (authenticationHeader != null) {
-            String content = authenticationHeader.replace("Bearer:", "");
+            String content = authenticationHeader.replace("Bearer ", "");
             Jws<Claims> jws = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(content);
 
             String[] roles = jws.getBody().get("roles", String.class).split(",");

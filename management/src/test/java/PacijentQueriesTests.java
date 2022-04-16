@@ -217,7 +217,7 @@ class PacijentQueriesTests {
         when(pacijentService.fetchPacijentByLbp(p.getLbp())).thenReturn(p);
 
         TypedQuery<Pregled> query1 = mock(TypedQuery.class);
-        when(entityManager.createQuery(eq("SELECT i FROM Pregled p WHERE p.zdravstveniKarton = :zk AND p.indikatorPoverljivosti = false"),
+        when(entityManager.createQuery(eq("SELECT p FROM Pregled p WHERE p.zdravstveniKarton = :zk AND p.indikatorPoverljivosti = false"),
                 any(Class.class))).thenReturn(query1);
 
         when(query1.getResultList()).thenReturn(pregledi);

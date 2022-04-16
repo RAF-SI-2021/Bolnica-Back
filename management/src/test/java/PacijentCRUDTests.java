@@ -17,10 +17,7 @@ import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonSer
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.Date;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -117,11 +114,11 @@ public class PacijentCRUDTests {
 
         PacijentCRUDRequestDTO request = getRequest();
 
-        ResponseEntity<?> response = managementController.removePatient(1L);
+        ResponseEntity<?> response = managementController.removePatient(UUID.randomUUID().toString());
 
         assertThat(response.getStatusCodeValue()).isEqualTo(403);
 
-        response = managementController.updatePatient(request,1L);
+        response = managementController.updatePatient(request,UUID.randomUUID().toString());
 
         assertThat(response.getStatusCodeValue()).isEqualTo(403);
     }
@@ -139,9 +136,9 @@ public class PacijentCRUDTests {
 
         assertThat(managementController.createPatient(request).getStatusCodeValue()).isNotEqualTo(200);
 
-        assertThat(managementController.removePatient(1L).getStatusCodeValue()).isNotEqualTo(200);
+        assertThat(managementController.removePatient(UUID.randomUUID().toString()).getStatusCodeValue()).isNotEqualTo(200);
 
-        assertThat(managementController.updatePatient(request, 1L).getStatusCodeValue()).isNotEqualTo(200);
+        assertThat(managementController.updatePatient(request, UUID.randomUUID().toString()).getStatusCodeValue()).isNotEqualTo(200);
 
     }
 
@@ -179,7 +176,7 @@ public class PacijentCRUDTests {
         Pacijent test = new Pacijent();
         test.setZdravstveniKarton(new ZdravstveniKarton());
 
-        when(pacijentService.fetchPacijentById(1L)).thenReturn(test);
+        when(pacijentService.fetchPacijentByLbp(response.getLbp())).thenReturn(test);
 
         LinkedList<AlergenZdravstveniKarton> list1= new LinkedList<>();
         list1.add(new AlergenZdravstveniKarton());
@@ -217,7 +214,7 @@ public class PacijentCRUDTests {
         });
 
 
-        ResponseEntity<?> responseRemove = managementController.removePatient(1L);
+        ResponseEntity<?> responseRemove = managementController.removePatient(response.getLbp().toString());
 
         assertThat(responseRemove.getStatusCodeValue()).isEqualTo(200);
 
@@ -263,11 +260,13 @@ public class PacijentCRUDTests {
 
         assertThat(responseCreate.getBody()).isInstanceOf(PacijentResponseDTO.class);
 
-        when(pacijentService.fetchPacijentById(1L)).thenReturn(new Pacijent());
+        PacijentResponseDTO response = (PacijentResponseDTO) Objects.requireNonNull(responseCreate.getBody());
+
+        when(pacijentService.fetchPacijentByLbp((response.getLbp()))).thenReturn(new Pacijent());
 
         request.setBrojDece(5);
 
-        ResponseEntity<?> responseUpdate = managementController.updatePatient(request, 1L);
+        ResponseEntity<?> responseUpdate = managementController.updatePatient(request, response.getLbp().toString());
 
         assertThat(responseUpdate.getStatusCodeValue()).isEqualTo(200);
     }

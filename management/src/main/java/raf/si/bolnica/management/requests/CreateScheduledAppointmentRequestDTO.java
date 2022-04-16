@@ -10,10 +10,10 @@ public class CreateScheduledAppointmentRequestDTO {
 
     private String note;
 
-    //Employee (doctor) that will be conducting examination
-    private UUID examinationEmployeeId;
+    // Employee (doctor) that will be conducting examination
+    private String lbz;
 
-    private UUID patient;
+    private String lbp;
 
     public Timestamp getDateAndTimeOfAppointment() {
         return dateAndTimeOfAppointment;
@@ -31,20 +31,20 @@ public class CreateScheduledAppointmentRequestDTO {
         this.note = note;
     }
 
-    public UUID getExaminationEmployeeId() {
-        return examinationEmployeeId;
+    public String getLbp() {
+        return lbp;
     }
 
-    public void setExaminationEmployeeId(UUID examinationEmployeeId) {
-        this.examinationEmployeeId = examinationEmployeeId;
+    public void setLbp(String lbp) {
+        this.lbp = lbp;
     }
 
-    public UUID getPatient() {
-        return patient;
+    public String getLbz() {
+        return lbz;
     }
 
-    public void setPatient(UUID patient) {
-        this.patient = patient;
+    public void setLbz(String lbz) {
+        this.lbz = lbz;
     }
 }
 

@@ -1,6 +1,7 @@
 package raf.si.bolnica.management.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Type;
 import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
 
@@ -29,26 +30,28 @@ public class ZakazaniPregled {
 
     //FKs
     @Column(nullable = false)
-    private UUID lBZLekara;
+    @Type(type="org.hibernate.type.UUIDCharType")
+    private UUID lbzLekara;
 
     @Column(nullable = false)
-    private UUID LBZSestre;
+    @Type(type="org.hibernate.type.UUIDCharType")
+    private UUID lbzSestre;
 
     @ManyToOne
     @JoinColumn(name = "pacijent_id")
     @JsonIgnore
     private Pacijent pacijent;
 
-    public UUID getLBZLekara() {
-        return lBZLekara;
+    public UUID getLbzLekara() {
+        return lbzLekara;
+    }
+
+    public UUID getLbzSestre() {
+        return lbzSestre;
     }
 
     public long getZakazaniPregledId() {
         return zakazaniPregledId;
-    }
-
-    public UUID getLBZSestre() {
-        return LBZSestre;
     }
 
     public Pacijent getPacijent() {
@@ -75,12 +78,12 @@ public class ZakazaniPregled {
         this.datumIVremePregleda = datumIVremePregleda;
     }
 
-    public void setLBZLekara(UUID LBZLekara) {
-        this.lBZLekara = LBZLekara;
+    public void setLbzLekara(UUID lbzLekara) {
+        this.lbzLekara = lbzLekara;
     }
 
-    public void setLBZSestre(UUID LBZSestre) {
-        this.LBZSestre = LBZSestre;
+    public void setLbzSestre(UUID lbzSestre) {
+        this.lbzSestre = lbzSestre;
     }
 
     public void setNapomena(String napomena) {

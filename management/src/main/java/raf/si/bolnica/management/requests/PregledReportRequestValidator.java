@@ -8,8 +8,8 @@ public class PregledReportRequestValidator {
 
     public static String validate(CreatePregledReportRequestDTO request) {
         if (request.getObjektivniNalaz() == null) return  "Objektivni nalaz je obavezno polje!";
-        if (request.getLbp() == null) return  "Licni broj pacijenta(Lbp) je obavezno polje!";
-        if (request.getZaposleniId() == null) return  "Id zaposlenog je obavezno polje!";
+        if (request.getLbp() == null) return  "LBP je obavezno polje!";
+        if (request.getLbz() == null) return  "LBZ je obavezno polje!";
         return "OK";
     }
 }
