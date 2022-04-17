@@ -6,14 +6,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.test.util.ReflectionTestUtils;
 import raf.si.bolnica.user.controllers.UserController;
+import raf.si.bolnica.user.exceptionHandler.user.UserExceptionHandler;
 import raf.si.bolnica.user.interceptors.LoggedInUser;
 import raf.si.bolnica.user.models.Odeljenje;
 import raf.si.bolnica.user.models.Role;
 import raf.si.bolnica.user.models.User;
 import raf.si.bolnica.user.models.ZdravstvenaUstanova;
+import raf.si.bolnica.user.repositories.RoleRepository;
 import raf.si.bolnica.user.requests.CreateEmployeeRequestDTO;
 import raf.si.bolnica.user.requests.ListEmployeesRequestDTO;
+import raf.si.bolnica.user.requests.UpdateEmployeeRequestDTO;
+import raf.si.bolnica.user.responses.UserDataResponseDTO;
 import raf.si.bolnica.user.service.EmailService;
 import raf.si.bolnica.user.service.OdeljenjeService;
 import raf.si.bolnica.user.service.UserService;
@@ -23,7 +28,9 @@ import javax.persistence.TypedQuery;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,9 +41,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
-    @InjectMocks
-    UserController userController;
-
     @Mock
     LoggedInUser loggedInUser;
 
@@ -44,10 +48,22 @@ class UserControllerTest {
     UserService userService;
 
     @Mock
+    OdeljenjeService odeljenjeService;
+
+    @Mock
     private EmailService emailService;
 
     @Mock
+    UserExceptionHandler userExceptionHandler;
+
+    @InjectMocks
+    UserController userController;
+
+    @Mock
     EntityManager entityManager;
+
+    @Mock
+    RoleRepository roleRepository;
 
     public User getUser(){
         User user1 = new User();
@@ -94,6 +110,43 @@ class UserControllerTest {
         return user1;
     }
 
+    public CreateEmployeeRequestDTO createEmployeeRequestDTO() {
+        CreateEmployeeRequestDTO requestDTO = new CreateEmployeeRequestDTO();
+        requestDTO.setEmail("email@email.com");
+        requestDTO.setName("name");
+        requestDTO.setSurname("surname");
+        requestDTO.setJmbg("jmbg");
+        requestDTO.setContact("kontakt");
+        requestDTO.setAddress("adresa");
+        requestDTO.setCity("grad");
+        requestDTO.setDepartment(1);
+        requestDTO.setDob(Date.valueOf(LocalDate.now().minusYears(40)));
+        requestDTO.setGender("male");
+        requestDTO.setTitle("Dipl. farm.");
+        requestDTO.setProfession("Spec. hematolog");
+        return requestDTO;
+    }
+
+    public UpdateEmployeeRequestDTO updateEmployeeRequestDTO() {
+        UpdateEmployeeRequestDTO requestDTO = new UpdateEmployeeRequestDTO();
+        requestDTO.setEmail("email@email.com");
+        requestDTO.setName("name");
+        requestDTO.setSurname("surname");
+        requestDTO.setJmbg("jmbg");
+        requestDTO.setContact("kontakt");
+        requestDTO.setAddress("adresa");
+        requestDTO.setCity("grad");
+        requestDTO.setDepartment(1);
+        requestDTO.setDob(Date.valueOf(LocalDate.now().minusYears(40)));
+        requestDTO.setGender("male");
+        requestDTO.setTitle("Dipl. farm.");
+        requestDTO.setProfession("Spec. hematolog");
+        requestDTO.setOldPassword("stari");
+        requestDTO.setNewPassword("novi");
+        requestDTO.setLbz(UUID.randomUUID());
+        return requestDTO;
+    }
+
     @Test
     void forgotPassword(){
         User u = getUser();
@@ -127,6 +180,153 @@ class UserControllerTest {
         ResponseEntity<?> response = userController.removeEmployee(u.getLbz().toString());
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+    @Test
+    void createEmployeeSuccess() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_ADMIN");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(userService.saveEmployee(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        CreateEmployeeRequestDTO requestDTO = createEmployeeRequestDTO();
+
+        when(odeljenjeService.fetchOdeljenjeById(any(Long.class))).thenAnswer(i -> {
+            Odeljenje odeljenje = new Odeljenje();
+            odeljenje.setOdeljenjeId((Long)i.getArguments()[0]);
+            return odeljenje;
+        });
+
+        when(roleRepository.findByName(any(String.class))).thenReturn(new Role());
+
+        UserExceptionHandler handler = new UserExceptionHandler();
+
+        ReflectionTestUtils.setField(userExceptionHandler,"validateUsername",handler.validateUsername);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserGender",handler.validateUserGender);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserTitle", handler.validateUserTitle);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserProfession",handler.validateUserProfession);
+
+        ResponseEntity<?> response = userController.createEmployee(requestDTO);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(UserDataResponseDTO.class);
+
+        UserDataResponseDTO data = (UserDataResponseDTO) response.getBody();
+
+        assertThat(data).isNotNull();
+
+        assertThat(data.getAddress()).isEqualTo(requestDTO.getAddress());
+        assertThat(data.getCity()).isEqualTo(requestDTO.getCity());
+        assertThat(data.getContact()).isEqualTo(requestDTO.getContact());
+        assertThat(data.getCity()).isEqualTo(requestDTO.getCity());
+        assertThat(data.getEmail()).isEqualTo(requestDTO.getEmail());
+        assertThat(data.getLbz()).isNotNull();
+        assertThat(data.getDob()).isEqualTo(requestDTO.getDob());
+        assertThat(data.getDepartment()).isEqualTo(requestDTO.getDepartment());
+        assertThat(data.getGender()).isEqualTo(requestDTO.getGender());
+        assertThat(data.getName()).isEqualTo(requestDTO.getName());
+        assertThat(data.getJmbg()).isEqualTo(requestDTO.getJmbg());
+        assertThat(data.getSurname()).isEqualTo(requestDTO.getSurname());
+        assertThat(data.getProfession()).isEqualTo(requestDTO.getProfession());
+        assertThat(data.getTitle()).isEqualTo(requestDTO.getTitle());
+    }
+
+    @Test
+    void createEmployeeUnauthorized() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_MED_SESTRA");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        ResponseEntity<?> response = userController.createEmployee(createEmployeeRequestDTO());
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
+    void adminUpdateEmployeeNoSuchUser() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_ADMIN");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(userService.fetchUserByLBZ(any(UUID.class))).thenReturn(null);
+
+        UpdateEmployeeRequestDTO requestDTO = updateEmployeeRequestDTO();
+
+        when(odeljenjeService.fetchOdeljenjeById(any(Long.class))).thenAnswer(i -> {
+            Odeljenje odeljenje = new Odeljenje();
+            odeljenje.setOdeljenjeId((Long)i.getArguments()[0]);
+            return odeljenje;
+        });
+
+        UserExceptionHandler handler = new UserExceptionHandler();
+
+        ReflectionTestUtils.setField(userExceptionHandler,"validateUsername",handler.validateUsername);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserGender",handler.validateUserGender);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserTitle", handler.validateUserTitle);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserProfession",handler.validateUserProfession);
+
+        ResponseEntity<?> response = userController.updateEmployee(requestDTO);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
+    void adminUpdateEmployeeSuccess() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_ADMIN");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(userService.fetchUserByLBZ(any(UUID.class))).thenReturn(new User());
+
+        when(userService.saveEmployee(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        UpdateEmployeeRequestDTO requestDTO = updateEmployeeRequestDTO();
+
+        when(odeljenjeService.fetchOdeljenjeById(any(Long.class))).thenAnswer(i -> {
+            Odeljenje odeljenje = new Odeljenje();
+            odeljenje.setOdeljenjeId((Long)i.getArguments()[0]);
+            return odeljenje;
+        });
+
+        UserExceptionHandler handler = new UserExceptionHandler();
+
+        ReflectionTestUtils.setField(userExceptionHandler,"validateUsername",handler.validateUsername);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserGender",handler.validateUserGender);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserTitle", handler.validateUserTitle);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserProfession",handler.validateUserProfession);
+
+        ResponseEntity<?> response = userController.updateEmployee(requestDTO);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(User.class);
+
+        User data = (User) response.getBody();
+
+        assertThat(data).isNotNull();
+
+        assertThat(data.getAdresaStanovanja()).isEqualTo(requestDTO.getAddress());
+        assertThat(data.getMestoStanovanja()).isEqualTo(requestDTO.getCity());
+        assertThat(data.getKontaktTelefon()).isEqualTo(requestDTO.getContact());
+        assertThat(data.getEmail()).isEqualTo(requestDTO.getEmail());
+        assertThat(data.getDatumRodjenja()).isEqualTo(requestDTO.getDob());
+        assertThat(data.getOdeljenje().getOdeljenjeId()).isEqualTo(requestDTO.getDepartment());
+        assertThat(data.getPol()).isEqualTo(requestDTO.getGender());
+        assertThat(data.getName()).isEqualTo(requestDTO.getName());
+        assertThat(data.getJmbg()).isEqualTo(requestDTO.getJmbg());
+        assertThat(data.getSurname()).isEqualTo(requestDTO.getSurname());
+        assertThat(data.getZanimanje()).isEqualTo(requestDTO.getProfession());
+        assertThat(data.getTitula()).isEqualTo(requestDTO.getTitle());
     }
 
 //    @Test
