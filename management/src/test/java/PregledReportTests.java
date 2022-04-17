@@ -115,6 +115,48 @@ public class PregledReportTests {
     }
 
     @Test
+    public void testCreatePregledReportTreatmentOngoing() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.SPECIJLISTA_POV);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        CreatePregledReportRequestDTO request = getRequest();
+        request.setRezultatLecenja(RezultatLecenja.U_TOKU);
+
+        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(new ZdravstveniKarton());
+
+        when(istorijaBolestiService.fetchByZdravstveniKartonPodaciValidni(any(ZdravstveniKarton.class),eq(true))).thenReturn(new IstorijaBolesti());
+
+        ResponseEntity<?> responseCreate = managementController.createPregledReport(request);
+
+        assertThat(responseCreate.getStatusCodeValue()).isEqualTo(200);
+
+    }
+
+    @Test
+    public void testCreatePregledReportTreatmentNoResult() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.SPECIJLISTA_POV);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        CreatePregledReportRequestDTO request = getRequest();
+        request.setRezultatLecenja(null);
+
+        when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(new ZdravstveniKarton());
+
+        when(istorijaBolestiService.fetchByZdravstveniKartonPodaciValidni(any(ZdravstveniKarton.class),eq(true))).thenReturn(new IstorijaBolesti());
+
+        ResponseEntity<?> responseCreate = managementController.createPregledReport(request);
+
+        assertThat(responseCreate.getStatusCodeValue()).isEqualTo(200);
+
+    }
+
+    @Test
     public void testCreatePregledReportUnauthorized() {
         Set<String> roles = new TreeSet<>();
 
