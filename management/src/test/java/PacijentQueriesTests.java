@@ -242,6 +242,47 @@ class PacijentQueriesTests {
     }
 
     @Test
+    public void testFetchPreglediWithParams() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK);
+        roles.add(Constants.SPECIJLISTA_POV);
+
+        Pacijent p = getPacijent();
+
+        List<Pregled> pregledi = getPregledi();
+
+
+        ZdravstveniKarton zk = new ZdravstveniKarton();
+
+        p.setZdravstveniKarton(zk);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(pacijentService.fetchPacijentByLbp(p.getLbp())).thenReturn(p);
+
+        TypedQuery<Pregled> query1 = mock(TypedQuery.class);
+        when(entityManager.createQuery(eq("SELECT p FROM Pregled p WHERE p.zdravstveniKarton = :zk AND p.datumPregleda = :on AND p.datumPregleda >= :from AND p.datumPregleda <= :to"),
+                any(Class.class))).thenReturn(query1);
+
+        when(query1.getResultList()).thenReturn(pregledi);
+
+        PreglediRequestDTO requestDTO = new PreglediRequestDTO();
+        requestDTO.setFrom(Date.valueOf(LocalDate.now().minusDays(1)));
+        requestDTO.setOn(Date.valueOf(LocalDate.now()));
+        requestDTO.setTo(Date.valueOf(LocalDate.now().plusDays(1)));
+
+        ResponseEntity<?> response = managementController.fetchPreglediLbp(requestDTO,p.getLbp().toString(),1,2);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(List.class);
+
+        assertThat(((List)response.getBody()).size()).isEqualTo(pregledi.size());
+
+    }
+
+    @Test
     public void testFetchIstorijaBolesti() {
         Set<String> roles = new TreeSet<>();
 
@@ -269,6 +310,44 @@ class PacijentQueriesTests {
         when(query1.getResultList()).thenReturn(istorija);
 
         ResponseEntity<?> response = managementController.fetchIstorijaBolestiLbp(new IstorijaBolestiRequestDTO(),p.getLbp().toString(),1,2);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(List.class);
+
+        assertThat(((List)response.getBody()).size()).isEqualTo(istorija.size());
+
+    }
+
+    @Test
+    public void testFetchIstorijaBolestiWithParams() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK);
+
+        Pacijent p = getPacijent();
+
+        List<IstorijaBolesti> istorija = getIstorija();
+
+
+        ZdravstveniKarton zk = new ZdravstveniKarton();
+
+        p.setZdravstveniKarton(zk);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(pacijentService.fetchPacijentByLbp(p.getLbp())).thenReturn(p);
+
+        TypedQuery<IstorijaBolesti> query1 = mock(TypedQuery.class);
+        when(entityManager.createQuery(eq("SELECT i FROM IstorijaBolesti i WHERE i.zdravstveniKarton = :zk AND i.indikatorPoverljivosti = false AND i.dijagnoza like :dijagnoza"),
+                any(Class.class))).thenReturn(query1);
+
+        when(query1.getResultList()).thenReturn(istorija);
+
+        IstorijaBolestiRequestDTO requestDTO = new IstorijaBolestiRequestDTO();
+        requestDTO.setDijagnoza("dijagnoza");
+
+        ResponseEntity<?> response = managementController.fetchIstorijaBolestiLbp(requestDTO,p.getLbp().toString(),1,2);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
 
