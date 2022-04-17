@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
 import raf.si.bolnica.management.entities.ZakazaniPregled;
+import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
@@ -45,13 +46,25 @@ public class AppointmentTests {
         Set<String> roles = new TreeSet<>();
         roles.add(Constants.VISA_MED_SESTRA);
         when(loggedInUser.getRoles()).thenReturn(roles);
+        UUID uuid = UUID.randomUUID();
+        when(loggedInUser.getLBZ()).thenReturn(uuid);
+        when(appointmentService.saveAppointment(any(ZakazaniPregled.class))).thenAnswer(i -> i.getArguments()[0]);
         CreateScheduledAppointmentRequestDTO requestDTO = new CreateScheduledAppointmentRequestDTO();
         requestDTO.setDateAndTimeOfAppointment(Timestamp.valueOf(LocalDateTime.now()));
         requestDTO.setLbz(UUID.randomUUID().toString());
         requestDTO.setLbp(UUID.randomUUID().toString());
+        requestDTO.setNote("Napomena");
         ResponseEntity<?> response = managementController.setAppointment(requestDTO);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isInstanceOf(ZakazaniPregled.class);
+
+        ZakazaniPregled pregled = (ZakazaniPregled) response.getBody();
+        assertThat(pregled).isNotNull();
+        assertThat(pregled.getDatumIVremePregleda()).isEqualTo(requestDTO.getDateAndTimeOfAppointment());
+        assertThat(pregled.getLbzLekara().toString()).isEqualTo(requestDTO.getLbz());
+        assertThat(pregled.getLbzSestre()).isEqualTo(loggedInUser.getLBZ());
+        assertThat(pregled.getNapomena()).isEqualTo(requestDTO.getNote());
     }
 
     @Test
@@ -95,9 +108,16 @@ public class AppointmentTests {
         UpdateAppointmentStatusDTO requestDTO = new UpdateAppointmentStatusDTO();
         requestDTO.setAppointmentStatus(StatusPregleda.U_TOKU.toString());
         when(appointmentService.fetchById(any(Long.class))).thenReturn(new ZakazaniPregled());
+        when(appointmentService.saveAppointment(any(ZakazaniPregled.class))).thenAnswer(i -> i.getArguments()[0]);
         ResponseEntity<?> response = managementController.updateAppointmentStatus(requestDTO);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isInstanceOf(ZakazaniPregled.class);
+
+        ZakazaniPregled pregled = (ZakazaniPregled) response.getBody();
+
+        assertThat(pregled).isNotNull();
+        assertThat(pregled.getStatusPregleda().toString()).isEqualTo(requestDTO.getAppointmentStatus());
     }
 
     @Test
@@ -114,8 +134,6 @@ public class AppointmentTests {
 
     @Test
     public void testUpdateAppointmentInvalidTest() {
-        Set<String> roles = new TreeSet<>();
-        roles.add(Constants.SPECIJALISTA);
         UpdateAppointmentStatusDTO requestDTO = new UpdateAppointmentStatusDTO();
         requestDTO.setAppointmentStatus(null);
         ResponseEntity<?> response = managementController.updateAppointmentStatus(requestDTO);
@@ -131,9 +149,16 @@ public class AppointmentTests {
         UpdateArrivalStatusDTO requestDTO = new UpdateArrivalStatusDTO();
         requestDTO.setArrivalStatus(PrispecePacijenta.PRIMLJEN.toString());
         when(appointmentService.fetchById(any(Long.class))).thenReturn(new ZakazaniPregled());
+        when(appointmentService.saveAppointment(any(ZakazaniPregled.class))).thenAnswer(i -> i.getArguments()[0]);
         ResponseEntity<?> response = managementController.updateArrivalStatus(requestDTO);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isInstanceOf(ZakazaniPregled.class);
+
+        ZakazaniPregled pregled = (ZakazaniPregled) response.getBody();
+
+        assertThat(pregled).isNotNull();
+        assertThat(pregled.getPrispecePacijenta().toString()).isEqualTo(requestDTO.getArrivalStatus());
     }
 
     @Test
