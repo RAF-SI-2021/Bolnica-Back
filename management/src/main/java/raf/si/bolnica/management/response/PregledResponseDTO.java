@@ -7,7 +7,6 @@ import raf.si.bolnica.management.entities.Pregled;
 import java.sql.Date;
 
 @Getter
-@Setter
 public class PregledResponseDTO {
 
     private Date datumPregleda;
