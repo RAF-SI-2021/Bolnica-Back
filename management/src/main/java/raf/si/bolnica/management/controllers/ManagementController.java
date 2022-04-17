@@ -92,8 +92,7 @@ public class ManagementController {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
             }
 
-            if (!loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV)
-                    && requestDTO.getIndikatorPoverljivosti()) {
+            if (!loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV) && requestDTO.getIndikatorPoverljivosti()) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nemate privilegije za postavljanje poverljivosti!");
             }
 
@@ -133,8 +132,7 @@ public class ManagementController {
 
                     istorijaBolesti.setIndikatorPoverljivosti(istorijaBolestiAktuelna.getIndikatorPoverljivosti());
                     istorijaBolesti.setDatumPocetkaZdravstvenogProblema(istorijaBolestiAktuelna.getDatumPocetkaZdravstvenogProblema());
-                    if (requestDTO.getRezultatLecenja() != RezultatLecenja.U_TOKU
-                            && requestDTO.getRezultatLecenja() != null) {
+                    if (requestDTO.getRezultatLecenja() != RezultatLecenja.U_TOKU && requestDTO.getRezultatLecenja() != null) {
                         istorijaBolesti.setDatumZavrsetkaZdravstvenogProblema(new Date(Calendar.getInstance().getTime().getTime()));
                     }
 

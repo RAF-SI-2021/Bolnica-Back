@@ -6,10 +6,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
-import raf.si.bolnica.management.entities.IstorijaBolesti;
-import raf.si.bolnica.management.entities.Pacijent;
-import raf.si.bolnica.management.entities.Pregled;
-import raf.si.bolnica.management.entities.ZdravstveniKarton;
+import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.entities.enums.*;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.FilterPatientsRequestDTO;
@@ -181,9 +178,21 @@ class PacijentQueriesTests {
 
         when(pacijentService.fetchPacijentByLbp(p.getLbp())).thenReturn(p);
 
-        TypedQuery query = mock(TypedQuery.class);
-        when(query.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(any(String.class),any(Class.class))).thenReturn(query);
+        LinkedList<AlergenZdravstveniKarton> list1= new LinkedList<>();
+        list1.add(new AlergenZdravstveniKarton());
+        TypedQuery query1 = mock(TypedQuery.class);
+        when(query1.getResultList()).thenReturn(list1);
+
+        LinkedList<Vakcinacija> list2= new LinkedList<>();
+        list2.add(new Vakcinacija());
+        TypedQuery query2 = mock(TypedQuery.class);
+        when(query2.getResultList()).thenReturn(list2);
+
+        when(entityManager.createQuery(any(String.class),any(Class.class))).thenAnswer(i -> {
+            if(i.getArguments()[1].equals(AlergenZdravstveniKarton.class)) return query1;
+            else if(i.getArguments()[1].equals(Vakcinacija.class)) return query2;
+            else return null;
+        });
 
         ResponseEntity<?> response = managementController.fetchPatientDataLbp(p.getLbp().toString());
 

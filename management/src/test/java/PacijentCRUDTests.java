@@ -103,6 +103,28 @@ public class PacijentCRUDTests {
     }
 
     @Test
+    public void testPacijentUpdateInvalidRequest() {
+
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.MED_SESTRA);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+
+        PacijentCRUDRequestDTO request = getRequest();
+        request.setPol(null);
+
+        ResponseEntity<?> response = managementController.updatePatient(request,"1");
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+
+        assertThat(response.getBody()).isInstanceOf(String.class);
+
+        assertThat(response.getBody()).isEqualTo("Pol je obavezno polje!");
+    }
+
+    @Test
     public void testPacijentUpdateRemoveNoPatient() {
 
         Set<String> roles = new TreeSet<>();
