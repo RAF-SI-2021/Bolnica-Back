@@ -39,7 +39,6 @@ public class ZakazaniPregled {
 
     @ManyToOne
     @JoinColumn(name = "pacijent_id")
-    @JsonIgnore
     private Pacijent pacijent;
 
     public UUID getLbzLekara() {
