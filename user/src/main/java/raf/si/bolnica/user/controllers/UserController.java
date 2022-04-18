@@ -256,10 +256,8 @@ public class UserController {
     public ResponseEntity<?> updateEmployee(@RequestBody UpdateEmployeeRequestDTO requestDTO) {
         if (loggedInUser.getRoles().contains("ROLE_ADMIN")) {
             Odeljenje odeljenje = odeljenjeService.fetchOdeljenjeById(requestDTO.getDepartment());
-            String username = requestDTO.getEmail().substring(0, requestDTO.getEmail().indexOf("@"));
             String password = requestDTO.getNewPassword();
 
-            userExceptionHandler.validateUsername.accept(username);
             userExceptionHandler.validateUserTitle.accept(requestDTO.getTitle());
             userExceptionHandler.validateUserProfession.accept(requestDTO.getProfession());
             userExceptionHandler.validateUserGender.accept(requestDTO.getGender());
@@ -272,8 +270,8 @@ public class UserController {
 
             user.setOdeljenje(odeljenje);
             user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
-            user.setKorisnickoIme(username);
-            user.setEmail(requestDTO.getEmail());
+            user.setKorisnickoIme(user.getKorisnickoIme());
+            user.setEmail(user.getEmail());
             user.setName(requestDTO.getName());
             user.setSurname(requestDTO.getSurname());
             user.setAdresaStanovanja(requestDTO.getAddress());

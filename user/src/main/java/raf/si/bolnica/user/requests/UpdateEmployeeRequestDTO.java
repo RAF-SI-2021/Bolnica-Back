@@ -31,8 +31,6 @@ public class UpdateEmployeeRequestDTO {
 
     private String contact;
 
-    private String email;
-
     private String title;
 
     private String profession;
