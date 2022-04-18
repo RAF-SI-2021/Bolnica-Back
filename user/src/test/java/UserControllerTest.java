@@ -1,3 +1,4 @@
+import org.hibernate.query.Query;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,6 +36,7 @@ import java.util.function.Consumer;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -329,24 +331,249 @@ class UserControllerTest {
         assertThat(data.getTitula()).isEqualTo(requestDTO.getTitle());
     }
 
-//    @Test
-//    void listEmployees(){
-//        User u = getUser();
-//
-//        ListEmployeesRequestDTO requestDTO = new ListEmployeesRequestDTO();
-//
-//        List<User> users = new ArrayList<>();
-//
-//        users.add(u);
-//
-//        TypedQuery query = mock(TypedQuery.class);
-//        when(query.getResultList()).thenReturn(new LinkedList<>());
-//        when(entityManager.createQuery(any(String.class),any(Class.class))).thenReturn(query);
-//
-//        when(query.getResultList()).thenReturn(users);
-//
-//        ResponseEntity<?> response = userController.listEmployees(requestDTO, 1, 5);
-//
-//        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-//    }
+    @Test
+    void userUpdateEmployeeUnauthorized() {
+        Set<String> roles = new TreeSet<>();
+
+        when(loggedInUser.getLBZ()).thenReturn(UUID.randomUUID());
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        UpdateEmployeeRequestDTO requestDTO = updateEmployeeRequestDTO();
+
+        when(userService.fetchUserByLBZ(any(UUID.class))).thenAnswer(i -> {
+            User u = new User();
+            u.setLbz(requestDTO.getLbz());
+            return u;
+        });
+
+        ResponseEntity<?> response = userController.updateEmployee(requestDTO);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
+    void userUpdateEmployeeWithData() {
+        Set<String> roles = new TreeSet<>();
+
+        UpdateEmployeeRequestDTO requestDTO = updateEmployeeRequestDTO();
+
+        when(loggedInUser.getLBZ()).thenReturn(requestDTO.getLbz());
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(userService.fetchUserByLBZ(any(UUID.class))).thenAnswer(i -> {
+            User u = new User();
+            u.setLbz(requestDTO.getLbz());
+            u.setPassword(BCrypt.hashpw(requestDTO.getOldPassword(), BCrypt.gensalt()));
+            return u;
+        });
+
+        ResponseEntity<?> response = userController.updateEmployee(requestDTO);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+    @Test
+    void userUpdateEmployeeNoData() {
+        Set<String> roles = new TreeSet<>();
+
+        UpdateEmployeeRequestDTO requestDTO = updateEmployeeRequestDTO();
+
+        requestDTO.setContact(null);
+
+        requestDTO.setNewPassword(null);
+
+        when(loggedInUser.getLBZ()).thenReturn(requestDTO.getLbz());
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        String pass = BCrypt.hashpw(requestDTO.getOldPassword(), BCrypt.gensalt());
+
+
+        when(userService.fetchUserByLBZ(any(UUID.class))).thenAnswer(i -> {
+            User u = new User();
+            u.setLbz(requestDTO.getLbz());
+            u.setPassword(pass);
+            u.setKontaktTelefon("telefon");
+            return u;
+        });
+
+        when(userService.saveEmployee(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        ResponseEntity<?> response = userController.updateEmployee(requestDTO);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(User.class);
+
+        User u = (User)response.getBody();
+
+        assertThat(u).isNotNull();
+
+        assertThat(u.getKontaktTelefon()).isEqualTo("telefon");
+
+        assertThat(u.getPassword()).isEqualTo(pass);
+    }
+
+    @Test
+    void userUpdateEmployeeInvalidPass() {
+        Set<String> roles = new TreeSet<>();
+
+        UpdateEmployeeRequestDTO requestDTO = updateEmployeeRequestDTO();
+
+        requestDTO.setContact(null);
+
+        requestDTO.setNewPassword(null);
+
+        when(loggedInUser.getLBZ()).thenReturn(requestDTO.getLbz());
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        String pass = BCrypt.hashpw(requestDTO.getOldPassword(), BCrypt.gensalt());
+
+        String realPass = BCrypt.hashpw("sifra", BCrypt.gensalt());
+
+
+        when(userService.fetchUserByLBZ(any(UUID.class))).thenAnswer(i -> {
+            User u = new User();
+            u.setLbz(requestDTO.getLbz());
+            u.setPassword(realPass);
+            u.setKontaktTelefon("telefon");
+            return u;
+        });
+
+        when(userService.saveEmployee(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        ResponseEntity<?> response = userController.updateEmployee(requestDTO);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(User.class);
+
+        User u = (User)response.getBody();
+
+        assertThat(u).isNotNull();
+
+        assertThat(u.getKontaktTelefon()).isEqualTo("telefon");
+
+        assertThat(u.getPassword()).isEqualTo(realPass);
+    }
+
+    @Test
+    public void getEmployeeAdmin() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_ADMIN");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(userService.fetchUserByLBZ(any(UUID.class))).thenAnswer(i -> {
+            User u = new User();
+            u.setLbz((UUID)i.getArguments()[0]);
+            u.setOdeljenje(new Odeljenje());
+            return u;
+        });
+
+        ResponseEntity<?> response = userController.getEmployee(UUID.randomUUID().toString());
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+    @Test
+    public void getEmployeeMe() {
+        Set<String> roles = new TreeSet<>();
+
+        UUID uuid = UUID.randomUUID();
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(loggedInUser.getLBZ()).thenReturn(uuid);
+
+        when(userService.fetchUserByLBZ(any(UUID.class))).thenAnswer(i -> {
+                User u = new User();
+                u.setLbz((UUID)i.getArguments()[0]);
+                u.setOdeljenje(new Odeljenje());
+                return u;
+        });
+
+        ResponseEntity<?> response = userController.getEmployee(uuid.toString());
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+    @Test
+    public void getEmployeeUnauthorized() {
+        Set<String> roles = new TreeSet<>();
+
+        UUID uuid = UUID.randomUUID();
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(loggedInUser.getLBZ()).thenReturn(uuid);
+
+        ResponseEntity<?> response = userController.getEmployee(UUID.randomUUID().toString());
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
+    public void listEmployeesUnauthorized() {
+        Set<String> roles = new TreeSet<>();
+
+        UUID uuid = UUID.randomUUID();
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        ListEmployeesRequestDTO requestDTO = new ListEmployeesRequestDTO();
+
+        ResponseEntity<?> response = userController.listEmployees(requestDTO,2,2);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
+    public void listEmployeesEmptyRequest() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_ADMIN");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        ListEmployeesRequestDTO requestDTO = new ListEmployeesRequestDTO();
+
+        TypedQuery query = mock(TypedQuery.class);
+        when(entityManager.createQuery(eq("SELECT u FROM User u WHERE  u.obrisan = :obrisan "),any(Class.class))).thenReturn(query);
+        when(query.getResultList()).thenReturn(new ArrayList());
+
+        ResponseEntity<?> response = userController.listEmployees(requestDTO,2,2);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+
+    @Test
+    public void listEmployeesFullRequest() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_ADMIN");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        ListEmployeesRequestDTO requestDTO = new ListEmployeesRequestDTO();
+        requestDTO.setDepartment(1L);
+        requestDTO.setName("name");
+        requestDTO.setSurname("surname");
+        requestDTO.setHospital(1L);
+
+        TypedQuery query = mock(TypedQuery.class);
+        when(entityManager.createQuery(eq("SELECT u FROM User u INNER JOIN u.odeljenje o INNER JOIN o.bolnica z WHERE  u.name like :name  AND  u.surname like :surname  AND  u.obrisan = :obrisan  AND  o.odeljenjeId = :odeljenje AND  z.zdravstvenaUstanovaId = :bolnica"),any(Class.class))).thenReturn(query);
+        when(query.getResultList()).thenReturn(new ArrayList());
+
+        ResponseEntity<?> response = userController.listEmployees(requestDTO,2,2);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+    
 }
