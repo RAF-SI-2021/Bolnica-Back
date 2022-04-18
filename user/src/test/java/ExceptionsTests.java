@@ -58,7 +58,7 @@ public class ExceptionsTests {
     @Test
     public void invalidUsernameTests() {
         Throwable thrown = catchThrowable(() -> {
-            userExceptionHandler.validateUsername.accept("КорисничкоИме");
+            userExceptionHandler.validateUsername.accept("-/*/**-/");
         });
         assertThat(thrown).isInstanceOf(InvalidRegistrationException.class);
         thrown = catchThrowable(() -> {
