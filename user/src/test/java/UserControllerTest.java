@@ -426,7 +426,6 @@ class UserControllerTest {
         assertThat(data.getAdresaStanovanja()).isEqualTo(requestDTO.getAddress());
         assertThat(data.getMestoStanovanja()).isEqualTo(requestDTO.getCity());
         assertThat(data.getKontaktTelefon()).isEqualTo(requestDTO.getContact());
-        assertThat(data.getEmail()).isEqualTo(requestDTO.getEmail());
         assertThat(data.getDatumRodjenja()).isEqualTo(requestDTO.getDob());
         assertThat(data.getOdeljenje().getOdeljenjeId()).isEqualTo(requestDTO.getDepartment());
         assertThat(data.getPol()).isEqualTo(requestDTO.getGender());
