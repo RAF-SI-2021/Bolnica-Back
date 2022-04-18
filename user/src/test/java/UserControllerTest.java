@@ -20,6 +20,7 @@ import raf.si.bolnica.user.requests.CreateEmployeeRequestDTO;
 import raf.si.bolnica.user.requests.ListEmployeesRequestDTO;
 import raf.si.bolnica.user.requests.UpdateEmployeeRequestDTO;
 import raf.si.bolnica.user.responses.UserDataResponseDTO;
+import raf.si.bolnica.user.responses.UserResponseDTO;
 import raf.si.bolnica.user.service.EmailService;
 import raf.si.bolnica.user.service.OdeljenjeService;
 import raf.si.bolnica.user.service.UserService;
@@ -150,6 +151,41 @@ class UserControllerTest {
     }
 
     @Test
+    public void fetchUserUsername() {
+        User u = getUser();
+        when(userService.fetchUserByEmail(u.getEmail())).thenReturn(u);
+
+        ResponseEntity<?> response = userController.fetchUserByUsername(u.getEmail());
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isInstanceOf(UserResponseDTO.class);
+
+        UserResponseDTO responseDTO = (UserResponseDTO) response.getBody();
+
+        assertThat(responseDTO).isNotNull();
+        assertThat(responseDTO.getEmail()).isEqualTo(u.getEmail());
+        assertThat(responseDTO.getName()).isEqualTo(u.getName());
+        assertThat(responseDTO.getPassword()).isEqualTo(u.getPassword());
+        assertThat(responseDTO.getSurname()).isEqualTo(u.getSurname());
+        assertThat(responseDTO.getUserId()).isEqualTo(u.getUserId());
+        assertThat(responseDTO.getRoles()).isEqualTo(u.getRoles());
+    }
+
+    @Test
+    public void fetchUserUsernameNoSuchUser() {
+        User u = getUser();
+        when(userService.fetchUserByEmail(any(String.class))).thenAnswer(i -> {
+            if(i.getArguments()[0].equals(u.getEmail())) return u;
+            else return null;
+        });
+
+        ResponseEntity<?> response = userController.fetchUserByUsername("nepostojeci");
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+
+    @Test
     void forgotPassword(){
         User u = getUser();
 
@@ -168,6 +204,19 @@ class UserControllerTest {
     }
 
     @Test
+    void forgotPasswordNoSuchUser(){
+        User u = getUser();
+
+        when(loggedInUser.getUsername()).thenReturn(u.getEmail());
+
+        when(userService.fetchUserByEmail(u.getEmail())).thenReturn(null);
+
+        ResponseEntity<?> responseForgot = userController.forgotPassword();
+
+        assertThat(responseForgot.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
     void removeEmployee(){
         Set<String> roles = new TreeSet<>();
 
@@ -182,6 +231,63 @@ class UserControllerTest {
         ResponseEntity<?> response = userController.removeEmployee(u.getLbz().toString());
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+    @Test
+    void removeEmployeeUnauthorized(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_ADMIN");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        User u = getUser();
+
+        when(userService.fetchUserByLBZ(u.getLbz())).thenReturn(null);
+
+        ResponseEntity<?> response = userController.removeEmployee(u.getLbz().toString());
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
+    void removeEmployeeSelfErase(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_ADMIN");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        String email = "email@email.com";
+
+        User u = getUser();
+
+        u.setEmail(email);
+
+        when(loggedInUser.getUsername()).thenReturn(email);
+
+        when(userService.fetchUserByLBZ(u.getLbz())).thenReturn(u);
+
+        ResponseEntity<?> response = userController.removeEmployee(u.getLbz().toString());
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
+    void removeEmployeeNoSuchUser(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_MED_SESTRA");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        User u = getUser();
+
+        ResponseEntity<?> response = userController.removeEmployee(u.getLbz().toString());
+
+
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
     }
 
     @Test
@@ -568,12 +674,56 @@ class UserControllerTest {
 
         TypedQuery query = mock(TypedQuery.class);
         when(entityManager.createQuery(eq("SELECT u FROM User u INNER JOIN u.odeljenje o INNER JOIN o.bolnica z WHERE  u.name like :name  AND  u.surname like :surname  AND  u.obrisan = :obrisan  AND  o.odeljenjeId = :odeljenje AND  z.zdravstvenaUstanovaId = :bolnica"),any(Class.class))).thenReturn(query);
-        when(query.getResultList()).thenReturn(new ArrayList());
+        ArrayList<User> a = new ArrayList();
+        a.add(getUser());
+        when(query.getResultList()).thenReturn(a);
 
         ResponseEntity<?> response = userController.listEmployees(requestDTO,2,2);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
     }
 
-    
+    @Test
+    public void listEmployeesPBOUnauthorized() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_ADMIN");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        ResponseEntity<?> response = userController.listEmployeesByPbo(1L);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+    }
+
+    @Test
+    public void listEmployeesPBO() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_VISA_MED_SESTRA");
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        ArrayList<User> a = new ArrayList();
+        User u1 = new User();
+        u1.setObrisan(true);
+        u1.setOdeljenje(new Odeljenje());
+        User u2 = new User();
+        u2.setObrisan(false);
+        u2.setOdeljenje(u1.getOdeljenje());
+        a.add(u1);
+        a.add(u2);
+        when(userService.fetchUsersByPBO(any(Long.class))).thenReturn(a);
+
+
+        ResponseEntity<?> response = userController.listEmployeesByPbo(1L);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isInstanceOf(List.class);
+
+        List<UserDataResponseDTO> lista = (List)(response.getBody());
+        assertThat(lista).isNotNull();
+        assertThat(lista.size()).isEqualTo(1);
+    }
+
 }

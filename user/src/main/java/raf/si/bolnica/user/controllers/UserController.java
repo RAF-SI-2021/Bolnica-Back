@@ -294,7 +294,7 @@ public class UserController {
                 if (requestDTO.getContact() != null) {
                     user.setKontaktTelefon(requestDTO.getContact());
                 }
-                if (requestDTO.getNewPassword() != null && user.getPassword().equals(BCrypt.hashpw(requestDTO.getOldPassword(), BCrypt.gensalt()))) {
+                if (requestDTO.getNewPassword() != null && BCrypt.checkpw(requestDTO.getOldPassword(),user.getPassword())) {
                     user.setPassword(BCrypt.hashpw(requestDTO.getNewPassword(), BCrypt.gensalt()));
                 }
                 user = userService.saveEmployee(user);
