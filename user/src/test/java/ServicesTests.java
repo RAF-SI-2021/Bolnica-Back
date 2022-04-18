@@ -117,4 +117,12 @@ public class ServicesTests {
         String newPassword = userService.generateNewPassword(u);
         assertThat(newPassword.length()).isEqualTo(8);
     }
+
+    @Test
+    public void savePasswordTest() {
+        User u = new User();
+        when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
+        User newUser = userService.savePassword(u,"pass");
+        assertThat(BCrypt.checkpw("pass",newUser.getPassword())).isTrue();
+    }
 }
