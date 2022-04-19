@@ -60,10 +60,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void savePassword(User user, String password) {
+    public User savePassword(User user, String password) {
         // Encrypting password before saving it in database
         user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     @Override

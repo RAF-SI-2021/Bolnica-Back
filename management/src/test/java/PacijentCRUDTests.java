@@ -17,6 +17,7 @@ import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonSer
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -96,6 +97,28 @@ public class PacijentCRUDTests {
         ResponseEntity<?> response = managementController.createPatient(request);
 
         assertThat(response.getStatusCodeValue()).isNotEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(String.class);
+
+        assertThat(response.getBody()).isEqualTo("Pol je obavezno polje!");
+    }
+
+    @Test
+    public void testPacijentUpdateInvalidRequest() {
+
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.MED_SESTRA);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+
+        PacijentCRUDRequestDTO request = getRequest();
+        request.setPol(null);
+
+        ResponseEntity<?> response = managementController.updatePatient(request,"1");
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
 
         assertThat(response.getBody()).isInstanceOf(String.class);
 
@@ -189,7 +212,15 @@ public class PacijentCRUDTests {
         when(query2.getResultList()).thenReturn(list2);
 
         LinkedList<Operacija> list3= new LinkedList<>();
-        list3.add(new Operacija());
+        Operacija operacija = new Operacija();
+        operacija.setOpis("opis");
+        operacija.setOperacijaId(123);
+        operacija.setDatumOperacije(Date.valueOf(LocalDate.now().minusDays(32)));
+        operacija.setObrisan(false);
+        operacija.setOdeljenjeId(345);
+        ZdravstveniKarton zk = new ZdravstveniKarton();
+        operacija.setZdravstveniKarton(zk);
+        list3.add(operacija);
         TypedQuery query3 = mock(TypedQuery.class);
         when(query3.getResultList()).thenReturn(list3);
 
@@ -229,6 +260,16 @@ public class PacijentCRUDTests {
         for(Operacija op:list3) {
             assertThat(op.getObrisan()).isEqualTo(true);
         }
+
+        assertThat(list3.size()).isEqualTo(1);
+
+        Operacija op1 = list3.get(0);
+
+        assertThat(op1.getDatumOperacije()).isEqualTo(Date.valueOf(LocalDate.now().minusDays(32)));
+        assertThat(op1.getOdeljenjeId()).isEqualTo(345);
+        assertThat(op1.getZdravstveniKarton()).isEqualTo(zk);
+        assertThat(op1.getOpis()).isEqualTo("opis");
+        assertThat(op1.getOperacijaId()).isEqualTo(123);
 
         for(Pregled p:list4) {
             assertThat(p.getObrisan()).isEqualTo(true);

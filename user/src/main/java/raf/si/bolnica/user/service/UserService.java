@@ -20,7 +20,7 @@ public interface UserService {
 
     List<User> fetchUsersByPBO(Long id);
 
-    void savePassword(User user, String password);
+    User savePassword(User user, String password);
 
     void deleteById(Long id);
 

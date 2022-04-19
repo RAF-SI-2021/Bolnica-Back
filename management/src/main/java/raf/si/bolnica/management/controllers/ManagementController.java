@@ -84,71 +84,69 @@ public class ManagementController {
         acceptedRoles.add(Constants.NACELNIK);
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);
-        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        String msg = PregledReportRequestValidator.validate(requestDTO);
 
-            String msg = PregledReportRequestValidator.validate(requestDTO);
+        if (!msg.equals("OK")) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
+        }
 
-            if (!msg.equals("OK")) {
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
-            }
+        if (!loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV) && requestDTO.getIndikatorPoverljivosti()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nemate privilegije za postavljanje poverljivosti!");
+        }
 
-            if (!loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV)
-                    && requestDTO.getIndikatorPoverljivosti()) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nemate privilegije za postavljanje poverljivosti!");
-            }
+        ZdravstveniKarton zdravstveniKarton = zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(UUID.fromString(requestDTO.getLbp()));
 
-            ZdravstveniKarton zdravstveniKarton = zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(UUID.fromString(requestDTO.getLbp()));
+        Pregled pregled = new Pregled();
 
-            Pregled pregled = new Pregled();
+        pregled.setZdravstveniKarton(zdravstveniKarton);
+        pregled.setLbz(UUID.fromString(requestDTO.getLbz()));
+        pregled.setDatumPregleda(new Date(Calendar.getInstance().getTime().getTime()));
+        pregled.setDijagnoza(requestDTO.getDijagnoza());
+        pregled.setGlavneTegobe(requestDTO.getGlavneTegobe());
+        pregled.setLicnaAnamneza(requestDTO.getLicnaAnamneza());
+        pregled.setMisljenjePacijenta(requestDTO.getMisljenjePacijenta());
+        pregled.setObjektivniNalaz(requestDTO.getObjektivniNalaz());
+        pregled.setSavet(requestDTO.getSavet());
+        pregled.setPorodicnaAnamneza(requestDTO.getPorodicnaAnamneza());
+        pregled.setSadasnjaBolest(requestDTO.getSadasnjaBolest());
+        pregled.setPredlozenaTerapija(requestDTO.getPredlozenaTerapija());
 
-            pregled.setZdravstveniKarton(zdravstveniKarton);
-            pregled.setLbz(UUID.fromString(requestDTO.getLbz()));
-            pregled.setDatumPregleda(new Date(Calendar.getInstance().getTime().getTime()));
-            pregled.setDijagnoza(requestDTO.getDijagnoza());
-            pregled.setGlavneTegobe(requestDTO.getGlavneTegobe());
-            pregled.setLicnaAnamneza(requestDTO.getLicnaAnamneza());
-            pregled.setMisljenjePacijenta(requestDTO.getMisljenjePacijenta());
-            pregled.setObjektivniNalaz(requestDTO.getObjektivniNalaz());
-            pregled.setSavet(requestDTO.getSavet());
-            pregled.setPorodicnaAnamneza(requestDTO.getPorodicnaAnamneza());
-            pregled.setSadasnjaBolest(requestDTO.getSadasnjaBolest());
-            pregled.setPredlozenaTerapija(requestDTO.getPredlozenaTerapija());
+        if (pregled.getDijagnoza() != null) {
+            IstorijaBolesti istorijaBolesti = new IstorijaBolesti();
 
-            if (pregled.getDijagnoza() != null) {
-                IstorijaBolesti istorijaBolesti = new IstorijaBolesti();
+            istorijaBolesti.setDijagnoza(pregled.getDijagnoza());
+            istorijaBolesti.setRezultatLecenja(requestDTO.getRezultatLecenja());
+            istorijaBolesti.setOpisTekucegStanja(requestDTO.getOpisTekucegStanja());
+            istorijaBolesti.setPodatakValidanOd(new Date(Calendar.getInstance().getTime().getTime()));
+            istorijaBolesti.setPodatakValidanDo(Date.valueOf("9999-12-31"));
+            istorijaBolesti.setPodaciValidni(true);
 
-                istorijaBolesti.setDijagnoza(pregled.getDijagnoza());
-                istorijaBolesti.setRezultatLecenja(requestDTO.getRezultatLecenja());
-                istorijaBolesti.setOpisTekucegStanja(requestDTO.getOpisTekucegStanja());
-                istorijaBolesti.setPodatakValidanOd(new Date(Calendar.getInstance().getTime().getTime()));
-                istorijaBolesti.setPodatakValidanDo(Date.valueOf("9999-12-31"));
-                istorijaBolesti.setPodaciValidni(true);
+            if (pregled.getSadasnjaBolest() != null) {
 
-                if (pregled.getSadasnjaBolest() != null) {
+                IstorijaBolesti istorijaBolestiAktuelna = istorijaBolestiService.fetchByZdravstveniKartonPodaciValidni(pregled.getZdravstveniKarton(), true);
+                istorijaBolestiAktuelna.setPodatakValidanDo(new Date(Calendar.getInstance().getTime().getTime()));
+                istorijaBolestiAktuelna.setPodaciValidni(false);
+                istorijaBolestiService.saveIstorijaBolesti(istorijaBolestiAktuelna);
 
-                    IstorijaBolesti istorijaBolestiAktuelna = istorijaBolestiService.fetchByZdravstveniKartonPodaciValidni(pregled.getZdravstveniKarton(), true);
-                    istorijaBolestiAktuelna.setPodatakValidanDo(new Date(Calendar.getInstance().getTime().getTime()));
-                    istorijaBolestiAktuelna.setPodaciValidni(false);
-                    istorijaBolestiService.saveIstorijaBolesti(istorijaBolestiAktuelna);
-
-                    istorijaBolesti.setIndikatorPoverljivosti(istorijaBolestiAktuelna.getIndikatorPoverljivosti());
-                    istorijaBolesti.setDatumPocetkaZdravstvenogProblema(istorijaBolestiAktuelna.getDatumPocetkaZdravstvenogProblema());
-                    if (requestDTO.getRezultatLecenja() != RezultatLecenja.U_TOKU
-                            && requestDTO.getRezultatLecenja() != null) {
-                        istorijaBolesti.setDatumZavrsetkaZdravstvenogProblema(new Date(Calendar.getInstance().getTime().getTime()));
-                    }
-
-                } else {
-                    istorijaBolesti.setIndikatorPoverljivosti(pregled.getIndikatorPoverljivosti());
-                    istorijaBolesti.setDatumPocetkaZdravstvenogProblema(Date.valueOf(LocalDate.now()));
+                istorijaBolesti.setIndikatorPoverljivosti(istorijaBolestiAktuelna.getIndikatorPoverljivosti());
+                istorijaBolesti.setDatumPocetkaZdravstvenogProblema(istorijaBolestiAktuelna.getDatumPocetkaZdravstvenogProblema());
+                if (requestDTO.getRezultatLecenja() != RezultatLecenja.U_TOKU && requestDTO.getRezultatLecenja() != null) {
+                    istorijaBolesti.setDatumZavrsetkaZdravstvenogProblema(new Date(Calendar.getInstance().getTime().getTime()));
                 }
 
-                istorijaBolestiService.saveIstorijaBolesti(istorijaBolesti);
+            } else {
+                istorijaBolesti.setIndikatorPoverljivosti(pregled.getIndikatorPoverljivosti());
+                istorijaBolesti.setDatumPocetkaZdravstvenogProblema(Date.valueOf(LocalDate.now()));
             }
-            Pregled pregledToReturn = this.pregledService.savePregled(pregled);
-            return ok(pregledToReturn);
+
+            istorijaBolestiService.saveIstorijaBolesti(istorijaBolesti);
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        Pregled pregledToReturn = this.pregledService.savePregled(pregled);
+        return ok(pregledToReturn);
+
     }
 
     @PostMapping("/create-patient")

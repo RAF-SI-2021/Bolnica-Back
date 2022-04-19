@@ -6,18 +6,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
-import raf.si.bolnica.management.entities.IstorijaBolesti;
-import raf.si.bolnica.management.entities.Pacijent;
-import raf.si.bolnica.management.entities.Pregled;
-import raf.si.bolnica.management.entities.ZdravstveniKarton;
+import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.entities.enums.*;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.FilterPatientsRequestDTO;
 import raf.si.bolnica.management.requests.IstorijaBolestiRequestDTO;
 import raf.si.bolnica.management.requests.PacijentCRUDRequestDTO;
 import raf.si.bolnica.management.requests.PreglediRequestDTO;
-import raf.si.bolnica.management.response.PacijentPodaciResponseDTO;
-import raf.si.bolnica.management.response.PacijentResponseDTO;
+import raf.si.bolnica.management.response.*;
 import raf.si.bolnica.management.services.PacijentService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
@@ -28,8 +24,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -90,6 +85,18 @@ class PacijentQueriesTests {
         pregled1.setDatumPregleda(Date.valueOf(LocalDate.now()));
         pregled1.setObjektivniNalaz("nalaz1");
         pregled1.setIndikatorPoverljivosti(false);
+        pregled1.setDijagnoza("dijagnoza");
+        pregled1.setLbz(UUID.randomUUID());
+        pregled1.setObrisan(false);
+        pregled1.setPregledId(12);
+        pregled1.setGlavneTegobe("tegobe");
+        pregled1.setLicnaAnamneza("anamneza");
+        pregled1.setMisljenjePacijenta("misljenje");
+        pregled1.setPorodicnaAnamneza("porodica");
+        pregled1.setPredlozenaTerapija("terapija");
+        pregled1.setSadasnjaBolest("bolest");
+        pregled1.setSadasnjaBolest("savet");
+        pregled1.setZdravstveniKarton(new ZdravstveniKarton());
 
         Pregled pregled2 = new Pregled();
         pregled1.setDatumPregleda(Date.valueOf(LocalDate.now()));
@@ -106,7 +113,7 @@ class PacijentQueriesTests {
     List<IstorijaBolesti> getIstorija() {
         List<IstorijaBolesti> istorija = new ArrayList<>();
         IstorijaBolesti i1 = new IstorijaBolesti();
-        i1.setDijagnoza("dijgnoza");
+        i1.setDijagnoza("dijagnoza");
         i1.setIndikatorPoverljivosti(true);
         i1.setDatumPocetkaZdravstvenogProblema(Date.valueOf(LocalDate.now()));
         i1.setRezultatLecenja(RezultatLecenja.OPORAVLJEN);
@@ -114,6 +121,8 @@ class PacijentQueriesTests {
         i1.setPodatakValidanOd(Date.valueOf(LocalDate.now()));
         i1.setPodatakValidanDo(Date.valueOf(LocalDate.now()));
         i1.setPodaciValidni(true);
+        i1.setObrisan(false);
+        i1.setBolestPacijentaId(12);
 
         istorija.add(i1);
         return istorija;
@@ -181,9 +190,29 @@ class PacijentQueriesTests {
 
         when(pacijentService.fetchPacijentByLbp(p.getLbp())).thenReturn(p);
 
-        TypedQuery query = mock(TypedQuery.class);
-        when(query.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(any(String.class),any(Class.class))).thenReturn(query);
+        LinkedList<AlergenZdravstveniKarton> list1= new LinkedList<>();
+        AlergenZdravstveniKarton alergenZdravstveniKarton = new AlergenZdravstveniKarton();
+        Alergen alergen = new Alergen();
+        alergen.setAlergenId(142);
+        alergenZdravstveniKarton.setAlergen(alergen);
+        list1.add(alergenZdravstveniKarton);
+        TypedQuery query1 = mock(TypedQuery.class);
+        when(query1.getResultList()).thenReturn(list1);
+
+        LinkedList<Vakcinacija> list2= new LinkedList<>();
+        Vakcinacija vakcinacija = new Vakcinacija();
+        Vakcina vak  = new Vakcina();
+        vak.setVakcinaId(132);
+        vakcinacija.setVakcina(vak);
+        list2.add(vakcinacija);
+        TypedQuery query2 = mock(TypedQuery.class);
+        when(query2.getResultList()).thenReturn(list2);
+
+        when(entityManager.createQuery(any(String.class),any(Class.class))).thenAnswer(i -> {
+            if(i.getArguments()[1].equals(AlergenZdravstveniKarton.class)) return query1;
+            else if(i.getArguments()[1].equals(Vakcinacija.class)) return query2;
+            else return null;
+        });
 
         ResponseEntity<?> response = managementController.fetchPatientDataLbp(p.getLbp().toString());
 
@@ -195,6 +224,15 @@ class PacijentQueriesTests {
 
         assertThat(((PacijentPodaciResponseDTO)response.getBody()).getKrvnaGrupa()).isEqualTo(KrvnaGrupa.A);
 
+        Set<Vakcina> vakcine = ((PacijentPodaciResponseDTO)response.getBody()).getVakcine();
+
+        assertThat(vakcine.size()).isEqualTo(1);
+        assertThat(vakcine.contains(vak)).isTrue();
+
+        Set<Alergen> alergeni = ((PacijentPodaciResponseDTO)response.getBody()).getAlergeni();
+
+        assertThat(alergeni.size()).isEqualTo(1);
+        assertThat(alergeni.contains(alergen)).isTrue();
     }
 
     @Test
@@ -223,6 +261,63 @@ class PacijentQueriesTests {
         when(query1.getResultList()).thenReturn(pregledi);
 
         ResponseEntity<?> response = managementController.fetchPreglediLbp(new PreglediRequestDTO(),p.getLbp().toString(),1,2);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(List.class);
+
+        assertThat(((List)response.getBody()).size()).isEqualTo(pregledi.size());
+
+        for(int i=0;i<pregledi.size();i++) {
+            Pregled data = pregledi.get(i);
+            PregledResponseDTO responseDTO = (PregledResponseDTO) ((List)response.getBody()).get(i);
+            assertThat(responseDTO.getDatumPregleda()).isEqualTo(data.getDatumPregleda());
+            assertThat(responseDTO.getDijagnoza()).isEqualTo(data.getDijagnoza());
+            assertThat(responseDTO.getIndikatorPoverljivosti()).isEqualTo(data.getIndikatorPoverljivosti());
+            assertThat(responseDTO.getObrisan()).isEqualTo(data.getObrisan());
+            assertThat(responseDTO.getGlavneTegobe()).isEqualTo(data.getGlavneTegobe());
+            assertThat(responseDTO.getLicnaAnamneza()).isEqualTo(data.getLicnaAnamneza());
+            assertThat(responseDTO.getMisljenjePacijenta()).isEqualTo(data.getMisljenjePacijenta());
+            assertThat(responseDTO.getObjektivniNalaz()).isEqualTo(data.getObjektivniNalaz());
+            assertThat(responseDTO.getPorodicnaAnamneza()).isEqualTo(data.getPorodicnaAnamneza());
+            assertThat(responseDTO.getPredlozenaTerapija()).isEqualTo(data.getPredlozenaTerapija());
+            assertThat(responseDTO.getSadasnjaBolest()).isEqualTo(data.getSadasnjaBolest());
+            assertThat(responseDTO.getSavet()).isEqualTo(data.getSavet());
+        }
+    }
+
+    @Test
+    public void testFetchPreglediWithParams() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK);
+        roles.add(Constants.SPECIJLISTA_POV);
+
+        Pacijent p = getPacijent();
+
+        List<Pregled> pregledi = getPregledi();
+
+
+        ZdravstveniKarton zk = new ZdravstveniKarton();
+
+        p.setZdravstveniKarton(zk);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(pacijentService.fetchPacijentByLbp(p.getLbp())).thenReturn(p);
+
+        TypedQuery<Pregled> query1 = mock(TypedQuery.class);
+        when(entityManager.createQuery(eq("SELECT p FROM Pregled p WHERE p.zdravstveniKarton = :zk AND p.datumPregleda = :on AND p.datumPregleda >= :from AND p.datumPregleda <= :to"),
+                any(Class.class))).thenReturn(query1);
+
+        when(query1.getResultList()).thenReturn(pregledi);
+
+        PreglediRequestDTO requestDTO = new PreglediRequestDTO();
+        requestDTO.setFrom(Date.valueOf(LocalDate.now().minusDays(1)));
+        requestDTO.setOn(Date.valueOf(LocalDate.now()));
+        requestDTO.setTo(Date.valueOf(LocalDate.now().plusDays(1)));
+
+        ResponseEntity<?> response = managementController.fetchPreglediLbp(requestDTO,p.getLbp().toString(),1,2);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
 
@@ -260,6 +355,59 @@ class PacijentQueriesTests {
         when(query1.getResultList()).thenReturn(istorija);
 
         ResponseEntity<?> response = managementController.fetchIstorijaBolestiLbp(new IstorijaBolestiRequestDTO(),p.getLbp().toString(),1,2);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(response.getBody()).isInstanceOf(List.class);
+
+        assertThat(((List)response.getBody()).size()).isEqualTo(istorija.size());
+
+        for(int i=0;i<istorija.size();i++) {
+            IstorijaBolesti data = istorija.get(i);
+            IstorijaBolestiResponseDTO responseDTO = (IstorijaBolestiResponseDTO) ((List) response.getBody()).get(i);
+            assertThat(responseDTO.getDatumPocetkaZdravstvenogProblema()).isEqualTo(data.getDatumPocetkaZdravstvenogProblema());
+            assertThat(responseDTO.getDijagnoza()).isEqualTo(data.getDijagnoza());
+            assertThat(responseDTO.getDatumZavrsetkaZdravstvenogProblema()).isEqualTo(data.getDatumZavrsetkaZdravstvenogProblema());
+            assertThat(responseDTO.getIndikatorPoverljivosti()).isEqualTo(data.getIndikatorPoverljivosti());
+            assertThat(responseDTO.getObrisan()).isEqualTo(data.getObrisan());
+            assertThat(responseDTO.getOpisTekucegStanja()).isEqualTo(data.getOpisTekucegStanja());
+            assertThat(responseDTO.getPodaciValidni()).isEqualTo(data.getPodaciValidni());
+            assertThat(responseDTO.getRezultatLecenja()).isEqualTo(data.getRezultatLecenja());
+            assertThat(responseDTO.getPodatakValidanDo()).isEqualTo(data.getPodatakValidanDo());
+            assertThat(responseDTO.getPodatakValidanOd()).isEqualTo(data.getPodatakValidanOd());
+        }
+
+    }
+
+    @Test
+    public void testFetchIstorijaBolestiWithParams() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK);
+
+        Pacijent p = getPacijent();
+
+        List<IstorijaBolesti> istorija = getIstorija();
+
+
+        ZdravstveniKarton zk = new ZdravstveniKarton();
+
+        p.setZdravstveniKarton(zk);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        when(pacijentService.fetchPacijentByLbp(p.getLbp())).thenReturn(p);
+
+        TypedQuery<IstorijaBolesti> query1 = mock(TypedQuery.class);
+        when(entityManager.createQuery(eq("SELECT i FROM IstorijaBolesti i WHERE i.zdravstveniKarton = :zk AND i.indikatorPoverljivosti = false AND i.dijagnoza like :dijagnoza"),
+                any(Class.class))).thenReturn(query1);
+
+        when(query1.getResultList()).thenReturn(istorija);
+
+        IstorijaBolestiRequestDTO requestDTO = new IstorijaBolestiRequestDTO();
+        requestDTO.setDijagnoza("dijagnoza");
+
+        ResponseEntity<?> response = managementController.fetchIstorijaBolestiLbp(requestDTO,p.getLbp().toString(),1,2);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
 
@@ -342,6 +490,14 @@ class PacijentQueriesTests {
 
         zk.setPacijent(p);
 
+        zk.setKrvnaGrupa(KrvnaGrupa.AB);
+
+        zk.setRhFaktor(RhFaktor.MINUS);
+
+        zk.setObrisan(true);
+
+        zk.setDatumRegistracije(Date.valueOf(LocalDate.now()));
+
         when(pacijentService.fetchPacijentByLbp(lbp)).thenReturn(p);
 
         ResponseEntity<?> responseFetchPatient = managementController.fetchPatientLbp(lbp.toString());
@@ -355,6 +511,19 @@ class PacijentQueriesTests {
         ResponseEntity<?> responseFetchZdravstveniKarton = managementController.fetchZdravstveniKartonLbp(lbp.toString());
 
         assertThat(responseFetchZdravstveniKarton.getStatusCodeValue()).isEqualTo(200);
+
+        assertThat(responseFetchZdravstveniKarton.getBody()).isInstanceOf(ZdravstveniKartonResponseDTO.class);
+
+        ZdravstveniKartonResponseDTO responseDTO = (ZdravstveniKartonResponseDTO) responseFetchZdravstveniKarton.getBody();
+
+        assertThat(responseDTO).isNotNull();
+
+
+        assertThat(responseDTO.getKrvnaGrupa()).isEqualTo(zk.getKrvnaGrupa());
+        assertThat(responseDTO.getRhFaktor()).isEqualTo(zk.getRhFaktor());
+        assertThat(responseDTO.getObrisan()).isEqualTo(zk.getObrisan());
+        assertThat(responseDTO.getDatumRegistracije()).isEqualTo(zk.getDatumRegistracije());
+        assertThat(responseDTO.getPacijent().getLbp()).isEqualTo(p.getLbp());
     }
 
 }
