@@ -6,6 +6,4 @@ import raf.si.bolnica.management.requests.CreatePregledReportRequestDTO;
 public interface PregledService {
 
     Pregled savePregled(Pregled pregled);
-
-    Pregled createPregledReport(CreatePregledReportRequestDTO requestDTO);
 }

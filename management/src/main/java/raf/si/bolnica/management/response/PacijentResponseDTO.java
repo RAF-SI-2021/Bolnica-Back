@@ -8,7 +8,6 @@ import raf.si.bolnica.management.entities.Pacijent;
 import java.util.UUID;
 
 @Getter
-@Setter
 public class PacijentResponseDTO extends PacijentCRUDDTO {
 
     private UUID lbp;

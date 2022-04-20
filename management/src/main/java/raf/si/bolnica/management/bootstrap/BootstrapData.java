@@ -82,6 +82,7 @@ public class BootstrapData implements CommandLineRunner {
         pacijent.setZemljaDrzavljanstva(CountryCode.SRB);
         pacijent.setZemljaStanovanja(CountryCode.SRB);
         pacijent.setEmail("pacijent@gmail.com");
+        pacijent.setKontaktTelefon("+381 632309642");
         pacijentRepository.save(pacijent);
 
         ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();

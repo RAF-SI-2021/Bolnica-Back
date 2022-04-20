@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface ScheduledAppointmentRepository extends JpaRepository<ZakazaniPregled, Long> {
             ZakazaniPregled getZakazaniPregledByZakazaniPregledId(long id);
-            List<ZakazaniPregled> findByLBZLekaraAndAndDatumIVremePregleda(UUID lBZLekara, Timestamp datumIVremePregleda);
-            List<ZakazaniPregled> findByLBZLekara(UUID lBZLekara);
+            List<ZakazaniPregled> findByLbzLekaraAndAndDatumIVremePregleda(UUID lbzLekara, Timestamp datumIVremePregleda);
+            List<ZakazaniPregled> findByLbzLekara(UUID lbzLekara);
 
 }

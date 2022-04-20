@@ -11,7 +11,6 @@ import javax.persistence.Enumerated;
 import java.sql.Date;
 
 @Getter
-@Setter
 public class IstorijaBolestiResponseDTO {
 
     private String dijagnoza;

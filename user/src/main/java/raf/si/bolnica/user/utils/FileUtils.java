@@ -31,7 +31,7 @@ public class FileUtils {
 
         while (titlesFile.hasNext()) {
             title = titlesFile.next();
-            titleList.add(title);
+            titleList.add(title.trim());
         }
         titlesFile.close();
 

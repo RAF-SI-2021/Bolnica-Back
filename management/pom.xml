@@ -143,6 +143,40 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
 			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.8</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<formats>
+								<format>XML</format>
+							</formats>
+						</configuration>
+					</execution>
+				</executions>
+				<!--configuration>
+					<excludes>
+						<exclude>raf/si/bolnica/management/**/LoggedInUser.class</exclude>
+						<exclude>raf/si/bolnica/management/**/UserInfoInterceptor.class</exclude>
+						<exclude>**/bootstrap/*</exclude>
+						<exclude>raf/si/bolnica/management/**/SpringWebConfiguration.class</exclude>
+						<exclude>raf/si/bolnica/management/**/JwtProperties.class</exclude>
+					</excludes>
+				</configuration-->
+
+			</plugin>
 		</plugins>
 	</build>
 

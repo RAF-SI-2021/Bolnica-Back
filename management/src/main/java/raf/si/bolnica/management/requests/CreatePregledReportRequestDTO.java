@@ -9,7 +9,7 @@ public class CreatePregledReportRequestDTO {
 
     private String lbp;
 
-    private String zaposleniId;
+    private String lbz;
 
     private Boolean indikatorPoverljivosti;
 

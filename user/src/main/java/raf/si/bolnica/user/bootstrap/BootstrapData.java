@@ -102,6 +102,7 @@ public class BootstrapData implements CommandLineRunner {
         user.setTitula("titula");
         user.setKorisnickoIme("superadmin");
         user.setZanimanje("zanimanje");
+        user.setKontaktTelefon("+381 69312321");
 
 
 

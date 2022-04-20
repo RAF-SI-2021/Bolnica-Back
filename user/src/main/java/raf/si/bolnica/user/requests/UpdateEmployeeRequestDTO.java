@@ -31,8 +31,6 @@ public class UpdateEmployeeRequestDTO {
 
     private String contact;
 
-    private String email;
-
     private String title;
 
     private String profession;
@@ -42,4 +40,14 @@ public class UpdateEmployeeRequestDTO {
     private String oldPassword;
 
     private String newPassword;
+
+    private String email;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

@@ -11,9 +11,6 @@ import raf.si.bolnica.management.entities.enums.RhFaktor;
 import java.sql.Date;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class ZdravstveniKartonResponseDTO {
 
     private Date datumRegistracije;
