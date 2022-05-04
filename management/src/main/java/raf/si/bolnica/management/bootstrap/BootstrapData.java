@@ -79,6 +79,7 @@ public class BootstrapData implements CommandLineRunner {
         pacijent.setPol(Pol.MUSKI);
         pacijent.setDatumRodjenja(Date.valueOf("1990-01-01"));
         pacijent.setMestoRodjenja("Loznica");
+        pacijent.setZanimanje("Programer");
         pacijent.setZemljaDrzavljanstva(CountryCode.SRB);
         pacijent.setZemljaStanovanja(CountryCode.SRB);
         pacijent.setEmail("pacijent@gmail.com");
