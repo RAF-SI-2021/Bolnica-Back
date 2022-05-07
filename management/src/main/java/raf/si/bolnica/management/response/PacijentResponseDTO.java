@@ -1,8 +1,7 @@
 package raf.si.bolnica.management.response;
 
 import lombok.Getter;
-import lombok.Setter;
-import raf.si.bolnica.management.dto.PacijentCRUDDTO;
+import raf.si.bolnica.management.requests.PacijentCRUDDTO;
 import raf.si.bolnica.management.entities.Pacijent;
 
 import java.util.UUID;

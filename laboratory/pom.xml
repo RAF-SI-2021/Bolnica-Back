@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>raf.si.bolnica</groupId>
-	<artifactId>management</artifactId>
+	<artifactId>laboratory</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>management</name>
-	<description>Hospital Management service</description>
+	<name>laboratory</name>
+	<description>Hospital Laboratory service</description>
 	<properties>
 		<java.version>11</java.version>
 		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
@@ -99,6 +99,7 @@
 			<version>5.8.2</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
@@ -106,12 +107,10 @@
 			<scope>test</scope>
 		</dependency>
 
-
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
 
 	</dependencies>
 
@@ -126,6 +125,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
 	<build>
 		<plugins>
 			<plugin>

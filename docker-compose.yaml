@@ -95,6 +95,23 @@ services:
       eureka:
         condition: service_healthy
 
+  laboratory-service:
+    # image: abasic8619rn/bolnica-laboratory
+    restart: unless-stopped
+    container_name: laboratory-service
+    build:
+      context: ./laboratory
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    networks:
+      - local_network
+    depends_on:
+      docker-mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
+
 networks:
   local_network:
     name: local_network

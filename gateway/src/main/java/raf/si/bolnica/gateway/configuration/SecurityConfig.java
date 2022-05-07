@@ -32,8 +32,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .and()
                 .authorizeRequests()
                 .antMatchers("/bolnica-user-service/api/login").permitAll()
-                .antMatchers("/bolnica-user-service/api/create-employee").hasRole("ADMIN")
-                .antMatchers("/bolnica-user-service/api/hello").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));
