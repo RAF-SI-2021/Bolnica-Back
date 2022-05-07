@@ -96,7 +96,7 @@ services:
         condition: service_healthy
 
   laboratory-service:
-    # image: abasic8619rn/bolnica-laboratory
+    image: ghcr.io/raf-si-2021/bolnica-laboratory-service:latest
     restart: unless-stopped
     container_name: laboratory-service
     build:
