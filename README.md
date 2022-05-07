@@ -23,3 +23,5 @@ Moguće je pristupiti Swagger dokumentaciji preko URL-ova:
 **User servis:** http://localhost:8081/swagger-ui.html
 
 **Management servis:** http://localhost:8082/swagger-ui.html
+
+**Laboratory servis:** http://localhost:8083/swagger-ui.html
