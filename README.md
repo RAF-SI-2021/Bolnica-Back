@@ -14,6 +14,7 @@ Kako bi Docker pokupio izmene načinjene nad projektom, prilikom izmene bilo kog
 Primer komande: `docker-compose build management-service`. 
 
 Takođe, moguće je odraditi komandu `docker-compose up --build` koja će sve servise ponovo build-ovati iz source-a.
+Ukoliko se ne koristi `--build` uz komandu `docker-compose up` on ce povuci image-e sa GHCR koji ima image-e sa main grane.
 
 ### Swagger
 

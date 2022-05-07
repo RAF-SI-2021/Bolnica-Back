@@ -32,7 +32,7 @@ services:
       - local_network
 
   eureka:
-    # image: abasic8619rn/bolnica-eureka:v1
+    image: ghcr.io/raf-si-2021/bolnica-eureka:latest
     restart: always
     container_name: eureka-service
     build:
@@ -48,7 +48,7 @@ services:
       - local_network
 
   gateway:
-    # image: abasic8619rn/bolnica-gateway:v1
+    image: ghcr.io/raf-si-2021/bolnica-gateway:latest
     restart: always
     container_name: gateway-service
     ports:
@@ -63,7 +63,7 @@ services:
         condition: service_healthy
 
   user-service:
-    # image: abasic8619rn/bolnica-user:v2
+    image: ghcr.io/raf-si-2021/bolnica-user-service:latest
     restart: unless-stopped
     build:
       context: ./user
@@ -79,7 +79,7 @@ services:
         condition: service_healthy
       
   management-service:
-    # image: abasic8619rn/bolnica-management
+    image: ghcr.io/raf-si-2021/bolnica-management-service:latest
     restart: unless-stopped
     container_name: management-service
     build:
