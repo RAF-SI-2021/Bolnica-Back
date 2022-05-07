@@ -10,6 +10,9 @@ RUN mvn -f /home/app/pom.xml clean package
 # Package stage
 #
 FROM openjdk:11
+
+LABEL org.opencontainers.image.source https://github.com/RAF-SI-2021/Bolnica-Back
+
 COPY --from=build /home/app/target/management-0.0.1-SNAPSHOT.jar /usr/local/lib/management.jar
 EXPOSE 8082
 ENTRYPOINT ["java", "-jar", "/usr/local/lib/management.jar"]
