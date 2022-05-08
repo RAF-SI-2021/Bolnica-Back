@@ -1,4 +1,4 @@
-package raf.si.bolnica.management.dto;
+package raf.si.bolnica.management.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,5 @@
 package raf.si.bolnica.management.requests;
 
-import raf.si.bolnica.management.dto.PacijentCRUDDTO;
 import raf.si.bolnica.management.entities.Pacijent;
 
 public class PacijentCRUDRequestDTO extends PacijentCRUDDTO {
