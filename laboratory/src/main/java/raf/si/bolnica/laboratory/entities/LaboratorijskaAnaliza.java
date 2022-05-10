@@ -20,7 +20,7 @@ public class LaboratorijskaAnaliza {
     }
 
     public void setLaboratorijskaAnalizaId(long laboratorijskaAnalizaId) {
-        laboratorijskaAnalizaId = laboratorijskaAnalizaId;
+        this.laboratorijskaAnalizaId = laboratorijskaAnalizaId;
     }
 
     public String getNazivAnalize() {
