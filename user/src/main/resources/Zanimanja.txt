@@ -11,3 +11,5 @@ Spec. pulmolog
 Spec. urlog
 Spec. hematolog
 Spec. hirurg
+Lab. tehnicar
+Med. biohemičar
