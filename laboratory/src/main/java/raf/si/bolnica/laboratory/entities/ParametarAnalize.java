@@ -1,6 +1,5 @@
 package raf.si.bolnica.laboratory.entities;
 
-
 import javax.persistence.*;
 
 @Entity

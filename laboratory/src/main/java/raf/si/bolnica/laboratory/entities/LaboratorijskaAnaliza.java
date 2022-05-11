@@ -1,6 +1,4 @@
 package raf.si.bolnica.laboratory.entities;
-
-
 import javax.persistence.*;
 
 @Entity
@@ -9,7 +7,7 @@ public class LaboratorijskaAnaliza {
     @Id
     @Column(name = "laboratorijska_analiza_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long LaboratorijskaAnalizaId;
+    private long laboratorijskaAnalizaId;
 
     @Column(nullable = false)
     private String nazivAnalize;
@@ -18,11 +16,11 @@ public class LaboratorijskaAnaliza {
     private String skracenica;
 
     public long getLaboratorijskaAnalizaId() {
-        return LaboratorijskaAnalizaId;
+        return laboratorijskaAnalizaId;
     }
 
     public void setLaboratorijskaAnalizaId(long laboratorijskaAnalizaId) {
-        LaboratorijskaAnalizaId = laboratorijskaAnalizaId;
+        this.laboratorijskaAnalizaId = laboratorijskaAnalizaId;
     }
 
     public String getNazivAnalize() {
