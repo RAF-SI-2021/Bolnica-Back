@@ -69,8 +69,20 @@ public class BootstrapData implements CommandLineRunner {
         Role visaMedSestraRole = new Role();
         visaMedSestraRole.setName("ROLE_VISA_MED_SESTRA");
 
-        Role MedSestraRole = new Role();
-        MedSestraRole.setName("ROLE_MED_SESTRA");
+        Role medSestraRole = new Role();
+        medSestraRole.setName("ROLE_MED_SESTRA");
+
+        Role visiLabaratorijskiTehnicarRole = new Role();
+        visiLabaratorijskiTehnicarRole.setName("ROLE_VISI_LABORATORIJSKI_TEHNICAR");
+
+        Role labaratorijskiTehnicarRole = new Role();
+        labaratorijskiTehnicarRole.setName("ROLE_LABORATORIJSKI_TEHNICAR");
+
+        Role medicinskiBiohemicarRole = new Role();
+        medicinskiBiohemicarRole.setName("ROLE_MEDICINSKI_BIOHEMICAR");
+
+        Role specijalistaMedicinskeBiohemijeRole = new Role();
+        specijalistaMedicinskeBiohemijeRole.setName("ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE");
 
 
         Set<Role> roles = new HashSet<>();
@@ -79,7 +91,11 @@ public class BootstrapData implements CommandLineRunner {
         roles.add(roleRepository.save(drSpecRole));
         roles.add(roleRepository.save(drSpecPovRole));
         roles.add(roleRepository.save(visaMedSestraRole));
-        roles.add(roleRepository.save(MedSestraRole));
+        roles.add(roleRepository.save(medSestraRole));
+        roles.add(roleRepository.save(visiLabaratorijskiTehnicarRole));
+        roles.add(roleRepository.save(labaratorijskiTehnicarRole));
+        roles.add(roleRepository.save(medicinskiBiohemicarRole));
+        roles.add(roleRepository.save(specijalistaMedicinskeBiohemijeRole));
 
 
         User user = new User();
