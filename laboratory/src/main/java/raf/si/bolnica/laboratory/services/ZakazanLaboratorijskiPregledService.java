@@ -2,6 +2,7 @@ package raf.si.bolnica.laboratory.services;
 
 import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface ZakazanLaboratorijskiPregledService {
@@ -15,5 +16,7 @@ public interface ZakazanLaboratorijskiPregledService {
     void deleteZakazanPregled(Long id);
 
     ZakazanLaboratorijskiPregled updateZakazanPregled(ZakazanLaboratorijskiPregled pregled);
+
+    List<ZakazanLaboratorijskiPregled> getZakazaniPreglediByDate(Date date);
 
 }
