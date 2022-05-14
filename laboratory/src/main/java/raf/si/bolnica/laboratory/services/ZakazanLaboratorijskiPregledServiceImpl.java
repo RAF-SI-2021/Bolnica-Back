@@ -2,6 +2,7 @@ package raf.si.bolnica.laboratory.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
 import raf.si.bolnica.laboratory.repositories.ZakazanLaboratorijskiPregledRepository;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 
 @Service
+@Transactional("transactionManager")
 public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaboratorijskiPregledService {
 
 
@@ -24,7 +26,7 @@ public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaborator
 
     @Override
     public ZakazanLaboratorijskiPregled getZakazanPregled(Long id) {
-        return repository.getOne(id);
+        return repository.findByZakazanLaboratorijskiPregledId(id);
     }
 
     @Override

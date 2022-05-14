@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface ZakazanLaboratorijskiPregledRepository extends JpaRepository<ZakazanLaboratorijskiPregled, Long> {
+    ZakazanLaboratorijskiPregled findByZakazanLaboratorijskiPregledId(Long id);
     List<ZakazanLaboratorijskiPregled> findByZakazanDatum(Date zakazanDatum);
     List<ZakazanLaboratorijskiPregled> findByOdeljenjeId(Integer odeljenjeId);
     List<ZakazanLaboratorijskiPregled> findByOdeljenjeIdAndZakazanDatum(Integer odeljenjeId, Date zakazanDatum);
