@@ -7,6 +7,7 @@ import raf.si.bolnica.laboratory.repositories.ZakazanLaboratorijskiPregledReposi
 
 import java.sql.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -44,5 +45,25 @@ public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaborator
     @Override
     public List<ZakazanLaboratorijskiPregled> getZakazaniPreglediByDate(Date date) {
         return repository.findByZakazanDatum(date);
+    }
+
+    @Override
+    public List<ZakazanLaboratorijskiPregled> findByOdeljenjeId(Integer odeljenjeId) {
+        return repository.findByOdeljenjeId(odeljenjeId);
+    }
+
+    @Override
+    public List<ZakazanLaboratorijskiPregled> findByOdeljenjeIdAndZakazanDatum(Integer odeljenjeId, Date zakazanDatum) {
+        return repository.findByOdeljenjeIdAndZakazanDatum(odeljenjeId, zakazanDatum);
+    }
+
+    @Override
+    public List<ZakazanLaboratorijskiPregled> findByOdeljenjeIdAndLbp(Integer odeljenjeId, UUID lbp) {
+        return repository.findByOdeljenjeIdAndLbp(odeljenjeId, lbp);
+    }
+
+    @Override
+    public List<ZakazanLaboratorijskiPregled> findByOdeljenjeIdAndZakazanDatumAndLbp(Integer odeljenjeId, Date zakazanDatum,  UUID lbp) {
+        return repository.findByOdeljenjeIdAndZakazanDatumAndLbp(odeljenjeId, zakazanDatum, lbp);
     }
 }
