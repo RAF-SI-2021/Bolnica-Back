@@ -44,7 +44,7 @@ public class LaboratoryController {
     private ZakazanLaboratorijskiPregledService zakazanLaboratorijskiPregledService;
 
     @PostMapping(value = "/schedule-lab-examination")
-    public ResponseEntity<String> scheduleLabExamination(@RequestBody ScheduleLabExaminationDTO request){
+    public ResponseEntity<ZakazanLaboratorijskiPregled> scheduleLabExamination(@RequestBody ScheduleLabExaminationDTO request){
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);
         acceptedRoles.add(Constants.VISI_LABORATORIJSKI_TEHNICAR);
@@ -61,7 +61,7 @@ public class LaboratoryController {
         pregled.setOdeljenjeId(loggedInUser.getOdeljenjeId());
         zakazanLaboratorijskiPregledService.saveZakazanPregled(pregled);
 
-        return ResponseEntity.ok("Laboratorijska analiza zakazana za: " + request.getLbp() + "\nDatuma: " + request.getDate().toString() + "\nNapomena: " + request.getNapomena() + "\nNa odeljenju: " + pregled.getOdeljenjeId());
+        return ResponseEntity.ok(pregled);
     }
 
     @GetMapping(value = "/get-lab-examinations/{date}")
