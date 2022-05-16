@@ -17,6 +17,8 @@ public class LoggedInUser {
 
     private UUID lbz;
 
+    private Integer odeljenjeId;
+
     public LoggedInUser() {}
 
     public String getUsername() {
@@ -29,6 +31,14 @@ public class LoggedInUser {
 
     public UUID getLBZ() {
         return lbz;
+    }
+
+    public Integer getOdeljenjeId() {
+        return odeljenjeId;
+    }
+
+    public void setOdeljenjeId(Integer odeljenjeId) {
+        this.odeljenjeId = odeljenjeId;
     }
 
     public void setLBZ(UUID lbz) {

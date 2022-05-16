@@ -8,6 +8,8 @@ public interface UputService {
 
     Uput getUput(Long id);
 
+    Uput fetchUputById(Long id);
+
     List<Uput> getUputi();
 
     Uput saveUput(Uput uput);

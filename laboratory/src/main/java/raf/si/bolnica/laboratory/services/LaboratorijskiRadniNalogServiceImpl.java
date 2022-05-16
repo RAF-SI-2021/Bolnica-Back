@@ -1,11 +1,13 @@
 package raf.si.bolnica.laboratory.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import raf.si.bolnica.laboratory.entities.LaboratorijskiRadniNalog;
 import raf.si.bolnica.laboratory.repositories.LaboratorijskiRadniNalogRepository;
 
 import java.util.List;
 
+@Service
 public class LaboratorijskiRadniNalogServiceImpl implements LaboratorijskiRadniNalogService {
 
     @Autowired
@@ -15,6 +17,11 @@ public class LaboratorijskiRadniNalogServiceImpl implements LaboratorijskiRadniN
     @Override
     public LaboratorijskiRadniNalog getRadniNalog(Long id) {
         return repository.getOne(id);
+    }
+
+    @Override
+    public LaboratorijskiRadniNalog fetchRadniNalogById(Long id) {
+        return repository.findByLaboratorijskiRadniNalogId(id);
     }
 
     @Override
