@@ -251,7 +251,7 @@ public class LaboratoryWorkOrdersTests {
     @Test
     public void fetchOrdersNoParamsTest() {
         when(loggedInUser.getRoles()).thenReturn(allRoles());
-        String s = "SELECT l FROM LaboratorijskiRadniNalog l INNER JOIN l.uput u WHERE u.zaOdeljenjeId = :lab";
+        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab";
         TypedQuery query = mock(TypedQuery.class);
         when(query.getResultList()).thenReturn(new LinkedList<>());
         when(entityManager.createQuery(eq(s),any(Class.class))).thenReturn(query);
@@ -263,7 +263,7 @@ public class LaboratoryWorkOrdersTests {
     @Test
     public void fetchOrdersAllParamsTest() {
         when(loggedInUser.getRoles()).thenReturn(allRoles());
-        String s = "SELECT l FROM LaboratorijskiRadniNalog l INNER JOIN l.uput u WHERE u.zaOdeljenjeId = :lab AND l.lbp = :lbp AND l.statusObrade = :status AND l.datumVremeKreiranja >= :od AND l.datumVremeKreiranja <= :do";
+        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab AND lrn.lbp = :lbp AND lrn.statusObrade = :status AND lrn.datumVremeKreiranja >= :od AND lrn.datumVremeKreiranja <= :do";
         TypedQuery query = mock(TypedQuery.class);
         List<LaboratorijskiRadniNalog> lista = new ArrayList<>();
         lista.add(new LaboratorijskiRadniNalog());

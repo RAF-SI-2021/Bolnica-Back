@@ -302,27 +302,27 @@ public class LaboratoryController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        String s = "SELECT l FROM LaboratorijskiRadniNalog l INNER JOIN l.uput u WHERE u.zaOdeljenjeId = :lab";
+        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab";
         Map<String,Object> param = new HashMap<>();
         param.put("lab",loggedInUser.getOdeljenjeId());
 
         if(request.getLbp()!=null) {
-            s = s  + " AND l.lbp = :lbp";
+            s = s  + " AND lrn.lbp = :lbp";
             param.put("lbp",request.getLbp());
         }
 
         if(request.getStatusObrade()!=null) {
-            s = s + " AND l.statusObrade = :status";
+            s = s + " AND lrn.statusObrade = :status";
             param.put("status",request.getStatusObrade());
         }
 
         if(request.getOdDatuma()!=null) {
-            s = s + " AND l.datumVremeKreiranja >= :od";
+            s = s + " AND lrn.datumVremeKreiranja >= :od";
             param.put("od",request.getOdDatuma());
         }
 
         if(request.getDoDatuma()!=null) {
-            s = s + " AND l.datumVremeKreiranja <= :do";
+            s = s + " AND lrn.datumVremeKreiranja <= :do";
             param.put("do",request.getDoDatuma());
         }
 
