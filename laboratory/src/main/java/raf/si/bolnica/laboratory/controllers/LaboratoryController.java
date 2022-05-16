@@ -15,6 +15,7 @@ import raf.si.bolnica.laboratory.entities.*;
 import raf.si.bolnica.laboratory.entities.enums.StatusObrade;
 import raf.si.bolnica.laboratory.entities.enums.StatusUputa;
 import raf.si.bolnica.laboratory.interceptors.LoggedInUser;
+import raf.si.bolnica.laboratory.requests.CreateInquiryDTO;
 import raf.si.bolnica.laboratory.requests.FindScheduledLabExaminationsDTO;
 import raf.si.bolnica.laboratory.requests.ScheduleLabExaminationDTO;
 import raf.si.bolnica.laboratory.requests.SetStatusExaminationDTO;
@@ -471,5 +472,45 @@ public class LaboratoryController {
         radniNalogService.saveRadniNalog(nalog);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    @PostMapping(value = "/create-inquiry")
+    public ResponseEntity<?> createInquiry(@RequestBody CreateInquiryDTO request) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
+        acceptedRoles.add(Constants.DR_SPEC);
+        acceptedRoles.add(Constants.DR_SPEC_POV);
+
+           /*   if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        */
+
+        ArrayList<Object> requiredParams = new ArrayList<>();
+        requiredParams.add(request.getTip());
+        requiredParams.add(request.getLbp());
+        requiredParams.add(request.getLbz());
+        requiredParams.add(request.getIzOdeljenjaId());
+        requiredParams.add(request.getZaOdeljenjeId());
+        for(Object param : requiredParams){
+            if (param == null){
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(" Required param is not defined ");
+            }
+        }
+        Uput noviUput = new Uput();
+        noviUput.setTip(request.getTip());
+        noviUput.setDatumVremeKreiranja(Timestamp.valueOf(LocalDateTime.now()));
+        noviUput.setKomentar(request.getKomentar());
+        noviUput.setIzOdeljenjaId(request.getIzOdeljenjaId());
+        noviUput.setRazlogUpucivanja(request.getRazlogUpucivanja());
+        noviUput.setZaOdeljenjeId(request.getZaOdeljenjeId());
+        noviUput.setLbp(request.getLbp());
+        noviUput.setLbz(request.getLbz());
+        noviUput.setZahtevaneAnalize(request.getZahtevaneAnalize());
+        noviUput.setUputnaDijagnoza(request.getUputnaDijagnoza());
+
+        uputService.saveUput(noviUput);
+
+        return ResponseEntity.ok("Uput napravljen");
     }
 }
