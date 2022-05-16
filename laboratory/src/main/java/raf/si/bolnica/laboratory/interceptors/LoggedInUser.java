@@ -52,12 +52,4 @@ public class LoggedInUser {
     public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
-
-    public Integer getOdeljenjeId() {
-        return odeljenjeId;
-    }
-
-    public void setOdeljenjeId(Integer odeljenjeId) {
-        this.odeljenjeId = odeljenjeId;
-    }
 }
