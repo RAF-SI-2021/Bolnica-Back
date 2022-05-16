@@ -82,8 +82,8 @@ public class LaboratoryWorkOrdersTests {
 
     private Set<String> allRoles() {
         Set<String> roles = new HashSet<>();
-        roles.add(Constants.VISI_LAB_TEHNICAR);
-        roles.add(Constants.LAB_TEHNICAR);
+        roles.add(Constants.VISI_LABORATORIJSKI_TEHNICAR);
+        roles.add(Constants.LABORATORIJSKI_TEHNICAR);
         roles.add(Constants.SPEC_BIOHEMICAR);
         roles.add(Constants.BIOHEMICAR);
         roles.add(Constants.DR_SPEC_POV);
