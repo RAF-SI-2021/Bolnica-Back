@@ -311,19 +311,19 @@ public class LaboratoryController {
             param.put("lbp",request.getLbp());
         }
 
+        if(request.getDoDatuma()!=null) {
+            param.put("do",request.getDoDatuma());
+            s = s + " AND lrn.datumVremeKreiranja <= :do";
+        }
+
         if(request.getStatusObrade()!=null) {
-            s = s + " AND lrn.statusObrade = :status";
             param.put("status",request.getStatusObrade());
+            s = s + " AND lrn.statusObrade = :status";
         }
 
         if(request.getOdDatuma()!=null) {
-            s = s + " AND lrn.datumVremeKreiranja >= :od";
             param.put("od",request.getOdDatuma());
-        }
-
-        if(request.getDoDatuma()!=null) {
-            s = s + " AND lrn.datumVremeKreiranja <= :do";
-            param.put("do",request.getDoDatuma());
+            s = s + " AND lrn.datumVremeKreiranja >= :od";
         }
 
         TypedQuery<LaboratorijskiRadniNalog> query
@@ -333,7 +333,7 @@ public class LaboratoryController {
             query.setParameter(t, param.get(t));
         }
 
-        query.setFirstResult((page - 1) * size);
+        query.setFirstResult(page * size - size);
         query.setMaxResults(size);
 
         List<LaboratorijskiRadniNalogResponseDTO> ret = new ArrayList<>();

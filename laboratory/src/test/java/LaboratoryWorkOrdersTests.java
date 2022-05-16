@@ -263,7 +263,7 @@ public class LaboratoryWorkOrdersTests {
     @Test
     public void fetchOrdersAllParamsTest() {
         when(loggedInUser.getRoles()).thenReturn(allRoles());
-        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab AND lrn.lbp = :lbp AND lrn.statusObrade = :status AND lrn.datumVremeKreiranja >= :od AND lrn.datumVremeKreiranja <= :do";
+        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab AND lrn.lbp = :lbp AND lrn.datumVremeKreiranja <= :do AND lrn.statusObrade = :status AND lrn.datumVremeKreiranja >= :od";
         TypedQuery query = mock(TypedQuery.class);
         List<LaboratorijskiRadniNalog> lista = new ArrayList<>();
         lista.add(new LaboratorijskiRadniNalog());
