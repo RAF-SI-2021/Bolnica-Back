@@ -20,6 +20,11 @@ public class LaboratorijskiRadniNalogServiceImpl implements LaboratorijskiRadniN
     }
 
     @Override
+    public LaboratorijskiRadniNalog fetchRadniNalogById(Long id) {
+        return repository.findByLaboratorijskiRadniNalogId(id);
+    }
+
+    @Override
     public List<LaboratorijskiRadniNalog> getRadniNalozi() {
         return repository.findAll();
     }

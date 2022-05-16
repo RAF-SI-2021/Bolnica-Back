@@ -22,9 +22,9 @@ public class Parametar {
 
     private String jedinicaMere;
 
-    private int donjaGranica;
+    private double donjaGranica;
 
-    private int gornjaGranica;
+    private double gornjaGranica;
 
     public long getParametarId() {
         return parametarId;
@@ -58,19 +58,19 @@ public class Parametar {
         this.jedinicaMere = jedinicaMere;
     }
 
-    public int getDonjaGranica() {
+    public double getDonjaGranica() {
         return donjaGranica;
     }
 
-    public void setDonjaGranica(int donjaGranica) {
+    public void setDonjaGranica(double donjaGranica) {
         this.donjaGranica = donjaGranica;
     }
 
-    public int getGornjaGranica() {
+    public double getGornjaGranica() {
         return gornjaGranica;
     }
 
-    public void setGornjaGranica(int gornjaGranica) {
+    public void setGornjaGranica(double gornjaGranica) {
         this.gornjaGranica = gornjaGranica;
     }
 }

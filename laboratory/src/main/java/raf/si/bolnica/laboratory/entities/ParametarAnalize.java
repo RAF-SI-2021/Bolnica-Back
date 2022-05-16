@@ -10,11 +10,11 @@ public class ParametarAnalize {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long parametarAnalizeId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "laboratorijska_analiza_id")
     private LaboratorijskaAnaliza laboratorijskaAnaliza;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "parametar_id")
     private Parametar parametar;
 

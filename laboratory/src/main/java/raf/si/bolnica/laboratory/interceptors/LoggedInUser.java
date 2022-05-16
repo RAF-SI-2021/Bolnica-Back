@@ -33,6 +33,14 @@ public class LoggedInUser {
         return lbz;
     }
 
+    public Integer getOdeljenjeId() {
+        return odeljenjeId;
+    }
+
+    public void setOdeljenjeId(Integer odeljenjeId) {
+        this.odeljenjeId = odeljenjeId;
+    }
+
     public void setLBZ(UUID lbz) {
         this.lbz = lbz;
     }

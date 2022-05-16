@@ -9,6 +9,8 @@ public interface LaboratorijskiRadniNalogService {
 
     LaboratorijskiRadniNalog getRadniNalog(Long id);
 
+    LaboratorijskiRadniNalog fetchRadniNalogById(Long id);
+
     List<LaboratorijskiRadniNalog> getRadniNalozi();
 
     LaboratorijskiRadniNalog updateRadniNalog(LaboratorijskiRadniNalog radniNalog);

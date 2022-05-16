@@ -7,7 +7,6 @@ import raf.si.bolnica.laboratory.repositories.ParametarRepository;
 
 import java.util.List;
 
-
 @Service
 public class ParametarServiceImpl implements ParametarService {
 
