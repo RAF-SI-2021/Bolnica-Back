@@ -2,11 +2,14 @@ package raf.si.bolnica.laboratory.services;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import raf.si.bolnica.laboratory.entities.Uput;
 import raf.si.bolnica.laboratory.repositories.UputRepository;
 
 import java.util.List;
 
+
+@Service
 public class UputServiceImpl implements UputService {
 
     @Autowired

@@ -1,11 +1,13 @@
 package raf.si.bolnica.laboratory.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import raf.si.bolnica.laboratory.entities.LaboratorijskaAnaliza;
 import raf.si.bolnica.laboratory.repositories.LaboratorijskaAnalizaRepository;
 
 import java.util.List;
 
+@Service
 public class LaboratorijskaAnalizaServiceImpl implements LaboratorijskaAnalizaService{
 
     @Autowired
