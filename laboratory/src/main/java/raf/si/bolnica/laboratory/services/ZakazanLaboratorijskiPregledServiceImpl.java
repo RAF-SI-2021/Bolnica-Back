@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
 import raf.si.bolnica.laboratory.repositories.ZakazanLaboratorijskiPregledRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
+@Transactional
 public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaboratorijskiPregledService {
 
 
@@ -14,7 +17,14 @@ public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaborator
 
     @Override
     public ZakazanLaboratorijskiPregled saveZakazanPregled(ZakazanLaboratorijskiPregled pregled) {
-        return repository.save(pregled);
+        Optional<ZakazanLaboratorijskiPregled> toSave = repository.
+                findZakazanLaboratorijskiPregledByLbzEqualsAndZakazanDatum(pregled.getLbz(), pregled.getZakazanDatum());
+
+        if (toSave.isEmpty()) {
+            return repository.save(pregled);
+        }
+
+        return null;
     }
 
     @Override
