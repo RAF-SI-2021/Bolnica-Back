@@ -22,7 +22,7 @@ public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaborator
                 findZakazanLaboratorijskiPregledByLbzEqualsAndZakazanDatum(pregled.getLbz(), pregled.getZakazanDatum());
 
         if (toSave.isPresent()) {
-            throw new AccessDeniedException("Appointment already reserved!");
+            throw new AccessDeniedException("Appointment already made!");
         }
 
         return repository.save(pregled);
