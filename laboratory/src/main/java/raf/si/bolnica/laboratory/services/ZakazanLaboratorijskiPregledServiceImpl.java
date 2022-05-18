@@ -1,6 +1,7 @@
 package raf.si.bolnica.laboratory.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
 import raf.si.bolnica.laboratory.repositories.ZakazanLaboratorijskiPregledRepository;
 
@@ -20,11 +21,11 @@ public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaborator
         Optional<ZakazanLaboratorijskiPregled> toSave = repository.
                 findZakazanLaboratorijskiPregledByLbzEqualsAndZakazanDatum(pregled.getLbz(), pregled.getZakazanDatum());
 
-        if (toSave.isEmpty()) {
-            return repository.save(pregled);
+        if (toSave.isPresent()) {
+            throw new AccessDeniedException("Appointment already reserved!");
         }
 
-        return null;
+        return repository.save(pregled);
     }
 
     @Override
