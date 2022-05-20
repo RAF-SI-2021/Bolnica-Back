@@ -519,7 +519,7 @@ public class LaboratoryController {
     }
 
     @GetMapping(value = "/fetch-uput")
-    public ResponseEntity<?> uputInquiry(@RequestParam long uputId) {
+    public ResponseEntity<?> fetchUput(@RequestParam long uputId) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
         acceptedRoles.add(Constants.DR_SPEC);
@@ -578,7 +578,7 @@ public class LaboratoryController {
     }
 
     @GetMapping(value = "/unprocessed-uputi")
-    public ResponseEntity<?> unprocessed(@RequestParam UUID lbp) {
+    public ResponseEntity<?> unprocessedUputi(@RequestParam UUID lbp) {
         StatusUputa status = StatusUputa.NEREALIZOVAN;
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);
