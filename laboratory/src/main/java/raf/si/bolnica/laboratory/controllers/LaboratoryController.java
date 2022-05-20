@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.laboratory.constants.Constants;
+import raf.si.bolnica.laboratory.dto.request.UputHistoryRequestDTO;
 import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
 import raf.si.bolnica.laboratory.entities.enums.StatusPregleda;
 import raf.si.bolnica.laboratory.dto.request.LaboratorijskiRadniNalogRequestDTO;
@@ -15,13 +16,12 @@ import raf.si.bolnica.laboratory.entities.*;
 import raf.si.bolnica.laboratory.entities.enums.StatusObrade;
 import raf.si.bolnica.laboratory.entities.enums.StatusUputa;
 import raf.si.bolnica.laboratory.interceptors.LoggedInUser;
-import raf.si.bolnica.laboratory.requests.CreateInquiryDTO;
+import raf.si.bolnica.laboratory.requests.CreateUputDTO;
 import raf.si.bolnica.laboratory.requests.FindScheduledLabExaminationsDTO;
 import raf.si.bolnica.laboratory.requests.ScheduleLabExaminationDTO;
 import raf.si.bolnica.laboratory.requests.SetStatusExaminationDTO;
 import raf.si.bolnica.laboratory.services.*;
 
-import javax.websocket.server.PathParam;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -290,7 +290,7 @@ public class LaboratoryController {
         for (String t : param.keySet()) {
             queryNalog.setParameter(t, param.get(t));
         }
-
+        //keystone
         List<LaboratorijskiRadniNalog> nalozi = queryNalog.getResultList();
 
         if (nalozi.isEmpty()) {
@@ -474,17 +474,16 @@ public class LaboratoryController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @PostMapping(value = "/create-inquiry")
-    public ResponseEntity<?> createInquiry(@RequestBody CreateInquiryDTO request) {
+    @PostMapping(value = "/create-uput")
+    public ResponseEntity<?> createUput(@RequestBody CreateUputDTO request) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
         acceptedRoles.add(Constants.DR_SPEC);
         acceptedRoles.add(Constants.DR_SPEC_POV);
 
-           /*   if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        */
 
         ArrayList<Object> requiredParams = new ArrayList<>();
         requiredParams.add(request.getTip());
@@ -497,20 +496,113 @@ public class LaboratoryController {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(" Required param is not defined ");
             }
         }
-        Uput noviUput = new Uput();
-        noviUput.setTip(request.getTip());
-        noviUput.setDatumVremeKreiranja(Timestamp.valueOf(LocalDateTime.now()));
-        noviUput.setKomentar(request.getKomentar());
-        noviUput.setIzOdeljenjaId(request.getIzOdeljenjaId());
-        noviUput.setRazlogUpucivanja(request.getRazlogUpucivanja());
-        noviUput.setZaOdeljenjeId(request.getZaOdeljenjeId());
-        noviUput.setLbp(request.getLbp());
-        noviUput.setLbz(request.getLbz());
-        noviUput.setZahtevaneAnalize(request.getZahtevaneAnalize());
-        noviUput.setUputnaDijagnoza(request.getUputnaDijagnoza());
-
+        Uput noviUput = new Uput(request);
         uputService.saveUput(noviUput);
 
         return ResponseEntity.ok("Uput napravljen");
+    }
+
+    @DeleteMapping(value = "/delete-uput")
+    public ResponseEntity<?> deleteUput(@RequestParam long uputId) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
+        acceptedRoles.add(Constants.DR_SPEC);
+        acceptedRoles.add(Constants.DR_SPEC_POV);
+
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        uputService.deleteUput(uputId);
+
+        return ResponseEntity.ok("Uput obrisan");
+    }
+
+    @GetMapping(value = "/fetch-uput")
+    public ResponseEntity<?> uputInquiry(@RequestParam long uputId) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
+        acceptedRoles.add(Constants.DR_SPEC);
+        acceptedRoles.add(Constants.DR_SPEC_POV);
+
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Uput uput = uputService.fetchUputById(uputId);
+
+        return ok(uput);
+    }
+
+    @GetMapping(value = "/uput-history")
+    public ResponseEntity<?> uputHistory(@RequestBody UputHistoryRequestDTO request,
+                                            @RequestParam int page,
+                                            @RequestParam int size) {
+
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
+        acceptedRoles.add(Constants.DR_SPEC);
+        acceptedRoles.add(Constants.DR_SPEC_POV);
+        String s = "SELECT u from Uput u WHERE u.lbp = :lbp";
+
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+              return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Map<String, Object> param = new HashMap<>();
+        param.put("lbp", request.getLbp());
+
+        if (request.getDoDatuma() != null) {
+            param.put("do", request.getDoDatuma());
+            s = s + " AND u.datumVremeKreiranja <= :do";
+        }
+        if (request.getOdDatuma() != null) {
+            param.put("od", request.getOdDatuma());
+            s = s + " AND u.datumVremeKreiranja >= :od";
+        }
+        TypedQuery<Uput> query
+                = entityManager.createQuery(
+                s, Uput.class);
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+        List<UputResponseDTO> ret = new ArrayList<>();
+        for(Uput uput : query.getResultList()){
+            ret.add(new UputResponseDTO(uput));
+        }
+
+        query.setFirstResult((page - 1) * size);
+        query.setMaxResults(size);
+
+        return ok(ret);
+
+    }
+
+    @GetMapping(value = "/unprocessed-uputi")
+    public ResponseEntity<?> unprocessed(@RequestParam UUID lbp) {
+        StatusUputa status = StatusUputa.NEREALIZOVAN;
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);
+        acceptedRoles.add(Constants.VISI_LABORATORIJSKI_TEHNICAR);
+        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput from LaboratorijskiRadniNalog) ";
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+              return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", status);
+        param.put("lbp", lbp);
+
+
+        TypedQuery<Uput> query
+                = entityManager.createQuery(
+                s, Uput.class);
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+        List<UputResponseDTO> ret = new ArrayList<>();
+        for(Uput uput : query.getResultList()){
+            ret.add(new UputResponseDTO(uput));
+        }
+        return ok(ret);
+
     }
 }
