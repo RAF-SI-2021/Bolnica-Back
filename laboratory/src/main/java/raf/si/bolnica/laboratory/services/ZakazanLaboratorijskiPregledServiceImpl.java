@@ -1,11 +1,13 @@
 package raf.si.bolnica.laboratory.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
 import raf.si.bolnica.laboratory.repositories.ZakazanLaboratorijskiPregledRepository;
 
 import java.util.List;
 
+@Service
 public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaboratorijskiPregledService {
 
 
