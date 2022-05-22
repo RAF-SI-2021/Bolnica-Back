@@ -6,6 +6,7 @@ import raf.si.bolnica.management.entities.ZakazaniPregled;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 public interface ScheduledAppointmentRepository extends JpaRepository<ZakazaniPregled, Long> {
             ZakazaniPregled getZakazaniPregledByZakazaniPregledId(long id);
             List<ZakazaniPregled> findByLbzLekaraAndAndDatumIVremePregleda(UUID lbzLekara, Timestamp datumIVremePregleda);
+            Optional<ZakazaniPregled> findByLbzLekaraAndDatumIVremePregledaBetween(UUID lbzLekara, Timestamp datumStart, Timestamp datumEnd);
             List<ZakazaniPregled> findByLbzLekara(UUID lbzLekara);
 
 }

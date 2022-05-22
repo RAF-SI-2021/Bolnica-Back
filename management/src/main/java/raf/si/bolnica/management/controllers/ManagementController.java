@@ -3,6 +3,7 @@ package raf.si.bolnica.management.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.*;
@@ -416,8 +417,12 @@ public class ManagementController {
             appointment.setNapomena(requestDTO.getNote());
             appointment.setDatumIVremePregleda(requestDTO.getDateAndTimeOfAppointment());
             appointment.setPacijent(pacijent);
-            ZakazaniPregled appointmentToReturn = appointmentService.saveAppointment(appointment);
-            return ResponseEntity.ok(appointmentToReturn);
+            try {
+                ZakazaniPregled appointmentToReturn = appointmentService.saveAppointment(appointment);
+                return ResponseEntity.ok(appointmentToReturn);
+            } catch (AccessDeniedException e) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            }
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }

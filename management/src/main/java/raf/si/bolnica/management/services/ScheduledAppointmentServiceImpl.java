@@ -2,25 +2,17 @@ package raf.si.bolnica.management.services;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import raf.si.bolnica.management.entities.Pacijent;
 import raf.si.bolnica.management.entities.ZakazaniPregled;
-import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
-import raf.si.bolnica.management.entities.enums.StatusPregleda;
 import raf.si.bolnica.management.repositories.ScheduledAppointmentRepository;
-import raf.si.bolnica.management.requests.CreateScheduledAppointmentRequestDTO;
-import raf.si.bolnica.management.requests.UpdateAppointmentStatusDTO;
-import raf.si.bolnica.management.requests.UpdateArrivalStatusDTO;
-import raf.si.bolnica.management.services.ScheduledAppointmentService;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -31,6 +23,15 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
 
     @Override
     public ZakazaniPregled saveAppointment(ZakazaniPregled appointment) {
+        long appointmentDuration = 15;
+        Timestamp startTime = appointment.getDatumIVremePregleda();
+        Timestamp endTime = appointment.getDatumIVremePregleda();
+        endTime.setTime(appointment.getDatumIVremePregleda().getTime() + TimeUnit.MINUTES.toMillis(appointmentDuration));
+        Optional<ZakazaniPregled> toSave = scheduledAppointmentRepository
+                .findByLbzLekaraAndDatumIVremePregledaBetween(appointment.getLbzLekara(), startTime, endTime);
+        if (toSave.isPresent()) {
+            throw new AccessDeniedException("Already appointed!");
+        }
         return scheduledAppointmentRepository.save(appointment);
     }
 
