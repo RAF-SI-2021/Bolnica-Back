@@ -8,7 +8,9 @@ import java.util.List;
 
 @Repository
 public interface OdeljenjeRepository extends JpaRepository<Odeljenje, Long> {
-    Odeljenje findById(long id);
+    Odeljenje findByOdeljenjeId(long id);
 
     List<Odeljenje> findAll();
+
+    List<Odeljenje> findByNazivContaining(String naziv);
 }

@@ -17,11 +17,21 @@ public class OdeljenjeServiceImpl implements OdeljenjeService {
 
     @Override
     public Odeljenje fetchOdeljenjeById(long id) {
-        return odeljenjeRepository.findById(id);
+        return odeljenjeRepository.findByOdeljenjeId(id);
     }
 
     @Override
     public List<Odeljenje> findAll() {
         return odeljenjeRepository.findAll();
+    }
+
+    @Override
+    public Odeljenje saveOdeljenje(Odeljenje odeljenje) {
+        return odeljenjeRepository.save(odeljenje);
+    }
+
+    @Override
+    public List<Odeljenje> searchByNaziv(String naziv) {
+        return odeljenjeRepository.findByNazivContaining(naziv);
     }
 }
