@@ -3,9 +3,11 @@ package raf.si.bolnica.laboratory.entities;
 import org.hibernate.annotations.Type;
 import raf.si.bolnica.laboratory.entities.enums.StatusUputa;
 import raf.si.bolnica.laboratory.entities.enums.TipUputa;
+import raf.si.bolnica.laboratory.requests.CreateUputDTO;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -52,6 +54,21 @@ public class Uput {
     @OneToOne(mappedBy = "uput")
     private LaboratorijskiRadniNalog laboratorijskiRadniNalog;
 
+    public Uput(){
+
+    }
+    public Uput(CreateUputDTO DTO) {
+        this.tip = DTO.getTip();
+        this.datumVremeKreiranja=(Timestamp.valueOf(LocalDateTime.now()));
+        this.komentar=(DTO.getKomentar());
+        this.izOdeljenjaId=(DTO.getIzOdeljenjaId());
+        this.razlogUpucivanja=(DTO.getRazlogUpucivanja());
+        this.zaOdeljenjeId=(DTO.getZaOdeljenjeId());
+        this.lbp=(DTO.getLbp());
+        this.lbz=(DTO.getLbz());
+        this.zahtevaneAnalize=(DTO.getZahtevaneAnalize());
+        this.uputnaDijagnoza=(DTO.getUputnaDijagnoza());
+    }
 
     public long getUputId() {
         return uputId;
