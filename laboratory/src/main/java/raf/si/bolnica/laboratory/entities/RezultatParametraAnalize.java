@@ -10,7 +10,7 @@ import java.util.UUID;
 public class RezultatParametraAnalize {
 
     @EmbeddedId
-    private RezultatParametraAnalizeKey id;
+    private RezultatParametraAnalizeKey id = new RezultatParametraAnalizeKey();
 
     @ManyToOne
     @MapsId("laboratorijskiRadniNalogId")
