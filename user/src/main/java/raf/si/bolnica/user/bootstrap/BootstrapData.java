@@ -52,7 +52,43 @@ public class BootstrapData implements CommandLineRunner {
         odeljenje.setBolnica(zdravstvenaUstanova);
         odeljenje.setPoslovniBrojOdeljenja(12345);
 
+        Odeljenje odeljenjePedijatrija = new Odeljenje();
+        odeljenjePedijatrija.setNaziv("Pedijatrija");
+        odeljenjePedijatrija.setBolnica(zdravstvenaUstanova);
+        odeljenjePedijatrija.setPoslovniBrojOdeljenja(11111);
+
+        Odeljenje odeljenjeToksikologija = new Odeljenje();
+        odeljenjeToksikologija.setNaziv("Toksikologija");
+        odeljenjeToksikologija.setBolnica(zdravstvenaUstanova);
+        odeljenjeToksikologija.setPoslovniBrojOdeljenja(22222);
+
+        Odeljenje odeljenjeGinekologija = new Odeljenje();
+        odeljenjeGinekologija.setNaziv("Ginekologija");
+        odeljenjeGinekologija.setBolnica(zdravstvenaUstanova);
+        odeljenjeGinekologija.setPoslovniBrojOdeljenja(33333);
+
+        Odeljenje odeljenjeNeurologija = new Odeljenje();
+        odeljenjeNeurologija.setNaziv("Neurologija");
+        odeljenjeNeurologija.setBolnica(zdravstvenaUstanova);
+        odeljenjeNeurologija.setPoslovniBrojOdeljenja(44444);
+
+        Odeljenje odeljenjeNeurohirurgija = new Odeljenje();
+        odeljenjeNeurohirurgija.setNaziv("Neurohirurgija");
+        odeljenjeNeurohirurgija.setBolnica(zdravstvenaUstanova);
+        odeljenjeNeurohirurgija.setPoslovniBrojOdeljenja(55555);
+
+        Odeljenje odeljenjeKardiologija = new Odeljenje();
+        odeljenjeKardiologija.setNaziv("Kardiologija");
+        odeljenjeKardiologija.setBolnica(zdravstvenaUstanova);
+        odeljenjeKardiologija.setPoslovniBrojOdeljenja(66666);
+
         odeljenje = odeljenjeRepository.save(odeljenje);
+        odeljenjeRepository.save(odeljenjePedijatrija);
+        odeljenjeRepository.save(odeljenjeToksikologija);
+        odeljenjeRepository.save(odeljenjeGinekologija);
+        odeljenjeRepository.save(odeljenjeNeurologija);
+        odeljenjeRepository.save(odeljenjeNeurohirurgija);
+        odeljenjeRepository.save(odeljenjeKardiologija);
 
         Role adminRole = new Role();
         adminRole.setName("ROLE_ADMIN");
@@ -69,8 +105,20 @@ public class BootstrapData implements CommandLineRunner {
         Role visaMedSestraRole = new Role();
         visaMedSestraRole.setName("ROLE_VISA_MED_SESTRA");
 
-        Role MedSestraRole = new Role();
-        MedSestraRole.setName("ROLE_MED_SESTRA");
+        Role medSestraRole = new Role();
+        medSestraRole.setName("ROLE_MED_SESTRA");
+
+        Role visiLabaratorijskiTehnicarRole = new Role();
+        visiLabaratorijskiTehnicarRole.setName("ROLE_VISI_LABORATORIJSKI_TEHNICAR");
+
+        Role labaratorijskiTehnicarRole = new Role();
+        labaratorijskiTehnicarRole.setName("ROLE_LABORATORIJSKI_TEHNICAR");
+
+        Role medicinskiBiohemicarRole = new Role();
+        medicinskiBiohemicarRole.setName("ROLE_MEDICINSKI_BIOHEMICAR");
+
+        Role specijalistaMedicinskeBiohemijeRole = new Role();
+        specijalistaMedicinskeBiohemijeRole.setName("ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE");
 
 
         Set<Role> roles = new HashSet<>();
@@ -79,7 +127,11 @@ public class BootstrapData implements CommandLineRunner {
         roles.add(roleRepository.save(drSpecRole));
         roles.add(roleRepository.save(drSpecPovRole));
         roles.add(roleRepository.save(visaMedSestraRole));
-        roles.add(roleRepository.save(MedSestraRole));
+        roles.add(roleRepository.save(medSestraRole));
+        roles.add(roleRepository.save(visiLabaratorijskiTehnicarRole));
+        roles.add(roleRepository.save(labaratorijskiTehnicarRole));
+        roles.add(roleRepository.save(medicinskiBiohemicarRole));
+        roles.add(roleRepository.save(specijalistaMedicinskeBiohemijeRole));
 
 
         User user = new User();
@@ -103,7 +155,6 @@ public class BootstrapData implements CommandLineRunner {
         user.setKorisnickoIme("superadmin");
         user.setZanimanje("zanimanje");
         user.setKontaktTelefon("+381 69312321");
-
 
 
         userRepository.save(user);

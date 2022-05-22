@@ -4,6 +4,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
 import raf.si.bolnica.management.entities.ZakazaniPregled;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class AppointmentTests {
+
     @Mock
     LoggedInUser loggedInUser;
 
@@ -65,6 +67,29 @@ public class AppointmentTests {
         assertThat(pregled.getLbzLekara().toString()).isEqualTo(requestDTO.getLbz());
         assertThat(pregled.getLbzSestre()).isEqualTo(loggedInUser.getLBZ());
         assertThat(pregled.getNapomena()).isEqualTo(requestDTO.getNote());
+    }
+
+    @Test
+    public void testSetAppointmentOverlapingTest() {
+
+        Set<String> roles = new TreeSet<>();
+        roles.add(Constants.VISA_MED_SESTRA);
+        when(loggedInUser.getRoles()).thenReturn(roles);
+        UUID uuid = UUID.randomUUID();
+        when(loggedInUser.getLBZ()).thenReturn(uuid);
+        when(appointmentService.saveAppointment(any(ZakazaniPregled.class))).thenThrow(new AccessDeniedException("Appointment already made!"));
+
+        CreateScheduledAppointmentRequestDTO requestDTO = new CreateScheduledAppointmentRequestDTO();
+        requestDTO.setDateAndTimeOfAppointment(Timestamp.valueOf(LocalDateTime.now()));
+        requestDTO.setLbz(UUID.randomUUID().toString());
+        requestDTO.setLbp(UUID.randomUUID().toString());
+        requestDTO.setNote("Napomena");
+        ResponseEntity<?> response = managementController.setAppointment(requestDTO);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+        assertThat(response.getBody()).isInstanceOf(String.class);
+        assertThat(response.getBody()).isEqualTo("Appointment already made!");
+
     }
 
     @Test
