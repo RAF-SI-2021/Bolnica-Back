@@ -7,11 +7,15 @@ import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
 import raf.si.bolnica.laboratory.repositories.ZakazanLaboratorijskiPregledRepository;
 
 import java.sql.Date;
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.access.AccessDeniedException;
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
+
 @Service
-@Transactional("transactionManager")
+@Transactional
 public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaboratorijskiPregledService {
 
 
@@ -20,6 +24,13 @@ public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaborator
 
     @Override
     public ZakazanLaboratorijskiPregled saveZakazanPregled(ZakazanLaboratorijskiPregled pregled) {
+        Optional<ZakazanLaboratorijskiPregled> toSave = repository.
+                findZakazanLaboratorijskiPregledByLbzEqualsAndZakazanDatum(pregled.getLbz(), pregled.getZakazanDatum());
+
+        if (toSave.isPresent()) {
+            throw new AccessDeniedException("Appointment already made!");
+        }
+
         return repository.save(pregled);
     }
 
