@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LaboratorijskiRadniNalogSearchRequestDTO {
-    private UUID lbp;
+    private String lbp;
     private Timestamp odDatuma;
     private Timestamp doDatuma;
     private StatusObrade statusObrade;

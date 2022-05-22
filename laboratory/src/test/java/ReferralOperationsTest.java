@@ -74,9 +74,9 @@ public class ReferralOperationsTest{
         CreateUputDTO uput  = new CreateUputDTO();
 
 
-        uput.setLbp(UUID.randomUUID());
+        uput.setLbp(UUID.randomUUID().toString());
         uput.setZahtevaneAnalize("KKS,GLU,SE");
-        uput.setLbz(UUID.randomUUID());
+        uput.setLbz(UUID.randomUUID().toString());
         uput.setDatumVremeKreiranja(Timestamp.valueOf(LocalDateTime.now()));
         uput.setIzOdeljenjaId(1);
         uput.setZaOdeljenjeId(1);
@@ -88,7 +88,7 @@ public class ReferralOperationsTest{
         UputHistoryRequestDTO uput  = new UputHistoryRequestDTO();
 
 
-        uput.setLbp(UUID.randomUUID());
+        uput.setLbp(UUID.randomUUID().toString());
         uput.setDoDatuma(null);
         uput.setOdDatuma(null);
         return uput;
@@ -215,7 +215,7 @@ public class ReferralOperationsTest{
     public void unproccesedUputiUnauthorized() {
         when(loggedInUser.getRoles()).thenReturn(noRoles());
         UUID lbp  = UUID.fromString("4fa54fea-d850-11ec-9d64-0242ac120002");
-        ResponseEntity<?> response = laboratoryController.unprocessedUputi(lbp);
+        ResponseEntity<?> response = laboratoryController.unprocessedUputi(lbp.toString());
         assertThat(response.getStatusCodeValue()).isEqualTo(403);
     }
     @Test
@@ -230,7 +230,7 @@ public class ReferralOperationsTest{
         when(entityManager.createQuery(eq(s),any(Class.class))).thenReturn(query);
         makeUput(1);
         UUID lbp  = UUID.fromString("4fa54fea-d850-11ec-9d64-0242ac120002");
-        ResponseEntity<?> response = laboratoryController.unprocessedUputi(lbp);
+        ResponseEntity<?> response = laboratoryController.unprocessedUputi(lbp.toString());
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
     }
 

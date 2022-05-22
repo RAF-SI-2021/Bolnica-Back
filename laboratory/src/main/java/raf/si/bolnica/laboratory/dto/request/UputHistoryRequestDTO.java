@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UputHistoryRequestDTO {
-    private UUID lbp;
+    private String lbp;
     private Timestamp odDatuma;
     private Timestamp doDatuma;
 }

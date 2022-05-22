@@ -1,11 +1,9 @@
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import raf.si.bolnica.laboratory.constants.Constants;
 import raf.si.bolnica.laboratory.controllers.LaboratoryController;
 import raf.si.bolnica.laboratory.dto.request.LaboratorijskiRadniNalogRequestDTO;
@@ -148,7 +146,7 @@ public class LaboratoryWorkOrdersTests {
         when(query.getResultList()).thenReturn(lista);
         when(entityManager.createQuery(eq(s),any(Class.class))).thenReturn(query);
         LaboratorijskiRadniNalogRequestDTO requestDTO = new LaboratorijskiRadniNalogRequestDTO();
-        requestDTO.setLbp(UUID.randomUUID());
+        requestDTO.setLbp(UUID.randomUUID().toString());
         requestDTO.setOdDatuma(Timestamp.valueOf(LocalDateTime.now()));
         requestDTO.setDoDatuma(Timestamp.valueOf(LocalDateTime.now()));
         ResponseEntity<?> response = laboratoryController.getLaboratorijskiRadniNalogIstorija(requestDTO,1,1);
@@ -270,7 +268,7 @@ public class LaboratoryWorkOrdersTests {
         when(query.getResultList()).thenReturn(lista);
         when(entityManager.createQuery(eq(s),any(Class.class))).thenReturn(query);
         LaboratorijskiRadniNalogSearchRequestDTO requestDTO = new LaboratorijskiRadniNalogSearchRequestDTO();
-        requestDTO.setLbp(UUID.randomUUID());
+        requestDTO.setLbp(UUID.randomUUID().toString());
         requestDTO.setOdDatuma(Timestamp.valueOf(LocalDateTime.now()));
         requestDTO.setDoDatuma(Timestamp.valueOf(LocalDateTime.now()));
         requestDTO.setStatusObrade(StatusObrade.NEOBRADJEN);

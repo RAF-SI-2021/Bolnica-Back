@@ -4,14 +4,14 @@ import java.sql.Date;
 import java.util.UUID;
 
 public class FindScheduledLabExaminationsDTO {
-    private UUID lbp;
+    private String lbp;
     private Date date;
 
-    public UUID getLbp() {
+    public String getLbp() {
         return lbp;
     }
 
-    public void setLbp(UUID lbp) {
+    public void setLbp(String lbp) {
         this.lbp = lbp;
     }
 

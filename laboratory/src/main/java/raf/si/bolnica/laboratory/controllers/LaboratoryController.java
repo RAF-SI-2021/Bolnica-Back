@@ -87,11 +87,11 @@ public class LaboratoryController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         if (findScheduledLabExaminationsDTO.getDate() != null && findScheduledLabExaminationsDTO.getLbp() != null) {
-            return ResponseEntity.ok(zakazanLaboratorijskiPregledService.findByOdeljenjeIdAndZakazanDatumAndLbp(loggedInUser.getOdeljenjeId(), findScheduledLabExaminationsDTO.getDate(), findScheduledLabExaminationsDTO.getLbp()));
+            return ResponseEntity.ok(zakazanLaboratorijskiPregledService.findByOdeljenjeIdAndZakazanDatumAndLbp(loggedInUser.getOdeljenjeId(), findScheduledLabExaminationsDTO.getDate(), UUID.fromString(findScheduledLabExaminationsDTO.getLbp())));
         } else if (findScheduledLabExaminationsDTO.getDate() != null) {
             return ResponseEntity.ok(zakazanLaboratorijskiPregledService.findByOdeljenjeIdAndZakazanDatum(loggedInUser.getOdeljenjeId(), findScheduledLabExaminationsDTO.getDate()));
         } else if (findScheduledLabExaminationsDTO.getLbp() != null) {
-            return ResponseEntity.ok(zakazanLaboratorijskiPregledService.findByOdeljenjeIdAndLbp(loggedInUser.getOdeljenjeId(), findScheduledLabExaminationsDTO.getLbp()));
+            return ResponseEntity.ok(zakazanLaboratorijskiPregledService.findByOdeljenjeIdAndLbp(loggedInUser.getOdeljenjeId(), UUID.fromString(findScheduledLabExaminationsDTO.getLbp())));
         } else {
             return ResponseEntity.ok(zakazanLaboratorijskiPregledService.findByOdeljenjeId(loggedInUser.getOdeljenjeId()));
         }
@@ -124,7 +124,7 @@ public class LaboratoryController {
 
 
         ZakazanLaboratorijskiPregled pregled = new ZakazanLaboratorijskiPregled();
-        pregled.setLbp(request.getLbp());
+        pregled.setLbp(UUID.fromString(request.getLbp()));
         pregled.setNapomena(request.getNapomena());
         pregled.setZakazanDatum(request.getDate());
         pregled.setLbz(loggedInUser.getLBZ());
@@ -578,7 +578,7 @@ public class LaboratoryController {
     }
 
     @GetMapping(value = "/unprocessed-uputi")
-    public ResponseEntity<?> unprocessedUputi(@RequestParam UUID lbp) {
+    public ResponseEntity<?> unprocessedUputi(@RequestParam String lbp) {
         StatusUputa status = StatusUputa.NEREALIZOVAN;
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);

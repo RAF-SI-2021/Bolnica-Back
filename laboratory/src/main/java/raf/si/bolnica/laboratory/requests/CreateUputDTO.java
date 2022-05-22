@@ -16,10 +16,10 @@ import java.util.UUID;
 public class CreateUputDTO {
     //neophodni parametri
     private TipUputa tip;
-    private UUID lbz;
+    private String lbz;
     private Integer izOdeljenjaId;
     private Integer zaOdeljenjeId;
-    private UUID lbp;
+    private String lbp;
     private Timestamp datumVremeKreiranja;
 
 

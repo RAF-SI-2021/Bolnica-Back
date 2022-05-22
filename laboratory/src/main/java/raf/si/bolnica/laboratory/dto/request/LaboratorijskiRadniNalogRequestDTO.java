@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LaboratorijskiRadniNalogRequestDTO {
-    UUID lbp;
+    String lbp;
     Timestamp odDatuma;
     Timestamp doDatuma;
 }

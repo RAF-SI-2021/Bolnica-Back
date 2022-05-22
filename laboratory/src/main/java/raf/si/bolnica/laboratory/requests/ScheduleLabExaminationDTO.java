@@ -5,11 +5,11 @@ import java.util.UUID;
 
 public class ScheduleLabExaminationDTO {
 
-    private UUID lbp;
+    private String lbp;
     private Date date;
     private String napomena;
 
-    public UUID getLbp() {
+    public String getLbp() {
         return lbp;
     }
 
@@ -21,7 +21,7 @@ public class ScheduleLabExaminationDTO {
         return napomena;
     }
 
-    public void setLbp(UUID lbp) {
+    public void setLbp(String lbp) {
         this.lbp = lbp;
     }
 

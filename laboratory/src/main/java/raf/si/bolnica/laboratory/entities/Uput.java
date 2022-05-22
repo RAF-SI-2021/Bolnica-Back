@@ -64,8 +64,8 @@ public class Uput {
         this.izOdeljenjaId=(DTO.getIzOdeljenjaId());
         this.razlogUpucivanja=(DTO.getRazlogUpucivanja());
         this.zaOdeljenjeId=(DTO.getZaOdeljenjeId());
-        this.lbp=(DTO.getLbp());
-        this.lbz=(DTO.getLbz());
+        this.lbp=(UUID.fromString(DTO.getLbp()));
+        this.lbz=(UUID.fromString(DTO.getLbz()));
         this.zahtevaneAnalize=(DTO.getZahtevaneAnalize());
         this.uputnaDijagnoza=(DTO.getUputnaDijagnoza());
     }
