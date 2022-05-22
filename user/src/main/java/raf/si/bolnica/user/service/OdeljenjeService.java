@@ -9,4 +9,8 @@ public interface OdeljenjeService {
     Odeljenje fetchOdeljenjeById(long id);
 
     List<Odeljenje> findAll();
+
+    Odeljenje saveOdeljenje(Odeljenje odeljenje);
+
+    List<Odeljenje> searchByNaziv(String naziv);
 }

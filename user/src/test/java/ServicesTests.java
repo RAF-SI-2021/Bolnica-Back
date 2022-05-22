@@ -1,5 +1,6 @@
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -74,42 +75,42 @@ public class ServicesTests {
     public void loginTest() {
         UserExceptionHandler handler = new UserExceptionHandler();
 
-        ReflectionTestUtils.setField(userExceptionHandler,"validateUserUsername",handler.validateUserUsername);
-        ReflectionTestUtils.setField(userExceptionHandler, "validatePassword",handler.validatePassword);
+        ReflectionTestUtils.setField(userExceptionHandler, "validateUserUsername", handler.validateUserUsername);
+        ReflectionTestUtils.setField(userExceptionHandler, "validatePassword", handler.validatePassword);
 
         when(userRepository.findByEmail(any(String.class))).thenAnswer(i -> {
-           User u = new User();
-           u.setPassword(BCrypt.hashpw("pass",BCrypt.gensalt()));
-           u.setEmail((String) i.getArguments()[0]);
-           return u;
+            User u = new User();
+            u.setPassword(BCrypt.hashpw("pass", BCrypt.gensalt()));
+            u.setEmail((String) i.getArguments()[0]);
+            return u;
         });
 
         LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
         loginRequestDTO.setEmail("mejl");
         loginRequestDTO.setPassword("pass");
 
-        when(jwtTokenProvider.createToken(any(String.class),any(User.class))).thenReturn("token");
+        when(jwtTokenProvider.createToken(any(String.class), any(User.class))).thenReturn("token");
 
-        String token = loginService.login(loginRequestDTO,mock(HttpServletRequest.class));
+        String token = loginService.login(loginRequestDTO, mock(HttpServletRequest.class));
 
         assertThat(token).isEqualTo("token");
     }
 
-    @Test
-    public void OdeljenjeTests() {
-        when(odeljenjeRepository.findAll()).thenReturn(new ArrayList<>());
-        when(odeljenjeRepository.findById(eq(1L))).thenAnswer(i -> {
-            Odeljenje o = new Odeljenje();
-            o.setOdeljenjeId(1L);
-            return o;
-        });
-
-        Odeljenje o = odeljenjeService.fetchOdeljenjeById(1L);
-        assertThat(o.getOdeljenjeId()).isEqualTo(1L);
-
-        List<Odeljenje> lista = odeljenjeService.findAll();
-        assertThat(lista.size()).isEqualTo(0);
-    }
+//    @Test
+//    public void OdeljenjeTests() {
+//        when(odeljenjeRepository.findAll()).thenReturn(new ArrayList<>());
+//        when(odeljenjeRepository.findById(eq(1L))).thenAnswer(i -> {
+//            Odeljenje o = new Odeljenje();
+//            o.setOdeljenjeId(1L);
+//            return o;
+//        });
+//
+//        Odeljenje o = odeljenjeService.fetchOdeljenjeById(1L);
+//        assertThat(o.getOdeljenjeId()).isEqualTo(1L);
+//
+//        List<Odeljenje> lista = odeljenjeService.findAll();
+//        assertThat(lista.size()).isEqualTo(0);
+//    }
 
     @Test
     public void generatePasswordTest() {
@@ -122,7 +123,7 @@ public class ServicesTests {
     public void savePasswordTest() {
         User u = new User();
         when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
-        User newUser = userService.savePassword(u,"pass");
-        assertThat(BCrypt.checkpw("pass",newUser.getPassword())).isTrue();
+        User newUser = userService.savePassword(u, "pass");
+        assertThat(BCrypt.checkpw("pass", newUser.getPassword())).isTrue();
     }
 }

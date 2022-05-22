@@ -10,7 +10,10 @@ public class Constants {
     public static final String LIST_EMPLOYEES = "/list-employees";
     public static final String UPDATE_EMPLOYEE = "/update-employee";
     public static final String LIST_EMPLOYEES_BY_PBO = "/find-employees-pbo/{pbo}";
-
+    public static final String SEARCH_DEPARTMENT_BY_NAME = "/department/search";
+    public static final String VISA_MED_SESTRA = "ROLE_VISA_MED_SESTRA";
+    public static final String ROLE_DR_SPEC_ODELJENJA = "ROLE_DR_SPEC_ODELJENJA";
+    
     public static final String JWT_KEY = "QnuQblQWn8H9ggiwfGbCxpPA3gdY1oAe";
 
     public interface ForgetPassword {
