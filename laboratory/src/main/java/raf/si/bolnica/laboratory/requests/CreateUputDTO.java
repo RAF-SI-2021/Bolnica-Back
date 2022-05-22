@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 import raf.si.bolnica.laboratory.entities.enums.TipUputa;
 
-import javax.persistence.Column;
 import java.sql.Timestamp;
 import java.util.UUID;
 
