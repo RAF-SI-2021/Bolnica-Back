@@ -1,5 +1,6 @@
 package raf.si.bolnica.laboratory.controllers;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,12 @@ import raf.si.bolnica.laboratory.entities.*;
 import raf.si.bolnica.laboratory.entities.enums.StatusObrade;
 import raf.si.bolnica.laboratory.entities.enums.StatusUputa;
 import raf.si.bolnica.laboratory.interceptors.LoggedInUser;
-import raf.si.bolnica.laboratory.requests.CreateUputDTO;
-import raf.si.bolnica.laboratory.requests.FindScheduledLabExaminationsDTO;
-import raf.si.bolnica.laboratory.requests.ScheduleLabExaminationDTO;
-import raf.si.bolnica.laboratory.requests.SetStatusExaminationDTO;
+import raf.si.bolnica.laboratory.requests.*;
 import raf.si.bolnica.laboratory.services.*;
 
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -67,14 +67,17 @@ public class LaboratoryController {
     @Autowired
     private EntityManager entityManager;
 
-    @GetMapping(value = "/get-lab-examinations/{date}")
-    public ResponseEntity<Integer> getLabExaminationsOnDate(@PathVariable Date date) {
+    @PostMapping(value = "/get-lab-examinations")
+    public ResponseEntity<Integer> getLabExaminationsOnDate(@RequestBody GetLabExaminationsByDateDTO getLabExaminationsByDateDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);
         acceptedRoles.add(Constants.VISI_LABORATORIJSKI_TEHNICAR);
         if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+
+        Date date = new Date(getLabExaminationsByDateDTO.getDateAndTime().getTime());
+
         return ResponseEntity.ok(zakazanLaboratorijskiPregledService.getZakazaniPreglediByDate(date).size());
     }
 
@@ -206,7 +209,7 @@ public class LaboratoryController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping(value = "/laboratory-work-order-history")
+    @PostMapping(value = "/laboratory-work-order-history")
     public ResponseEntity<?> getLaboratorijskiRadniNalogIstorija(@RequestBody LaboratorijskiRadniNalogRequestDTO request,
                                                                  @RequestParam int page,
                                                                  @RequestParam int size) {
@@ -481,7 +484,7 @@ public class LaboratoryController {
         acceptedRoles.add(Constants.DR_SPEC);
         acceptedRoles.add(Constants.DR_SPEC_POV);
 
-            if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -491,8 +494,8 @@ public class LaboratoryController {
         requiredParams.add(request.getLbz());
         requiredParams.add(request.getIzOdeljenjaId());
         requiredParams.add(request.getZaOdeljenjeId());
-        for(Object param : requiredParams){
-            if (param == null){
+        for (Object param : requiredParams) {
+            if (param == null) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(" Required param is not defined ");
             }
         }
@@ -526,7 +529,7 @@ public class LaboratoryController {
         acceptedRoles.add(Constants.DR_SPEC_POV);
 
         if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         Uput uput = uputService.fetchUputById(uputId);
@@ -534,10 +537,10 @@ public class LaboratoryController {
         return ok(uput);
     }
 
-    @GetMapping(value = "/uput-history")
+    @PostMapping(value = "/uput-history")
     public ResponseEntity<?> uputHistory(@RequestBody UputHistoryRequestDTO request,
-                                            @RequestParam int page,
-                                            @RequestParam int size) {
+                                         @RequestParam int page,
+                                         @RequestParam int size) {
 
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
@@ -546,7 +549,7 @@ public class LaboratoryController {
         String s = "SELECT u from Uput u WHERE u.lbp = :lbp";
 
         if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-              return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         Map<String, Object> param = new HashMap<>();
         param.put("lbp", request.getLbp());
@@ -566,7 +569,7 @@ public class LaboratoryController {
             query.setParameter(t, param.get(t));
         }
         List<UputResponseDTO> ret = new ArrayList<>();
-        for(Uput uput : query.getResultList()){
+        for (Uput uput : query.getResultList()) {
             ret.add(new UputResponseDTO(uput));
         }
 
@@ -585,7 +588,7 @@ public class LaboratoryController {
         acceptedRoles.add(Constants.VISI_LABORATORIJSKI_TEHNICAR);
         String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput from LaboratorijskiRadniNalog) ";
         if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-              return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         Map<String, Object> param = new HashMap<>();
         param.put("status", status);
@@ -599,7 +602,7 @@ public class LaboratoryController {
             query.setParameter(t, param.get(t));
         }
         List<UputResponseDTO> ret = new ArrayList<>();
-        for(Uput uput : query.getResultList()){
+        for (Uput uput : query.getResultList()) {
             ret.add(new UputResponseDTO(uput));
         }
         return ok(ret);
