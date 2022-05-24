@@ -370,7 +370,7 @@ public class LaboratoryController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping(value = "/fetch-laboratory-work-orders")
+    @PostMapping(value = "/fetch-laboratory-work-orders")
     public ResponseEntity<?> getLaboratorijskiRadniNalogPretraga(@RequestBody LaboratorijskiRadniNalogSearchRequestDTO request,
                                                                  @RequestParam int page,
                                                                  @RequestParam int size) {
@@ -424,6 +424,22 @@ public class LaboratoryController {
         }
 
         return ok(ret);
+    }
+
+    @GetMapping(value = "/get-work-order")
+    public ResponseEntity<LaboratorijskiRadniNalogResponseDTO> getLaboratorijskiRadniNalog(@RequestParam long id) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.SPEC_BIOHEMICAR);
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        LaboratorijskiRadniNalog nalog = radniNalogService.fetchRadniNalogById(id);
+
+        if (nalog == null)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        return ok(new LaboratorijskiRadniNalogResponseDTO(nalog));
     }
 
     @PutMapping(value = "/verify-work-order")
