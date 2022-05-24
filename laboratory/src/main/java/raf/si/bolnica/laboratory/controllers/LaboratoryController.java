@@ -67,7 +67,7 @@ public class LaboratoryController {
     @Autowired
     private EntityManager entityManager;
 
-    @PostMapping(value = "/get-lab-examinations")
+    @PostMapping(value = "/get-lab-examination-count")
     public ResponseEntity<Integer> getLabExaminationsOnDate(@RequestBody GetLabExaminationsByDateDTO getLabExaminationsByDateDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);
