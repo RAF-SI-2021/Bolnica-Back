@@ -23,13 +23,6 @@ public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaborator
 
     @Override
     public ZakazanLaboratorijskiPregled saveZakazanPregled(ZakazanLaboratorijskiPregled pregled) {
-        Optional<ZakazanLaboratorijskiPregled> toSave = repository.
-                findZakazanLaboratorijskiPregledByLbzEqualsAndZakazanDatum(pregled.getLbz(), pregled.getZakazanDatum());
-
-        if (toSave.isPresent()) {
-            throw new AccessDeniedException("Appointment already made!");
-        }
-
         return repository.save(pregled);
     }
 
