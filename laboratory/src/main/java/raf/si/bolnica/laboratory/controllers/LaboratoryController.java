@@ -608,7 +608,7 @@ public class LaboratoryController {
         }
         Map<String, Object> param = new HashMap<>();
         param.put("status", status);
-        param.put("lbp", lbp);
+        param.put("lbp", UUID.fromString(lbp));
 
 
         TypedQuery<Uput> query
