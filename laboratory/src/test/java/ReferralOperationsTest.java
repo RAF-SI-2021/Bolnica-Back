@@ -222,7 +222,7 @@ public class ReferralOperationsTest{
 
     public void unproccesedUputiSuccess() {
         when(loggedInUser.getRoles()).thenReturn(allRoles());
-        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput from LaboratorijskiRadniNalog) ";
+        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput.uputId from LaboratorijskiRadniNalog) ";
         TypedQuery query = mock(TypedQuery.class);
         List<Uput> lista = new ArrayList<>();
         lista.add(new Uput());

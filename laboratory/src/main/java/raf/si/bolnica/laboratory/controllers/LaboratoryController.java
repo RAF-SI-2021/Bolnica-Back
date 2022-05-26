@@ -602,7 +602,7 @@ public class LaboratoryController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);
         acceptedRoles.add(Constants.VISI_LABORATORIJSKI_TEHNICAR);
-        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput from LaboratorijskiRadniNalog) ";
+        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput.uputId from LaboratorijskiRadniNalog) ";
         if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
