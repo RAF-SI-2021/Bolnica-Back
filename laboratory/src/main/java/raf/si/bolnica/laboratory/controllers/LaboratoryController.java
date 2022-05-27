@@ -127,6 +127,7 @@ public class LaboratoryController {
 
 
         ZakazanLaboratorijskiPregled pregled = new ZakazanLaboratorijskiPregled();
+        pregled.setStatusPregleda(StatusPregleda.ZAKAZANO);
         pregled.setLbp(UUID.fromString(request.getLbp()));
         pregled.setNapomena(request.getNapomena());
         pregled.setZakazanDatum(request.getDate());
@@ -568,7 +569,7 @@ public class LaboratoryController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         Map<String, Object> param = new HashMap<>();
-        param.put("lbp", request.getLbp());
+        param.put("lbp", UUID.fromString(request.getLbp()));
 
         if (request.getDoDatuma() != null) {
             param.put("do", request.getDoDatuma());

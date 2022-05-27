@@ -218,8 +218,8 @@ public class ReferralOperationsTest{
         ResponseEntity<?> response = laboratoryController.unprocessedUputi(lbp.toString());
         assertThat(response.getStatusCodeValue()).isEqualTo(403);
     }
-    @Test
 
+    @Test
     public void unproccesedUputiSuccess() {
         when(loggedInUser.getRoles()).thenReturn(allRoles());
         String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput.uputId from LaboratorijskiRadniNalog) ";

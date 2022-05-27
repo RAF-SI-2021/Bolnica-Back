@@ -26,7 +26,7 @@ public class ZakazanLaboratorijskiPregled {
     private Date zakazanDatum;
 
     @Enumerated(EnumType.STRING)
-    private StatusPregleda statusPregleda = StatusPregleda.ZAKAZANO;
+    private StatusPregleda statusPregleda;
 
     private String napomena;
 
