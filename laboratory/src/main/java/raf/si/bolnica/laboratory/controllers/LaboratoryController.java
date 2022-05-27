@@ -127,6 +127,7 @@ public class LaboratoryController {
 
 
         ZakazanLaboratorijskiPregled pregled = new ZakazanLaboratorijskiPregled();
+        pregled.setStatusPregleda(StatusPregleda.ZAKAZANO);
         pregled.setLbp(UUID.fromString(request.getLbp()));
         pregled.setNapomena(request.getNapomena());
         pregled.setZakazanDatum(request.getDate());
@@ -568,7 +569,7 @@ public class LaboratoryController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         Map<String, Object> param = new HashMap<>();
-        param.put("lbp", request.getLbp());
+        param.put("lbp", UUID.fromString(request.getLbp()));
 
         if (request.getDoDatuma() != null) {
             param.put("do", request.getDoDatuma());
@@ -602,7 +603,7 @@ public class LaboratoryController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);
         acceptedRoles.add(Constants.VISI_LABORATORIJSKI_TEHNICAR);
-        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput from LaboratorijskiRadniNalog) ";
+        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput.uputId from LaboratorijskiRadniNalog) ";
         if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
