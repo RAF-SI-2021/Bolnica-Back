@@ -16,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UputResponseDTO {
     //neophodni parametri
+    private Long uputId;
     private TipUputa tip;
     private UUID lbz;
     private Integer izOdeljenjaId;
@@ -31,7 +32,7 @@ public class UputResponseDTO {
     private String razlogUpucivanja;
 
     public UputResponseDTO(Uput uput) {
-
+        this.uputId = uput.getUputId();
         this.tip = uput.getTip();
         this.lbz = uput.getLbz();
         this.izOdeljenjaId = uput.getIzOdeljenjaId();
