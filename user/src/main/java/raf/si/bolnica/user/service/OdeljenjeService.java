@@ -10,6 +10,8 @@ public interface OdeljenjeService {
 
     List<Odeljenje> findAll();
 
+    List<Odeljenje> findAllByPbb(long pbb);
+
     Odeljenje saveOdeljenje(Odeljenje odeljenje);
 
     List<Odeljenje> searchByNaziv(String naziv);
