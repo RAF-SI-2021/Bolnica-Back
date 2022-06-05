@@ -4,6 +4,7 @@ package raf.si.bolnica.management.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import raf.si.bolnica.management.entities.ZakazaniPregled;
 import raf.si.bolnica.management.repositories.ScheduledAppointmentRepository;
 

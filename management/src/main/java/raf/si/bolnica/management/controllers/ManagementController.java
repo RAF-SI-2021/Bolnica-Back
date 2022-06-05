@@ -156,6 +156,8 @@ public class ManagementController {
         acceptedRoles.add(Constants.ADMIN);
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
         acceptedRoles.add(Constants.MED_SESTRA);
+        acceptedRoles.add(Constants.RECEPCIONER);
+
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
@@ -193,6 +195,8 @@ public class ManagementController {
         acceptedRoles.add(Constants.ADMIN);
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
         acceptedRoles.add(Constants.MED_SESTRA);
+        acceptedRoles.add(Constants.RECEPCIONER);
+
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             String msg = PacijentCRUDRequestValidator.checkValid(request);
@@ -221,6 +225,7 @@ public class ManagementController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.ADMIN);
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
+
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
@@ -306,6 +311,8 @@ public class ManagementController {
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
         acceptedRoles.add(Constants.MED_SESTRA);
+        acceptedRoles.add(Constants.RECEPCIONER);
+
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
@@ -403,6 +410,8 @@ public class ManagementController {
         acceptedRoles.add("ROLE_ADMIN");
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
+        acceptedRoles.add(Constants.RECEPCIONER);
+
         if (requestDTO.getDateAndTimeOfAppointment() == null || requestDTO.getLbz() == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -436,6 +445,8 @@ public class ManagementController {
         acceptedRoles.add(Constants.ADMIN);
         acceptedRoles.add(Constants.NACELNIK);
         acceptedRoles.add(Constants.SPECIJALISTA);
+        acceptedRoles.add(Constants.RECEPCIONER);
+
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
@@ -642,7 +653,7 @@ public class ManagementController {
     @PostMapping(value = "/list-appointments-by-lbz")
     public ResponseEntity<List<?>> listAppointmentsByLBZ(@RequestBody SearchForAppointmentDTO searchForAppointmentDTO) {
         //Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra
-        String[] roles = {"ROLE_ADMIN", "ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC", "ROLE_VISA_MED_SESTA", "ROLE_MED_SESTRA"};
+        String[] roles = {"ROLE_ADMIN", "ROLE_DR_SPEC_ODELJENJA", "ROLE_DR_SPEC", "ROLE_VISA_MED_SESTA", "ROLE_MED_SESTRA", Constants.RECEPCIONER};
         for (int i = 0; i < 4; i++) {
             if (loggedInUser.getRoles().contains(roles[i])) {
                 if (searchForAppointmentDTO.getDate() == null) {

@@ -41,6 +41,9 @@ public class ZakazaniPregled {
     @JoinColumn(name = "pacijent_id")
     private Pacijent pacijent;
 
+    @Version
+    private Integer version;
+
     public UUID getLbzLekara() {
         return lbzLekara;
     }
@@ -104,5 +107,12 @@ public class ZakazaniPregled {
     public void setStatusPregleda(StatusPregleda statusPregleda) {
         this.statusPregleda = statusPregleda;
     }
-    
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 }
