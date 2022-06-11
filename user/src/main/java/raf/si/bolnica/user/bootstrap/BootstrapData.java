@@ -120,6 +120,9 @@ public class BootstrapData implements CommandLineRunner {
         Role specijalistaMedicinskeBiohemijeRole = new Role();
         specijalistaMedicinskeBiohemijeRole.setName("ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE");
 
+        Role recepcioner = new Role();
+        recepcioner.setName("ROLE_RECEPCIONER");
+
 
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.save(adminRole));
@@ -132,6 +135,7 @@ public class BootstrapData implements CommandLineRunner {
         roles.add(roleRepository.save(labaratorijskiTehnicarRole));
         roles.add(roleRepository.save(medicinskiBiohemicarRole));
         roles.add(roleRepository.save(specijalistaMedicinskeBiohemijeRole));
+        roles.add(roleRepository.save(recepcioner));
 
 
         User user = new User();

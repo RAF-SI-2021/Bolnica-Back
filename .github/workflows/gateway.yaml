@@ -2,7 +2,7 @@ name: Gateway build test
 on:
   push:
     branches:
-      - master
+      - '**'
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:

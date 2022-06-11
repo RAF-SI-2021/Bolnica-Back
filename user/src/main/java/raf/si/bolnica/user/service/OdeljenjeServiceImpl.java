@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.user.models.Odeljenje;
 import raf.si.bolnica.user.repositories.OdeljenjeRepository;
 
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -23,6 +24,14 @@ public class OdeljenjeServiceImpl implements OdeljenjeService {
     @Override
     public List<Odeljenje> findAll() {
         return odeljenjeRepository.findAll();
+    }
+
+    @Override
+    public List<Odeljenje> findAllByPbb(long pbb) {
+        final List<Odeljenje> allDepartments = findAll();
+        allDepartments.removeIf(odeljenje -> odeljenje.getBolnica().getPoslovniBrojBolnice() != pbb);
+
+        return allDepartments;
     }
 
     @Override

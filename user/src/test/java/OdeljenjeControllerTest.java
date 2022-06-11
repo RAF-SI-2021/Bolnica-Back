@@ -71,4 +71,31 @@ class OdeljenjeControllerTest {
         assertThat(response.getStatusCodeValue()).isEqualTo(204);
     }
 
+    @Test
+    public void whenFindByPbb_ExpectStatusCode200() {
+        Set<String> roles = new TreeSet<>();
+
+        roles.add("ROLE_RECEPCIONER");
+
+        ZdravstvenaUstanova zdravstvenaUstanova = new ZdravstvenaUstanova();
+        zdravstvenaUstanova.setAdresa("Heroja Milana Tepića 1, Beograd");
+        zdravstvenaUstanova.setDatumOsnivanja(new Date(Calendar.getInstance().getTime().getTime()));
+        zdravstvenaUstanova.setDelatnost("Ginekologija i akušerstvo");
+        zdravstvenaUstanova.setMesto("Beograd");
+        zdravstvenaUstanova.setNaziv("Kliničko-bolnički centar \"Dragiša Mišović\"");
+        zdravstvenaUstanova.setPoslovniBrojBolnice(1234);
+        zdravstvenaUstanova.setSkracenNaziv("KBC Dragiša Mišović");
+
+        Odeljenje odeljenje = new Odeljenje();
+        odeljenje.setNaziv("Hirurgija");
+        odeljenje.setBolnica(zdravstvenaUstanova);
+        odeljenje.setPoslovniBrojOdeljenja(12345);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        ResponseEntity<?> response = odeljenjeController.getAllDepartments(12345L);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
 }
