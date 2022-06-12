@@ -1,69 +1,44 @@
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.assertj.core.util.Arrays;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import raf.si.bolnica.user.constants.Constants;
-import raf.si.bolnica.user.controllers.LoginController;
 import raf.si.bolnica.user.controllers.UserController;
 import raf.si.bolnica.user.exceptionHandler.user.UserExceptionHandler;
 import raf.si.bolnica.user.interceptors.LoggedInUser;
-import raf.si.bolnica.user.jwt.JwtProperties;
 import raf.si.bolnica.user.repositories.RoleRepository;
-import raf.si.bolnica.user.requests.LoginRequestDTO;
 import raf.si.bolnica.user.service.EmailService;
-import raf.si.bolnica.user.service.LoginService;
 import raf.si.bolnica.user.service.OdeljenjeService;
 import raf.si.bolnica.user.service.UserService;
-import com.auth0.jwt.JWT;
 
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.Base64;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.sql.Date;
 
-import static org.apache.tomcat.jni.Time.now;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static raf.si.bolnica.user.constants.Constants.JWT_KEY;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 @WebMvcTest(UserController.class)
-@ContextConfiguration(classes = {UserController.class, JwtProperties.class})
+@ContextConfiguration(classes = {UserController.class})
+@WebAppConfiguration
 class UserControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-//    @MockBean
-//    LoginService loginService;
-////    @InjectMocks
-////    private LoginController loginController;
-
-    private String jwt;
-
-    private String jwtStatic = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5hbWUiOiJhZG1pbiIsInN1cm5hbWUiOiJhZG1pbmljIiwidGl0bGUiOiJ0aXR1bGEiLCJwcm9mZXNzaW9uIjoiemFuaW1hbmplIiwiTEJaIjoiZTJiZjFkN2ItNGI2NC00MTNmLTg1MmItYWY4OTljZTBhMGFmIiwiUEJPIjoxMjM0NSwiZGVwYXJ0bWVudCI6IkhpcnVyZ2lqYSIsIlBCQiI6MTIzNCwiaG9zcGl0YWwiOiJLbGluacSNa28tYm9sbmnEjWtpIGNlbnRhciBcIkRyYWdpxaFhIE1pxaFvdmnEh1wiIiwicm9sZXMiOiJST0xFX0xBQk9SQVRPUklKU0tJX1RFSE5JQ0FSLFJPTEVfRFJfU1BFQ19QT1YsUk9MRV9NRURfU0VTVFJBLFJPTEVfU1BFQ0lKQUxJU1RBX01FRElDSU5TS0VfQklPSEVNSUpFLFJPTEVfVklTQV9NRURfU0VTVFJBLFJPTEVfTUVESUNJTlNLSV9CSU9IRU1JQ0FSLFJPTEVfQURNSU4sUk9MRV9EUl9TUEVDLFJPTEVfVklTSV9MQUJPUkFUT1JJSlNLSV9URUhOSUNBUixST0xFX0RSX1NQRUNfT0RFTEpFTkpBIiwiaXNzIjoiUW51UWJsUVduOEg5Z2dpd2ZHYkN4cFBBM2dkWTFvQWUiLCJleHAiOjE2NTU5NzA5MDl9.gyUz7SsFhnRw7nHQ24FWxT3U_wcrataZgzra3eK-gm8";
-
+    public String jwt = createJwt();
 
     @MockBean
     private UserService userService;
@@ -95,50 +70,87 @@ class UserControllerIntegrationTest {
         }
     }
 
-    @BeforeEach
-    private void initJwt(){
+    private String createJwt() {
 
         String secretKey = Base64.getEncoder().encodeToString("mysecret".getBytes());
 
-        jwt = Jwts.builder()
+        return Jwts.builder()
                 .setSubject("test@gmail.com")
-                .claim("name","admin")
+                .claim("name", "admin")
                 .claim("surname", "adminic")
-                .claim("roles", "ROLE_ADMIN,"+"ROLE_DR_SPEC_ODELJENJA,"+ "ROLE_DR_SPEC,"+ "ROLE_DR_SPEC_POV,"+
-                                                                "ROLE_VISA_MED_SESTRA,"+ "ROLE_MED_SESTRA,"+"ROLE_VISI_LABORATORIJSKI_TEHNICAR,"+
-                                                                "ROLE_LABORATORIJSKI_TEHNICAR,"+"ROLE_MEDICINSKI_BIOHEMICAR,"+
-                                                                "ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE,"+ "ROLE_RECEPCIONER")
+                .claim("title", "titula")
+                .claim("profession", "zanimanje")
+                .claim("LBZ", "e2bf1d7b-4b64-413f-852b-af899ce0a0af")
+                .claim("PBO", 12345)
+                .claim("department", "Hirurgija")
+                .claim("PBB", 1234)
+                .claim("hospital", "Kliničko-bolnički centar \"Dragiša Mišović\"")
+                .claim("roles", "ROLE_ADMIN," + "ROLE_DR_SPEC_ODELJENJA," + "ROLE_DR_SPEC," + "ROLE_DR_SPEC_POV," +
+                        "ROLE_VISA_MED_SESTRA," + "ROLE_MED_SESTRA," + "ROLE_VISI_LABORATORIJSKI_TEHNICAR," +
+                        "ROLE_LABORATORIJSKI_TEHNICAR," + "ROLE_MEDICINSKI_BIOHEMICAR," +
+                        "ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE," + "ROLE_RECEPCIONER")
                 .setIssuer(JWT_KEY)
-                .setExpiration(new Date(new Date().getTime() +1000000000))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000000000))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-
-
-//    @BeforeEach
-//    void setUp() throws Exception {
-//        LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
-//        loginRequestDTO.setEmail("test@gmail.com");
-//        loginRequestDTO.setPassword("superadmin");
-////        HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-////        jwt = loginService.login(loginRequestDTO, req);
-//
-//        jwt = mockMvc.perform(post("/api/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(asJsonString(loginRequestDTO)))
-//                .andReturn().getResponse().getContentAsString();
-//
-//        System.out.println(jwt);
-//    }
-
     @Test
     void fetchUserByUsername() throws Exception {
-//        System.out.println(jwt);
-        mockMvc.perform(post("/api/fetch-user")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer "+jwt)
+        String result = "{\n" +
+                "    \"userId\": 1,\n" +
+                "    \"name\": \"admin\",\n" +
+                "    \"surname\": \"adminic\",\n" +
+                "    \"password\": \"$2a$10$9/Mi5luE8LN0UTge9zgclui7Zjkn1RPvRvX7mawpf7O.oCtb2E.5i\",\n" +
+                "    \"email\": \"test@gmail.com\",\n" +
+                "    \"roles\": [\n" +
+                "        {\n" +
+                "            \"roleId\": 8,\n" +
+                "            \"name\": \"ROLE_LABORATORIJSKI_TEHNICAR\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"roleId\": 5,\n" +
+                "            \"name\": \"ROLE_VISA_MED_SESTRA\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"roleId\": 9,\n" +
+                "            \"name\": \"ROLE_MEDICINSKI_BIOHEMICAR\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"roleId\": 3,\n" +
+                "            \"name\": \"ROLE_DR_SPEC\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"roleId\": 7,\n" +
+                "            \"name\": \"ROLE_VISI_LABORATORIJSKI_TEHNICAR\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"roleId\": 1,\n" +
+                "            \"name\": \"ROLE_ADMIN\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"roleId\": 6,\n" +
+                "            \"name\": \"ROLE_MED_SESTRA\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"roleId\": 2,\n" +
+                "            \"name\": \"ROLE_DR_SPEC_ODELJENJA\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"roleId\": 4,\n" +
+                "            \"name\": \"ROLE_DR_SPEC_POV\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"roleId\": 10,\n" +
+                "            \"name\": \"ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+        mockMvc.perform(get("/api/fetch-user")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .param("username", "test@gmail.com"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().json(result));
     }
 
     @Test
@@ -146,23 +158,171 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    void createEmployee() {
+    void createEmployee() throws Exception {
+        mockMvc.perform(post("/api/create-employee")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .content("{\n" +
+                                "  \"address\": \"string\",\n" +
+                                "  \"city\": \"string\",\n" +
+                                "  \"contact\": \"string\",\n" +
+                                "  \"department\": 1,\n" +
+                                "  \"dob\": \"2022-04-16\",\n" +
+                                "  \"email\": \"zaposleni@ibis.rs\",\n" +
+                                "  \"gender\": \"male\",\n" +
+                                "  \"jmbg\": \"string\",\n" +
+                                "  \"name\": \"string\",\n" +
+                                "  \"profession\": \"Spec. hirurg\",\n" +
+                                "  \"surname\": \"string\",\n" +
+                                "  \"title\": \"Prof. dr. med.\"\n" +
+                                "}"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\n" +
+                        "    \"name\": \"string\",\n" +
+                        "    \"surname\": \"string\",\n" +
+                        "    \"dob\": 1650067200000,\n" +
+                        "    \"gender\": \"male\",\n" +
+                        "    \"jmbg\": \"string\",\n" +
+                        "    \"address\": \"string\",\n" +
+                        "    \"lbz\": \"91c71fdd-2e95-46f2-96c4-34d47aa90f4a\",\n" +
+                        "    \"city\": \"string\",\n" +
+                        "    \"contact\": \"string\",\n" +
+                        "    \"email\": \"zaposleni@ibis.rs\",\n" +
+                        "    \"title\": \"Prof. dr. med.\",\n" +
+                        "    \"profession\": \"Spec. hirurg\",\n" +
+                        "    \"department\": 1,\n" +
+                        "    \"username\": \"zaposleni\"\n" +
+                        "}"));
     }
 
     @Test
-    void removeEmployee() {
+    void removeEmployeeByLbz() throws Exception {
+        mockMvc.perform(delete("/api/remove-employee")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .content("{\n" +
+                                "    \"userCredential\": \"superadmin\",\n" +
+                                "    \"password\": \"superadmin\"\n" +
+                                "}")
+                        .param("lbz", "91c71fdd-2e95-46f2-96c4-34d47aa90f4"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getEmployee() {
+    void getEmployeeByLbz() throws Exception {
+        mockMvc.perform(get("/api/get-employee/e2bf1d7b-4b64-413f-852b-af899ce0a0af")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .content("{\n" +
+                                "    \"userCredential\": \"superadmin\",\n" +
+                                "    \"password\": \"superadmin\"\n" +
+                                "}"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\n" +
+                        "    \"name\": \"admin\",\n" +
+                        "    \"surname\": \"adminic\",\n" +
+                        "    \"dob\": 1654905600000,\n" +
+                        "    \"gender\": \"Muski\",\n" +
+                        "    \"jmbg\": \"123456789\",\n" +
+                        "    \"address\": \"adresa 1\",\n" +
+                        "    \"lbz\": \"e2bf1d7b-4b64-413f-852b-af899ce0a0af\",\n" +
+                        "    \"city\": \"SRBIJA\",\n" +
+                        "    \"contact\": \"+381 69312321\",\n" +
+                        "    \"email\": \"test@gmail.com\",\n" +
+                        "    \"title\": \"titula\",\n" +
+                        "    \"profession\": \"zanimanje\",\n" +
+                        "    \"department\": 1,\n" +
+                        "    \"username\": \"superadmin\"\n" +
+                        "}"));
     }
 
     @Test
-    void listEmployeesByPbo() {
+    void listEmployeesByPbo() throws Exception {
+        mockMvc.perform(get("/api/find-employees-pbo/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .content("{\n" +
+                                "    \"userCredential\": \"superadmin\",\n" +
+                                "    \"password\": \"superadmin\"\n" +
+                                "}"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[\n" +
+                        "    {\n" +
+                        "        \"name\": \"admin\",\n" +
+                        "        \"surname\": \"adminic\",\n" +
+                        "        \"dob\": 1654905600000,\n" +
+                        "        \"gender\": \"Muski\",\n" +
+                        "        \"jmbg\": \"123456789\",\n" +
+                        "        \"address\": \"adresa 1\",\n" +
+                        "        \"lbz\": \"e2bf1d7b-4b64-413f-852b-af899ce0a0af\",\n" +
+                        "        \"city\": \"SRBIJA\",\n" +
+                        "        \"contact\": \"+381 69312321\",\n" +
+                        "        \"email\": \"test@gmail.com\",\n" +
+                        "        \"title\": \"titula\",\n" +
+                        "        \"profession\": \"zanimanje\",\n" +
+                        "        \"department\": 1,\n" +
+                        "        \"username\": \"superadmin\"\n" +
+                        "    },\n" +
+                        "    {\n" +
+                        "        \"name\": \"string\",\n" +
+                        "        \"surname\": \"string\",\n" +
+                        "        \"dob\": 1650067200000,\n" +
+                        "        \"gender\": \"male\",\n" +
+                        "        \"jmbg\": \"string\",\n" +
+                        "        \"address\": \"string\",\n" +
+                        "        \"lbz\": \"91c71fdd-2e95-46f2-96c4-34d47aa90f4a\",\n" +
+                        "        \"city\": \"string\",\n" +
+                        "        \"contact\": \"string\",\n" +
+                        "        \"email\": \"zaposleni@ibis.rs\",\n" +
+                        "        \"title\": \"Prof. dr. med.\",\n" +
+                        "        \"profession\": \"Spec. hirurg\",\n" +
+                        "        \"department\": 1,\n" +
+                        "        \"username\": \"zaposleni\"\n" +
+                        "    }\n" +
+                        "]"));
     }
 
     @Test
-    void listEmployees() {
+    void listEmployees() throws Exception {
+        mockMvc.perform(post("/api/list-employees")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .content("{\n" +
+                                "    \"userCredential\": \"superadmin\",\n" +
+                                "    \"password\": \"superadmin\"\n" +
+                                "}")
+                        .param("page", "1")
+                        .param("size", "5"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[\n" +
+                        "    {\n" +
+                        "        \"name\": \"admin\",\n" +
+                        "        \"surname\": \"adminic\",\n" +
+                        "        \"dob\": 1654905600000,\n" +
+                        "        \"gender\": \"Muski\",\n" +
+                        "        \"jmbg\": \"123456789\",\n" +
+                        "        \"address\": \"adresa 1\",\n" +
+                        "        \"lbz\": \"e2bf1d7b-4b64-413f-852b-af899ce0a0af\",\n" +
+                        "        \"city\": \"SRBIJA\",\n" +
+                        "        \"contact\": \"+381 69312321\",\n" +
+                        "        \"email\": \"test@gmail.com\",\n" +
+                        "        \"title\": \"titula\",\n" +
+                        "        \"profession\": \"zanimanje\",\n" +
+                        "        \"department\": 1,\n" +
+                        "        \"username\": \"superadmin\"\n" +
+                        "    },\n" +
+                        "    {\n" +
+                        "        \"name\": \"string\",\n" +
+                        "        \"surname\": \"string\",\n" +
+                        "        \"dob\": 1650067200000,\n" +
+                        "        \"gender\": \"male\",\n" +
+                        "        \"jmbg\": \"string\",\n" +
+                        "        \"address\": \"string\",\n" +
+                        "        \"lbz\": \"91c71fdd-2e95-46f2-96c4-34d47aa90f4a\",\n" +
+                        "        \"city\": \"string\",\n" +
+                        "        \"contact\": \"string\",\n" +
+                        "        \"email\": \"zaposleni@ibis.rs\",\n" +
+                        "        \"title\": \"Prof. dr. med.\",\n" +
+                        "        \"profession\": \"Spec. hirurg\",\n" +
+                        "        \"department\": 1,\n" +
+                        "        \"username\": \"zaposleni\"\n" +
+                        "    }\n" +
+                        "]"));
     }
 
     @Test
