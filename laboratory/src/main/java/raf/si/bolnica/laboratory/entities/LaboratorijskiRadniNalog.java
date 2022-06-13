@@ -36,6 +36,7 @@ public class LaboratorijskiRadniNalog {
     @JoinColumn(name = "uput")
     private Uput uput;
 
+    private String labReport;
 
     public long getLaboratorijskiRadniNalogId() {
         return laboratorijskiRadniNalogId;
@@ -92,4 +93,8 @@ public class LaboratorijskiRadniNalog {
     public void setUput(Uput uput) {
         this.uput = uput;
     }
+
+    public String getLabReport() { return labReport; }
+
+    public void setLabReport(String labReport) { this.labReport = labReport; }
 }

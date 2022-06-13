@@ -67,6 +67,9 @@ public class LaboratoryController {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private PdfGeneratorService pdfGeneratorService;
+
     @PostMapping(value = "/get-lab-examination-count")
     public ResponseEntity<Integer> getLabExaminationsOnDate(@RequestBody GetLabExaminationsByDateDTO getLabExaminationsByDateDTO) {
         List<String> acceptedRoles = new ArrayList<>();
@@ -624,5 +627,10 @@ public class LaboratoryController {
         }
         return ok(ret);
 
+    }
+
+    @RequestMapping(path = "/labreportprint", method = RequestMethod.POST)
+    public ResponseEntity<?> labReportPrint(@RequestBody Map<String, Object> request){
+        return pdfGeneratorService.reportPrint(request);
     }
 }
