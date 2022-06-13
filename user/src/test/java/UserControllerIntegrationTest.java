@@ -8,14 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import raf.si.bolnica.user.UserApplication;
 import raf.si.bolnica.user.configuration.SpringWebConfiguration;
 
 import javax.servlet.ServletContext;
@@ -35,21 +39,22 @@ import static raf.si.bolnica.user.constants.Constants.JWT_KEY;
 ////@WebAppConfiguration
 //@AutoConfigureMockMvc
 //@SpringBootTest
-@SpringBootTest
+@SpringBootTest(classes = UserApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 class UserControllerIntegrationTest {
 
+    @Autowired
     private MockMvc mockMvc;
+
+    @LocalServerPort
+    private int port;
+
 
 //    @Autowired
 //    private WebApplicationContext webApplicationContext;
 
-    public String jwt = createJwt();
+    public String jwt;
 
-    @BeforeEach
-    public void setup() {
-//        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
-    }
 //
 //    @Test
 //    public void givenWac_whenServletContext_thenItProvidesGreetController() {
@@ -59,30 +64,46 @@ class UserControllerIntegrationTest {
 //        assertNotNull(webApplicationContext.getBean("userController"));
 //    }
 
-    private String createJwt() {
+    @BeforeEach
+    public void setUp() throws Exception {
+        System.out.println("PORT: " + port);
+        ResultActions resultActions = mockMvc.perform(post("http://localhost:" + 8081 + "/api/login")
+                        .contentType("application/json")
+                        .content("{\n" +
+                                "    \"email\": \"test@gmail.com\",\n" +
+                                "    \"password\": \"superadmin\"\n" +
+                                "}"))
+                .andExpect(status().isOk());
 
-        String secretKey = Base64.getEncoder().encodeToString("mysecret".getBytes());
-
-        return Jwts.builder()
-                .setSubject("test@gmail.com")
-                .claim("name", "admin")
-                .claim("surname", "adminic")
-                .claim("title", "titula")
-                .claim("profession", "zanimanje")
-                .claim("LBZ", "e2bf1d7b-4b64-413f-852b-af899ce0a0af")
-                .claim("PBO", 12345)
-                .claim("department", "Hirurgija")
-                .claim("PBB", 1234)
-                .claim("hospital", "Kliničko-bolnički centar \"Dragiša Mišović\"")
-                .claim("roles", "ROLE_ADMIN," + "ROLE_DR_SPEC_ODELJENJA," + "ROLE_DR_SPEC," + "ROLE_DR_SPEC_POV," +
-                        "ROLE_VISA_MED_SESTRA," + "ROLE_MED_SESTRA," + "ROLE_VISI_LABORATORIJSKI_TEHNICAR," +
-                        "ROLE_LABORATORIJSKI_TEHNICAR," + "ROLE_MEDICINSKI_BIOHEMICAR," +
-                        "ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE," + "ROLE_RECEPCIONER")
-                .setIssuer(JWT_KEY)
-                .setExpiration(new Date(System.currentTimeMillis() + 1000000000))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
+        MvcResult mvcResult = resultActions.andReturn();
+        System.out.println(mvcResult.getResponse().getContentAsString());
+        jwt = mvcResult.getResponse().getContentAsString().replace("\"", "");
     }
+
+//    private String createJwt() {
+//
+//        String secretKey = Base64.getEncoder().encodeToString("mysecret".getBytes());
+//
+//        return Jwts.builder()
+//                .setSubject("test@gmail.com")
+//                .claim("name", "admin")
+//                .claim("surname", "adminic")
+//                .claim("title", "titula")
+//                .claim("profession", "zanimanje")
+//                .claim("LBZ", "e2bf1d7b-4b64-413f-852b-af899ce0a0af")
+//                .claim("PBO", 12345)
+//                .claim("department", "Hirurgija")
+//                .claim("PBB", 1234)
+//                .claim("hospital", "Kliničko-bolnički centar \"Dragiša Mišović\"")
+//                .claim("roles", "ROLE_ADMIN," + "ROLE_DR_SPEC_ODELJENJA," + "ROLE_DR_SPEC," + "ROLE_DR_SPEC_POV," +
+//                        "ROLE_VISA_MED_SESTRA," + "ROLE_MED_SESTRA," + "ROLE_VISI_LABORATORIJSKI_TEHNICAR," +
+//                        "ROLE_LABORATORIJSKI_TEHNICAR," + "ROLE_MEDICINSKI_BIOHEMICAR," +
+//                        "ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE," + "ROLE_RECEPCIONER")
+//                .setIssuer(JWT_KEY)
+//                .setExpiration(new Date(System.currentTimeMillis() + 1000000000))
+//                .signWith(SignatureAlgorithm.HS256, secretKey)
+//                .compact();
+//    }
 
     @Test
     void fetchUserByUsername() throws Exception {
