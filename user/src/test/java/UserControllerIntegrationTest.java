@@ -1,74 +1,63 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.http.HttpHeaders;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import raf.si.bolnica.user.controllers.UserController;
-import raf.si.bolnica.user.exceptionHandler.user.UserExceptionHandler;
-import raf.si.bolnica.user.interceptors.LoggedInUser;
-import raf.si.bolnica.user.repositories.RoleRepository;
-import raf.si.bolnica.user.service.EmailService;
-import raf.si.bolnica.user.service.OdeljenjeService;
-import raf.si.bolnica.user.service.UserService;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import raf.si.bolnica.user.configuration.SpringWebConfiguration;
 
-import javax.persistence.EntityManager;
+import javax.servlet.ServletContext;
 
 import java.util.Base64;
-import java.sql.Date;
+import java.util.Date;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static raf.si.bolnica.user.constants.Constants.JWT_KEY;
 
-@ExtendWith(MockitoExtension.class)
-@WebMvcTest(UserController.class)
-@ContextConfiguration(classes = {UserController.class})
-@WebAppConfiguration
+////@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {SpringWebConfiguration.class})
+////@WebAppConfiguration
+//@AutoConfigureMockMvc
+//@SpringBootTest
+@SpringBootTest
+@AutoConfigureMockMvc
 class UserControllerIntegrationTest {
 
-    @Autowired
     private MockMvc mockMvc;
+
+//    @Autowired
+//    private WebApplicationContext webApplicationContext;
 
     public String jwt = createJwt();
 
-    @MockBean
-    private UserService userService;
-
-    @MockBean
-    private RoleRepository roleRepository;
-
-    @MockBean
-    private UserExceptionHandler userExceptionHandler;
-
-    @MockBean
-    private OdeljenjeService odeljenjeService;
-
-    @MockBean
-    private LoggedInUser loggedInUser;
-
-    @MockBean
-    private EmailService emailService;
-
-    @MockBean
-    private EntityManager entityManager;
-
-
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    @BeforeEach
+    public void setup() {
+//        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
+//
+//    @Test
+//    public void givenWac_whenServletContext_thenItProvidesGreetController() {
+//        final ServletContext servletContext = webApplicationContext.getServletContext();
+//        assertNotNull(servletContext);
+//        assertTrue(servletContext instanceof MockServletContext);
+//        assertNotNull(webApplicationContext.getBean("userController"));
+//    }
 
     private String createJwt() {
 
@@ -146,7 +135,7 @@ class UserControllerIntegrationTest {
                 "        }\n" +
                 "    ]\n" +
                 "}";
-        mockMvc.perform(get("/api/fetch-user")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/fetch-user")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .param("username", "test@gmail.com"))
                 .andExpect(status().isOk())
@@ -159,7 +148,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void createEmployee() throws Exception {
-        mockMvc.perform(post("/api/create-employee")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/create-employee")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .content("{\n" +
                                 "  \"address\": \"string\",\n" +
@@ -196,7 +185,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void removeEmployeeByLbz() throws Exception {
-        mockMvc.perform(delete("/api/remove-employee")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/remove-employee")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .content("{\n" +
                                 "    \"userCredential\": \"superadmin\",\n" +
@@ -208,7 +197,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void getEmployeeByLbz() throws Exception {
-        mockMvc.perform(get("/api/get-employee/e2bf1d7b-4b64-413f-852b-af899ce0a0af")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/get-employee/e2bf1d7b-4b64-413f-852b-af899ce0a0af")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .content("{\n" +
                                 "    \"userCredential\": \"superadmin\",\n" +
@@ -235,7 +224,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void listEmployeesByPbo() throws Exception {
-        mockMvc.perform(get("/api/find-employees-pbo/1")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/find-employees-pbo/1")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .content("{\n" +
                                 "    \"userCredential\": \"superadmin\",\n" +
