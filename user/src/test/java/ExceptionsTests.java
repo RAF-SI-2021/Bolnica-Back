@@ -24,7 +24,6 @@ public class ExceptionsTests {
     @BeforeEach
     public void setup() {
         UserExceptionHandler handler = new UserExceptionHandler();
-
         ReflectionTestUtils.setField(userExceptionHandler,"validateUserUsername",handler.validateUserUsername);
         ReflectionTestUtils.setField(userExceptionHandler, "validatePassword",handler.validatePassword);
         ReflectionTestUtils.setField(userExceptionHandler,"validateUsername",handler.validateUsername);
