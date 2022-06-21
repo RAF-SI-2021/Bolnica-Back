@@ -554,6 +554,25 @@ public class LaboratoryController {
         return ok(uput);
     }
 
+    @PostMapping(value = "/set-uput-status")
+    public ResponseEntity<?> setUputStatus(@RequestBody SetUputStatusDTO request) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
+        acceptedRoles.add(Constants.DR_SPEC);
+        acceptedRoles.add(Constants.DR_SPEC_POV);
+
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Uput uput = uputService.fetchUputById(request.getUputId());
+        uput.setStatus(request.getStatusUputa());
+        uputService.saveUput(uput);
+
+        return ok(uput);
+    }
+
     @PostMapping(value = "/uput-history")
     public ResponseEntity<?> uputHistory(@RequestBody UputHistoryRequestDTO request,
                                          @RequestParam int page,
@@ -623,6 +642,37 @@ public class LaboratoryController {
             ret.add(new UputResponseDTO(uput));
         }
         return ok(ret);
+    }
 
+    @PostMapping(value = "/unprocessed-uputi-with-type")
+    public ResponseEntity<?> unprocessedUputiWithType(@RequestBody SearchUputiDTO request) {
+        StatusUputa status = StatusUputa.NEREALIZOVAN;
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.tip = :tip";
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", status);
+        param.put("tip", request.getTipUputa().toString());
+        param.put("lbp", UUID.fromString(request.getLbp()));
+
+
+        TypedQuery<Uput> query
+                = entityManager.createQuery(
+                s, Uput.class);
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+
+        List<UputResponseDTO> ret = new ArrayList<>();
+        for (Uput uput : query.getResultList()) {
+            ret.add(new UputResponseDTO(uput));
+        }
+        return ok(ret);
     }
 }
