@@ -1,6 +1,5 @@
 import com.google.gson.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {SpringWebConfiguration.class, JwtProperties.class})
 @SpringBootTest(classes = LaboratoryApplication.class)
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class IntegrationTests {
 
     @Autowired
@@ -44,14 +44,16 @@ public class IntegrationTests {
 
     @Test
     public void givenWac_whenServletContext_thenItProvidesGreetController() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         final ServletContext servletContext = webApplicationContext.getServletContext();
         assertNotNull(servletContext);
         assertTrue(servletContext instanceof MockServletContext);
         assertNotNull(webApplicationContext.getBean("laboratoryController"));
     }
 
-    @BeforeEach
-    public void setUp() throws Exception {
+    @BeforeAll
+    public void setup() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         GsonBuilder builder = new GsonBuilder();
 
@@ -71,6 +73,11 @@ public class IntegrationTests {
          * jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5hbWUiOiJhZG1pbiIsInN1cm5hbWUiOiJhZG1pbmljIiwidGl0bGUiOiJ0aXR1bGEiLCJwcm9mZXNzaW9uIjoiemFuaW1hbmplIiwiTEJaIjoiMjhhYWI4NmMtZDQwZi00ZTZmLTljZDEtN2RhNTU3Nzk4NzdmIiwiUEJPIjoxMjM0NSwiZGVwYXJ0bWVudCI6IkhpcnVyZ2lqYSIsIlBCQiI6MTIzNCwiaG9zcGl0YWwiOiJLbGluacSNa28tYm9sbmnEjWtpIGNlbnRhciBcIkRyYWdpxaFhIE1pxaFvdmnEh1wiIiwicm9sZXMiOiJST0xFX0RSX1NQRUNfUE9WLFJPTEVfTUVEX1NFU1RSQSxST0xFX0RSX1NQRUMsUk9MRV9NRURJQ0lOU0tJX0JJT0hFTUlDQVIsUk9MRV9EUl9TUEVDX09ERUxKRU5KQSxST0xFX1ZJU0lfTEFCT1JBVE9SSUpTS0lfVEVITklDQVIsUk9MRV9SRUNFUENJT05FUixST0xFX0FETUlOLFJPTEVfU1BFQ0lKQUxJU1RBX01FRElDSU5TS0VfQklPSEVNSUpFLFJPTEVfVklTQV9NRURfU0VTVFJBLFJPTEVfTEFCT1JBVE9SSUpTS0lfVEVITklDQVIiLCJpc3MiOiJRbnVRYmxRV244SDlnZ2l3ZkdiQ3hwUEEzZ2RZMW9BZSIsImV4cCI6MTY1NjkyMTM4OH0.a_tIzTRuKuq_5oqUDO5ygParQXcg5ZBra03HFwREdVs";
          *
          * */
+    }
+
+    @AfterAll
+    public void cleanup() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
 }

@@ -1,6 +1,5 @@
 import com.google.gson.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {SpringWebConfiguration.class, JwtProperties.class})
 @SpringBootTest(classes = ManagementApplication.class)
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class IntegrationTests {
 
     @Autowired
@@ -44,14 +44,16 @@ public class IntegrationTests {
 
     @Test
     public void givenWac_whenServletContext_thenItProvidesGreetController() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         final ServletContext servletContext = webApplicationContext.getServletContext();
         assertNotNull(servletContext);
         assertTrue(servletContext instanceof MockServletContext);
         assertNotNull(webApplicationContext.getBean("managementController"));
     }
 
-    @BeforeEach
-    public void setUp() throws Exception {
+    @BeforeAll
+    public void setup() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         GsonBuilder builder = new GsonBuilder();
 
@@ -73,6 +75,12 @@ public class IntegrationTests {
         * */
 
 
+
+    }
+
+    @AfterAll
+    public void cleanup() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
     }
 }
