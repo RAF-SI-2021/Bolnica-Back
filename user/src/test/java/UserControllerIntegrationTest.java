@@ -1,18 +1,15 @@
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.*;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -21,52 +18,65 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import raf.si.bolnica.user.UserApplication;
 import raf.si.bolnica.user.configuration.SpringWebConfiguration;
+import raf.si.bolnica.user.jwt.JwtProperties;
+import raf.si.bolnica.user.properties.EmailProperties;
+import raf.si.bolnica.user.responses.UserDataResponseDTO;
+import raf.si.bolnica.user.responses.UserResponseDTO;
 
 import javax.servlet.ServletContext;
 
-import java.util.Base64;
-import java.util.Date;
+import java.lang.reflect.Type;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static raf.si.bolnica.user.constants.Constants.JWT_KEY;
 
-////@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {SpringWebConfiguration.class})
-////@WebAppConfiguration
-//@AutoConfigureMockMvc
-//@SpringBootTest
-@SpringBootTest(classes = UserApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {SpringWebConfiguration.class, EmailProperties.class, JwtProperties.class})
+@SpringBootTest(classes = UserApplication.class)
 @AutoConfigureMockMvc
 class UserControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @LocalServerPort
-    private int port;
-
-
-//    @Autowired
-//    private WebApplicationContext webApplicationContext;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
     public String jwt;
 
-//
-//    @Test
-//    public void givenWac_whenServletContext_thenItProvidesGreetController() {
-//        final ServletContext servletContext = webApplicationContext.getServletContext();
-//        assertNotNull(servletContext);
-//        assertTrue(servletContext instanceof MockServletContext);
-//        assertNotNull(webApplicationContext.getBean("userController"));
-//    }
+    private Gson g;
+
+    @Test
+    public void givenWac_whenServletContext_thenItProvidesGreetController() {
+        final ServletContext servletContext = webApplicationContext.getServletContext();
+        assertNotNull(servletContext);
+        assertTrue(servletContext instanceof MockServletContext);
+        assertNotNull(webApplicationContext.getBean("userController"));
+    }
 
     @BeforeEach
     public void setUp() throws Exception {
-        System.out.println("PORT: " + port);
+
+        GsonBuilder builder = new GsonBuilder();
+
+        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+
+            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                return new Date(json.getAsJsonPrimitive().getAsLong());
+            }
+        });
+
+        g = builder.create();
+
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         ResultActions resultActions = mockMvc.perform(post("http://localhost:" + 8081 + "/api/login")
                         .contentType("application/json")
                         .content("{\n" +
@@ -80,38 +90,22 @@ class UserControllerIntegrationTest {
         jwt = mvcResult.getResponse().getContentAsString().replace("\"", "");
     }
 
-//    private String createJwt() {
-//
-//        String secretKey = Base64.getEncoder().encodeToString("mysecret".getBytes());
-//
-//        return Jwts.builder()
-//                .setSubject("test@gmail.com")
-//                .claim("name", "admin")
-//                .claim("surname", "adminic")
-//                .claim("title", "titula")
-//                .claim("profession", "zanimanje")
-//                .claim("LBZ", "e2bf1d7b-4b64-413f-852b-af899ce0a0af")
-//                .claim("PBO", 12345)
-//                .claim("department", "Hirurgija")
-//                .claim("PBB", 1234)
-//                .claim("hospital", "Kliničko-bolnički centar \"Dragiša Mišović\"")
-//                .claim("roles", "ROLE_ADMIN," + "ROLE_DR_SPEC_ODELJENJA," + "ROLE_DR_SPEC," + "ROLE_DR_SPEC_POV," +
-//                        "ROLE_VISA_MED_SESTRA," + "ROLE_MED_SESTRA," + "ROLE_VISI_LABORATORIJSKI_TEHNICAR," +
-//                        "ROLE_LABORATORIJSKI_TEHNICAR," + "ROLE_MEDICINSKI_BIOHEMICAR," +
-//                        "ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE," + "ROLE_RECEPCIONER")
-//                .setIssuer(JWT_KEY)
-//                .setExpiration(new Date(System.currentTimeMillis() + 1000000000))
-//                .signWith(SignatureAlgorithm.HS256, secretKey)
-//                .compact();
-//    }
+
 
     @Test
     void fetchUserByUsername() throws Exception {
+        ResultActions resultActions = mockMvc.perform(get("/api/fetch-user")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .param("username", "test@gmail.com"));
+        String content = resultActions.andReturn().getResponse().getContentAsString();
+        UserResponseDTO responseDTO = g.fromJson(content, UserResponseDTO.class);
+
+
         String result = "{\n" +
                 "    \"userId\": 1,\n" +
                 "    \"name\": \"admin\",\n" +
                 "    \"surname\": \"adminic\",\n" +
-                "    \"password\": \"$2a$10$9/Mi5luE8LN0UTge9zgclui7Zjkn1RPvRvX7mawpf7O.oCtb2E.5i\",\n" +
+                "    \"password\": \"" + responseDTO.getPassword() + "\",\n" +
                 "    \"email\": \"test@gmail.com\",\n" +
                 "    \"roles\": [\n" +
                 "        {\n" +
@@ -153,24 +147,23 @@ class UserControllerIntegrationTest {
                 "        {\n" +
                 "            \"roleId\": 10,\n" +
                 "            \"name\": \"ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE\"\n" +
+                "        },\n" +
+                "       {\n" +
+                "            \"roleId\": 11,\n" +
+                "            \"name\": \"ROLE_RECEPCIONER\"\n" +
                 "        }\n" +
                 "    ]\n" +
                 "}";
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/fetch-user")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                        .param("username", "test@gmail.com"))
-                .andExpect(status().isOk())
+
+                resultActions.andExpect(status().isOk())
                 .andExpect(content().json(result));
     }
 
     @Test
-    void forgotPassword() {
-    }
-
-    @Test
     void createEmployee() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/create-employee")
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/create-employee")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType("application/json")
                         .content("{\n" +
                                 "  \"address\": \"string\",\n" +
                                 "  \"city\": \"string\",\n" +
@@ -184,8 +177,12 @@ class UserControllerIntegrationTest {
                                 "  \"profession\": \"Spec. hirurg\",\n" +
                                 "  \"surname\": \"string\",\n" +
                                 "  \"title\": \"Prof. dr. med.\"\n" +
-                                "}"))
-                .andExpect(status().isOk())
+                                "}"));
+        String content = resultActions.andReturn().getResponse().getContentAsString();
+
+        UserDataResponseDTO responseDTO = g.fromJson(content, UserDataResponseDTO.class);
+
+                resultActions.andExpect(status().isOk())
                 .andExpect(content().json("{\n" +
                         "    \"name\": \"string\",\n" +
                         "    \"surname\": \"string\",\n" +
@@ -193,7 +190,7 @@ class UserControllerIntegrationTest {
                         "    \"gender\": \"male\",\n" +
                         "    \"jmbg\": \"string\",\n" +
                         "    \"address\": \"string\",\n" +
-                        "    \"lbz\": \"91c71fdd-2e95-46f2-96c4-34d47aa90f4a\",\n" +
+                        "    \"lbz\": \"" + responseDTO.getLbz() + "\",\n" +
                         "    \"city\": \"string\",\n" +
                         "    \"contact\": \"string\",\n" +
                         "    \"email\": \"zaposleni@ibis.rs\",\n" +
@@ -206,61 +203,139 @@ class UserControllerIntegrationTest {
 
     @Test
     void removeEmployeeByLbz() throws Exception {
+
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/create-employee")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                .contentType("application/json")
+                .content("{\n" +
+                        "  \"address\": \"string\",\n" +
+                        "  \"city\": \"string\",\n" +
+                        "  \"contact\": \"string\",\n" +
+                        "  \"department\": 1,\n" +
+                        "  \"dob\": \"2022-04-16\",\n" +
+                        "  \"email\": \"zaposleni@ibis.rs\",\n" +
+                        "  \"gender\": \"male\",\n" +
+                        "  \"jmbg\": \"string\",\n" +
+                        "  \"name\": \"string\",\n" +
+                        "  \"profession\": \"Spec. hirurg\",\n" +
+                        "  \"surname\": \"string\",\n" +
+                        "  \"title\": \"Prof. dr. med.\"\n" +
+                        "}"));
+        String content = resultActions.andReturn().getResponse().getContentAsString();
+
+        UserDataResponseDTO createResponseDTO = g.fromJson(content, UserDataResponseDTO.class);
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().json("{\n" +
+                        "    \"name\": \"string\",\n" +
+                        "    \"surname\": \"string\",\n" +
+                        "    \"dob\": 1650067200000,\n" +
+                        "    \"gender\": \"male\",\n" +
+                        "    \"jmbg\": \"string\",\n" +
+                        "    \"address\": \"string\",\n" +
+                        "    \"lbz\": \"" + createResponseDTO.getLbz() + "\",\n" +
+                        "    \"city\": \"string\",\n" +
+                        "    \"contact\": \"string\",\n" +
+                        "    \"email\": \"zaposleni@ibis.rs\",\n" +
+                        "    \"title\": \"Prof. dr. med.\",\n" +
+                        "    \"profession\": \"Spec. hirurg\",\n" +
+                        "    \"department\": 1,\n" +
+                        "    \"username\": \"zaposleni\"\n" +
+                        "}"));
+
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/remove-employee")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .content("{\n" +
                                 "    \"userCredential\": \"superadmin\",\n" +
                                 "    \"password\": \"superadmin\"\n" +
                                 "}")
-                        .param("lbz", "91c71fdd-2e95-46f2-96c4-34d47aa90f4"))
+                        .param("lbz", createResponseDTO.getLbz().toString()))
                 .andExpect(status().isOk());
     }
 
     @Test
     void getEmployeeByLbz() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/get-employee/e2bf1d7b-4b64-413f-852b-af899ce0a0af")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                        .content("{\n" +
-                                "    \"userCredential\": \"superadmin\",\n" +
-                                "    \"password\": \"superadmin\"\n" +
-                                "}"))
+
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/create-employee")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                .contentType("application/json")
+                .content("{\n" +
+                        "  \"address\": \"string\",\n" +
+                        "  \"city\": \"string\",\n" +
+                        "  \"contact\": \"string\",\n" +
+                        "  \"department\": 1,\n" +
+                        "  \"dob\": \"2022-04-16\",\n" +
+                        "  \"email\": \"zaposleni@ibis.rs\",\n" +
+                        "  \"gender\": \"male\",\n" +
+                        "  \"jmbg\": \"string\",\n" +
+                        "  \"name\": \"string\",\n" +
+                        "  \"profession\": \"Spec. hirurg\",\n" +
+                        "  \"surname\": \"string\",\n" +
+                        "  \"title\": \"Prof. dr. med.\"\n" +
+                        "}"));
+        String content = resultActions.andReturn().getResponse().getContentAsString();
+
+        UserDataResponseDTO createResponseDTO = g.fromJson(content, UserDataResponseDTO.class);
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().json("{\n" +
+                        "    \"name\": \"string\",\n" +
+                        "    \"surname\": \"string\",\n" +
+                        "    \"dob\": 1650067200000,\n" +
+                        "    \"gender\": \"male\",\n" +
+                        "    \"jmbg\": \"string\",\n" +
+                        "    \"address\": \"string\",\n" +
+                        "    \"lbz\": \"" + createResponseDTO.getLbz() + "\",\n" +
+                        "    \"city\": \"string\",\n" +
+                        "    \"contact\": \"string\",\n" +
+                        "    \"email\": \"zaposleni@ibis.rs\",\n" +
+                        "    \"title\": \"Prof. dr. med.\",\n" +
+                        "    \"profession\": \"Spec. hirurg\",\n" +
+                        "    \"department\": 1,\n" +
+                        "    \"username\": \"zaposleni\"\n" +
+                        "}"));
+
+        mockMvc.perform(get("/api/get-employee/" + createResponseDTO.getLbz().toString())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\n" +
-                        "    \"name\": \"admin\",\n" +
-                        "    \"surname\": \"adminic\",\n" +
-                        "    \"dob\": 1654905600000,\n" +
-                        "    \"gender\": \"Muski\",\n" +
-                        "    \"jmbg\": \"123456789\",\n" +
-                        "    \"address\": \"adresa 1\",\n" +
-                        "    \"lbz\": \"e2bf1d7b-4b64-413f-852b-af899ce0a0af\",\n" +
-                        "    \"city\": \"SRBIJA\",\n" +
-                        "    \"contact\": \"+381 69312321\",\n" +
-                        "    \"email\": \"test@gmail.com\",\n" +
-                        "    \"title\": \"titula\",\n" +
-                        "    \"profession\": \"zanimanje\",\n" +
+                        "    \"name\": \"string\",\n" +
+                        "    \"surname\": \"string\",\n" +
+                        "    \"dob\": 1650067200000,\n" +
+                        "    \"gender\": \"male\",\n" +
+                        "    \"jmbg\": \"string\",\n" +
+                        "    \"address\": \"string\",\n" +
+                        "    \"lbz\": \"" + createResponseDTO.getLbz() + "\",\n" +
+                        "    \"city\": \"string\",\n" +
+                        "    \"contact\": \"string\",\n" +
+                        "    \"email\": \"zaposleni@ibis.rs\",\n" +
+                        "    \"title\": \"Prof. dr. med.\",\n" +
+                        "    \"profession\": \"Spec. hirurg\",\n" +
                         "    \"department\": 1,\n" +
-                        "    \"username\": \"superadmin\"\n" +
+                        "    \"username\": \"zaposleni\"\n" +
                         "}"));
     }
 
     @Test
     void listEmployeesByPbo() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/find-employees-pbo/1")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                        .content("{\n" +
-                                "    \"userCredential\": \"superadmin\",\n" +
-                                "    \"password\": \"superadmin\"\n" +
-                                "}"))
-                .andExpect(status().isOk())
+        ResultActions resultActions = mockMvc.perform(get("/api/find-employees-pbo/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt));
+        String content = resultActions.andReturn().getResponse().getContentAsString();
+
+        Type listType = new TypeToken<ArrayList<UserDataResponseDTO>>(){}.getType();
+
+        List<UserDataResponseDTO> listResponseDTO = g.fromJson(content, listType);
+
+        resultActions.andExpect(status().isOk())
                 .andExpect(content().json("[\n" +
                         "    {\n" +
                         "        \"name\": \"admin\",\n" +
                         "        \"surname\": \"adminic\",\n" +
-                        "        \"dob\": 1654905600000,\n" +
+                        "        \"dob\": " + listResponseDTO.get(0).getDob().getTime() + ",\n" +
                         "        \"gender\": \"Muski\",\n" +
                         "        \"jmbg\": \"123456789\",\n" +
                         "        \"address\": \"adresa 1\",\n" +
-                        "        \"lbz\": \"e2bf1d7b-4b64-413f-852b-af899ce0a0af\",\n" +
+                        "        \"lbz\": \"" + listResponseDTO.get(0).getLbz() + "\",\n" +
                         "        \"city\": \"SRBIJA\",\n" +
                         "        \"contact\": \"+381 69312321\",\n" +
                         "        \"email\": \"test@gmail.com\",\n" +
@@ -268,46 +343,35 @@ class UserControllerIntegrationTest {
                         "        \"profession\": \"zanimanje\",\n" +
                         "        \"department\": 1,\n" +
                         "        \"username\": \"superadmin\"\n" +
-                        "    },\n" +
-                        "    {\n" +
-                        "        \"name\": \"string\",\n" +
-                        "        \"surname\": \"string\",\n" +
-                        "        \"dob\": 1650067200000,\n" +
-                        "        \"gender\": \"male\",\n" +
-                        "        \"jmbg\": \"string\",\n" +
-                        "        \"address\": \"string\",\n" +
-                        "        \"lbz\": \"91c71fdd-2e95-46f2-96c4-34d47aa90f4a\",\n" +
-                        "        \"city\": \"string\",\n" +
-                        "        \"contact\": \"string\",\n" +
-                        "        \"email\": \"zaposleni@ibis.rs\",\n" +
-                        "        \"title\": \"Prof. dr. med.\",\n" +
-                        "        \"profession\": \"Spec. hirurg\",\n" +
-                        "        \"department\": 1,\n" +
-                        "        \"username\": \"zaposleni\"\n" +
                         "    }\n" +
                         "]"));
     }
 
     @Test
     void listEmployees() throws Exception {
-        mockMvc.perform(post("/api/list-employees")
+        ResultActions resultActions = mockMvc.perform(get("/api/list-employees")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                        .content("{\n" +
-                                "    \"userCredential\": \"superadmin\",\n" +
-                                "    \"password\": \"superadmin\"\n" +
-                                "}")
+                        .contentType("application/json")
+                        .content("{}")
                         .param("page", "1")
-                        .param("size", "5"))
-                .andExpect(status().isOk())
+                        .param("size", "5"));
+
+        String content = resultActions.andReturn().getResponse().getContentAsString();
+
+        Type listType = new TypeToken<ArrayList<UserDataResponseDTO>>(){}.getType();
+
+        List<UserDataResponseDTO> listResponseDTO = g.fromJson(content, listType);
+
+        resultActions.andExpect(status().isOk())
                 .andExpect(content().json("[\n" +
                         "    {\n" +
                         "        \"name\": \"admin\",\n" +
                         "        \"surname\": \"adminic\",\n" +
-                        "        \"dob\": 1654905600000,\n" +
+                        "        \"dob\": " + listResponseDTO.get(0).getDob().getTime() + ",\n" +
                         "        \"gender\": \"Muski\",\n" +
                         "        \"jmbg\": \"123456789\",\n" +
                         "        \"address\": \"adresa 1\",\n" +
-                        "        \"lbz\": \"e2bf1d7b-4b64-413f-852b-af899ce0a0af\",\n" +
+                        "        \"lbz\": \"" + listResponseDTO.get(0).getLbz() + "\",\n" +
                         "        \"city\": \"SRBIJA\",\n" +
                         "        \"contact\": \"+381 69312321\",\n" +
                         "        \"email\": \"test@gmail.com\",\n" +
@@ -315,22 +379,6 @@ class UserControllerIntegrationTest {
                         "        \"profession\": \"zanimanje\",\n" +
                         "        \"department\": 1,\n" +
                         "        \"username\": \"superadmin\"\n" +
-                        "    },\n" +
-                        "    {\n" +
-                        "        \"name\": \"string\",\n" +
-                        "        \"surname\": \"string\",\n" +
-                        "        \"dob\": 1650067200000,\n" +
-                        "        \"gender\": \"male\",\n" +
-                        "        \"jmbg\": \"string\",\n" +
-                        "        \"address\": \"string\",\n" +
-                        "        \"lbz\": \"91c71fdd-2e95-46f2-96c4-34d47aa90f4a\",\n" +
-                        "        \"city\": \"string\",\n" +
-                        "        \"contact\": \"string\",\n" +
-                        "        \"email\": \"zaposleni@ibis.rs\",\n" +
-                        "        \"title\": \"Prof. dr. med.\",\n" +
-                        "        \"profession\": \"Spec. hirurg\",\n" +
-                        "        \"department\": 1,\n" +
-                        "        \"username\": \"zaposleni\"\n" +
                         "    }\n" +
                         "]"));
     }

@@ -180,7 +180,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @PostMapping(value = Constants.LIST_EMPLOYEES)
+    @GetMapping(value = Constants.LIST_EMPLOYEES)
     public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO,
                                                                    @RequestParam int page,
                                                                    @RequestParam int size) {
