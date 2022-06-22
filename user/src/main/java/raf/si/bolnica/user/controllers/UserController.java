@@ -201,16 +201,16 @@ public class UserController {
 
         String nextOper = " WHERE ";
 
-        if (requestDTO.getName() != null) {
+        if (requestDTO.getName() != null && !requestDTO.getName().equals("")) {
             s = s + nextOper;
             nextOper = " AND ";
-            s = s + " u.name like :name ";
+            s = s + " u.name like %:name% ";
             param.put("name", requestDTO.getName());
         }
-        if (requestDTO.getSurname() != null) {
+        if (requestDTO.getSurname() != null && !requestDTO.getSurname().equals("")) {
             s = s + nextOper;
             nextOper = " AND ";
-            s = s + " u.surname like :surname ";
+            s = s + " u.surname like %:surname% ";
             param.put("surname", requestDTO.getSurname());
         }
 
@@ -219,14 +219,14 @@ public class UserController {
         s = s + " u.obrisan = :obrisan ";
         param.put("obrisan", false);
 
-        if (requestDTO.getDepartment() != null) {
+        if (requestDTO.getDepartment() != null && requestDTO.getDepartment() != -1) {
             s = s + nextOper;
             nextOper = " AND ";
             s = s + " o.odeljenjeId = :odeljenje";
             param.put("odeljenje", requestDTO.getDepartment());
         }
 
-        if (requestDTO.getHospital() != null) {
+        if (requestDTO.getHospital() != null && requestDTO.getHospital() != -1) {
             s = s + nextOper;
             s = s + " z.zdravstvenaUstanovaId = :bolnica";
             param.put("bolnica", requestDTO.getHospital());

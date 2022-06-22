@@ -43,7 +43,7 @@ public class OdeljenjeController {
     }
 
     @GetMapping(value = Constants.ALL_DEPARTMENTS)
-    public ResponseEntity<List<Odeljenje>> getAllDepartments(@RequestParam Long pbb) {
+    public ResponseEntity<List<Odeljenje>> getAllDepartments() {
         if (loggedInUser.getRoles().contains("ROLE_DR_SPEC") ||
                 loggedInUser.getRoles().contains("ROLE_DR_SPEC_POV") ||
                 loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
@@ -51,7 +51,24 @@ public class OdeljenjeController {
                 loggedInUser.getRoles().contains("ROLE_RECEPCIONER") ||
                 loggedInUser.getRoles().contains("ROLE_ADMIN")) {
 
-            List<Odeljenje> departments = odeljenjeService.findAllByPbb(pbb);
+            List<Odeljenje> departments = odeljenjeService.findAllByPbb();
+
+            return ResponseEntity.ok(departments);
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @GetMapping(value = Constants.ALL_HOSPITALS)
+    public ResponseEntity<List<Odeljenje>> getAllHospitals() {
+        if (loggedInUser.getRoles().contains("ROLE_DR_SPEC") ||
+                loggedInUser.getRoles().contains("ROLE_DR_SPEC_POV") ||
+                loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_RECEPCIONER") ||
+                loggedInUser.getRoles().contains("ROLE_ADMIN")) {
+
+            List<Odeljenje> departments = odeljenjeService.findAllByPbb();
 
             return ResponseEntity.ok(departments);
         }

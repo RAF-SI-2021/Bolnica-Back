@@ -93,7 +93,7 @@ class OdeljenjeControllerTest {
 
         when(loggedInUser.getRoles()).thenReturn(roles);
 
-        ResponseEntity<?> response = odeljenjeController.getAllDepartments(12345L);
+        ResponseEntity<?> response = odeljenjeController.getAllDepartments();
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
     }
