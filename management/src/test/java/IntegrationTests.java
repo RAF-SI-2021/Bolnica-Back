@@ -42,9 +42,13 @@ public class IntegrationTests {
 
     private Gson g;
 
+    @BeforeEach
+    public void prepareTest() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+    }
+
     @Test
     public void givenWac_whenServletContext_thenItProvidesGreetController() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         final ServletContext servletContext = webApplicationContext.getServletContext();
         assertNotNull(servletContext);
         assertTrue(servletContext instanceof MockServletContext);

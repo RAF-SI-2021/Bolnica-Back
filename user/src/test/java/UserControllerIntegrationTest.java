@@ -56,9 +56,13 @@ class UserControllerIntegrationTest {
 
     private Gson g;
 
+    @BeforeEach
+    public void prepareTest() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+    }
+
     @Test
     public void givenWac_whenServletContext_thenItProvidesGreetController() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         final ServletContext servletContext = webApplicationContext.getServletContext();
         assertNotNull(servletContext);
         assertTrue(servletContext instanceof MockServletContext);
@@ -67,6 +71,7 @@ class UserControllerIntegrationTest {
 
     @BeforeAll
     public void setup() throws Exception {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         GsonBuilder builder = new GsonBuilder();
 
@@ -79,7 +84,6 @@ class UserControllerIntegrationTest {
 
         g = builder.create();
 
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         ResultActions resultActions = mockMvc.perform(post("http://localhost:" + 8081 + "/api/login")
                         .contentType("application/json")
                         .content("{\n" +
@@ -152,7 +156,6 @@ class UserControllerIntegrationTest {
 
     @Test
     void fetchUserByUsername() throws Exception {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         ResultActions resultActions = mockMvc.perform(get("/api/fetch-user")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .param("username", "test@gmail.com"));
@@ -223,7 +226,6 @@ class UserControllerIntegrationTest {
 
         /*System.out.println("\n\n TEST \n\n");
         System.out.println("."+lbz+".");*/
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
 
         mockMvc.perform(get("/api/get-employee/" + lbz)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
@@ -248,7 +250,6 @@ class UserControllerIntegrationTest {
 
     @Test
     void listEmployeesByPbo() throws Exception {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         ResultActions resultActions = mockMvc.perform(get("/api/find-employees-pbo/1")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt));
         String content = resultActions.andReturn().getResponse().getContentAsString();
@@ -296,7 +297,6 @@ class UserControllerIntegrationTest {
 
     @Test
     void listEmployees() throws Exception {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         ResultActions resultActions = mockMvc.perform(get("/api/list-employees")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .contentType("application/json")

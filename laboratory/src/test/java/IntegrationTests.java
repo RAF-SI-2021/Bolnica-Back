@@ -42,13 +42,9 @@ public class IntegrationTests {
 
     private Gson g;
 
-    @Test
-    public void givenWac_whenServletContext_thenItProvidesGreetController() {
+    @BeforeEach
+    public void prepareTest() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
-        final ServletContext servletContext = webApplicationContext.getServletContext();
-        assertNotNull(servletContext);
-        assertTrue(servletContext instanceof MockServletContext);
-        assertNotNull(webApplicationContext.getBean("laboratoryController"));
     }
 
     @BeforeAll
@@ -78,6 +74,17 @@ public class IntegrationTests {
     @AfterAll
     public void cleanup() throws Exception {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+
+    }
+
+
+
+    @Test
+    public void givenWac_whenServletContext_thenItProvidesGreetController() {
+        final ServletContext servletContext = webApplicationContext.getServletContext();
+        assertNotNull(servletContext);
+        assertTrue(servletContext instanceof MockServletContext);
+        assertNotNull(webApplicationContext.getBean("laboratoryController"));
     }
 
 }
