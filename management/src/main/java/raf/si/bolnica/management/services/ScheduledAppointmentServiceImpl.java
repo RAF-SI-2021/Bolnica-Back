@@ -6,6 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import raf.si.bolnica.management.entities.ZakazaniPregled;
+import raf.si.bolnica.management.entities.enums.StatusPregleda;
 import raf.si.bolnica.management.repositories.ScheduledAppointmentRepository;
 
 import javax.transaction.Transactional;
@@ -24,15 +25,20 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
 
     @Override
     public ZakazaniPregled saveAppointment(ZakazaniPregled appointment) {
-        long appointmentDuration = 15;
-        Timestamp startTime = appointment.getDatumIVremePregleda();
-        Timestamp endTime = appointment.getDatumIVremePregleda();
-        endTime.setTime(appointment.getDatumIVremePregleda().getTime() + TimeUnit.MINUTES.toMillis(appointmentDuration));
+        long appointmentDuration = 60;
+        Timestamp startTime = new Timestamp(appointment.getDatumIVremePregleda().getTime());
+        Timestamp endTime = new Timestamp(startTime.getTime());
+        endTime.setTime(startTime.getTime() + TimeUnit.MINUTES.toMillis(appointmentDuration));
         Optional<ZakazaniPregled> toSave = scheduledAppointmentRepository
-                .findByLbzLekaraAndDatumIVremePregledaBetween(appointment.getLbzLekara(), startTime, endTime);
+                .findByLbzLekaraAndDatumIVremePregledaBetweenAndStatusPregleda(appointment.getLbzLekara(), startTime, endTime, StatusPregleda.ZAKAZANO);
         if (toSave.isPresent()) {
             throw new AccessDeniedException("Already appointed!");
         }
+        return scheduledAppointmentRepository.save(appointment);
+    }
+
+    @Override
+    public ZakazaniPregled saveAppointmentStatus(ZakazaniPregled appointment) {
         return scheduledAppointmentRepository.save(appointment);
     }
 

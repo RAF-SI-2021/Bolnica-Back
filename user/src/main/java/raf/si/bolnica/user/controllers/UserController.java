@@ -97,6 +97,7 @@ public class UserController {
             userExceptionHandler.validateUserProfession.accept(requestDTO.getProfession());
             userExceptionHandler.validateUserGender.accept(requestDTO.getGender());
 
+
             User user = new User();
 
             user.setLbz(UUID.randomUUID());
@@ -116,8 +117,10 @@ public class UserController {
             user.setZanimanje(requestDTO.getProfession());
 
             Set<Role> roles = new HashSet<>();
-            roles.add(roleRepository.findByName("ROLE_ADMIN"));
             user.setRoles(roles);
+            for(String roleString: requestDTO.getRoles()) {
+                user.getRoles().add(roleRepository.findByName(roleString));
+            }
 
             User userToReturn = userService.saveEmployee(user);
 
@@ -204,13 +207,13 @@ public class UserController {
         if (requestDTO.getName() != null && !requestDTO.getName().equals("")) {
             s = s + nextOper;
             nextOper = " AND ";
-            s = s + " u.name like %:name% ";
+            s = s + " u.name like CONCAT('%', :name, '%') ";
             param.put("name", requestDTO.getName());
         }
         if (requestDTO.getSurname() != null && !requestDTO.getSurname().equals("")) {
             s = s + nextOper;
             nextOper = " AND ";
-            s = s + " u.surname like %:surname% ";
+            s = s + " u.surname like CONCAT('%', :surname, '%') ";
             param.put("surname", requestDTO.getSurname());
         }
 
@@ -269,7 +272,7 @@ public class UserController {
             }
 
             user.setOdeljenje(odeljenje);
-            user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+            if (password != null && !password.equals("")) user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
             user.setKorisnickoIme(user.getKorisnickoIme());
             user.setEmail(user.getEmail());
             user.setName(requestDTO.getName());
@@ -292,7 +295,7 @@ public class UserController {
                 if (requestDTO.getContact() != null) {
                     user.setKontaktTelefon(requestDTO.getContact());
                 }
-                if (requestDTO.getNewPassword() != null && BCrypt.checkpw(requestDTO.getOldPassword(),user.getPassword())) {
+                if (requestDTO.getNewPassword() != null && BCrypt.checkpw(requestDTO.getOldPassword(), user.getPassword())) {
                     user.setPassword(BCrypt.hashpw(requestDTO.getNewPassword(), BCrypt.gensalt()));
                 }
                 user = userService.saveEmployee(user);

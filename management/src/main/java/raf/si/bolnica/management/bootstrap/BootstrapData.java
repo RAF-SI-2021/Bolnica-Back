@@ -3,26 +3,25 @@ package raf.si.bolnica.management.bootstrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import raf.si.bolnica.management.entities.Pacijent;
-import raf.si.bolnica.management.entities.Vakcina;
-import raf.si.bolnica.management.entities.ZdravstveniKarton;
+import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.entities.enums.CountryCode;
 import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
 import raf.si.bolnica.management.entities.enums.Pol;
 import raf.si.bolnica.management.entities.enums.RhFaktor;
 import raf.si.bolnica.management.repositories.*;
-import raf.si.bolnica.management.entities.Alergen;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Component
 public class BootstrapData implements CommandLineRunner {
 
     @Autowired
     private VakcinaRepository vakcinaRepository;
+
+    @Autowired
+    private VakcinacijaRepository vakcinacijaRepository;
 
     @Autowired
     private AlergenRepository alergenRepository;
@@ -43,12 +42,14 @@ public class BootstrapData implements CommandLineRunner {
         String[] tipovi = {"Virusne vakcine", "Bakterijske vakcine", "Virusne vakcine", "Bakterijske vakcine", "Bakterijske vakcine"};
         String[] proizvodjaci = {"GlaxoSmithKline Biologicals S.A., Belgija", "GlaxoSmithKline Biologicals S.A., Belgija", "Abbott Biologicals B.V., Holandija", "GlaxoSmithKline Biologicals S.A., Belgija", "Institut za virusologiju, vakcine i serume \"Torlak\", Republika Srbija"};
 
+        List<Vakcina> vakcine = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Vakcina vakcina = new Vakcina();
             vakcina.setNaziv(nazivi[i]);
             vakcina.setOpis(opisi[i]);
             vakcina.setProizvodjac(proizvodjaci[i]);
             vakcina.setTip(tipovi[i]);
+            vakcine.add(vakcina);
             vakcinaRepository.save(vakcina);
         }
 
@@ -62,7 +63,7 @@ public class BootstrapData implements CommandLineRunner {
         alergens.add(new Alergen("Riba"));
         alergens.add(new Alergen("Penicilin"));
         alergens.add(new Alergen("Cefalosporin"));
-        alergens.add(new Alergen("tetraciklin"));
+        alergens.add(new Alergen("Tetraciklin"));
         alergens.add(new Alergen("Karbamazepin"));
         alergens.add(new Alergen("Ibuprofen"));
 
@@ -91,6 +92,25 @@ public class BootstrapData implements CommandLineRunner {
         zdravstveniKarton.setKrvnaGrupa(KrvnaGrupa.AB);
         zdravstveniKarton.setPacijent(pacijent);
         zdravstveniKarton.setDatumRegistracije(Date.valueOf("2010-01-01"));
+        zdravstveniKartonRepository.save(zdravstveniKarton);
+        Set<AlergenZdravstveniKarton> alergenZdravstveniKartonSet = new HashSet<>();
+        for(int i = 0; i < 4; i++) {
+            AlergenZdravstveniKarton alergenZdravstveniKarton = new AlergenZdravstveniKarton();
+            alergenZdravstveniKarton.setAlergen(alergens.get(i));
+            alergenZdravstveniKarton.setZdravstveniKarton(zdravstveniKarton);
+            alergenZdravstveniKarton.setObrisan(false);
+            alergenZdravstveniKartonSet.add(alergenZdravstveniKarton);
+        }
+        zdravstveniKarton.setAlergenZdravstveniKarton(alergenZdravstveniKartonSet);
+        Set<Vakcinacija> vakcinacije = new HashSet<>();
+        for(int i = 0; i < 2; i++) {
+            Vakcinacija vakcinacija = new Vakcinacija();
+            vakcinacija.setVakcina(vakcine.get(i));
+            vakcinacija.setDatumVakcinacije(new Date(System.currentTimeMillis()));
+            vakcinacija.setZdravstveniKarton(zdravstveniKarton);
+            vakcinacijaRepository.save(vakcinacija);
+        }
+        zdravstveniKarton.setVakcinacije(vakcinacije);
         zdravstveniKartonRepository.save(zdravstveniKarton);
     }
 }

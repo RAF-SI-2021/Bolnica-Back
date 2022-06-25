@@ -155,9 +155,9 @@ public class BootstrapData implements CommandLineRunner {
         user.setJmbg("123456789");
         user.setAdresaStanovanja("adresa 1");
         user.setMestoStanovanja("SRBIJA");
-        user.setTitula("titula");
+        user.setTitula("Dr. sci. med");
         user.setKorisnickoIme("superadmin");
-        user.setZanimanje("zanimanje");
+        user.setZanimanje("Spec. endrokrinolog");
         user.setKontaktTelefon("+381 69312321");
 
 

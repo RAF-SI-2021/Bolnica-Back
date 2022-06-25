@@ -180,6 +180,8 @@ public class ManagementController {
 
             zdravstveniKarton.setPacijent(kreiranPacijent);
 
+            zdravstveniKarton.setAlergenZdravstveniKarton(new HashSet<>());
+
             ZdravstveniKarton kreiranZdravstveniKarton = zdravstveniKartonService.saveZdravstveniKarton(zdravstveniKarton);
 
             kreiranPacijent.setZdravstveniKarton(kreiranZdravstveniKarton);
@@ -624,7 +626,7 @@ public class ManagementController {
             ZakazaniPregled appointmentForUpdate = appointmentService.fetchById(requestDTO.getAppointmentId());
             appointmentForUpdate.setStatusPregleda(StatusPregleda.valueOf(requestDTO.getAppointmentStatus()));
 
-            ZakazaniPregled appointmentToReturn = appointmentService.saveAppointment(appointmentForUpdate);
+            ZakazaniPregled appointmentToReturn = appointmentService.saveAppointmentStatus(appointmentForUpdate);
             return ResponseEntity.ok(appointmentToReturn);
         }
 

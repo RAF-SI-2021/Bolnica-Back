@@ -15,6 +15,7 @@ import java.util.UUID;
 public interface ScheduledAppointmentService {
 
         ZakazaniPregled saveAppointment(ZakazaniPregled appointment);
+        ZakazaniPregled saveAppointmentStatus(ZakazaniPregled appointment);
         List<ZakazaniPregled> getAppointmentByLBZ(UUID lbz) ;
         List<ZakazaniPregled> getAppointmentByLBZAndDate(UUID lbz, Timestamp date);
         ZakazaniPregled fetchById(long id);
