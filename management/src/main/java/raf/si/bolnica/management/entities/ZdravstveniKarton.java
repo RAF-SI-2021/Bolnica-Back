@@ -35,14 +35,32 @@ public class ZdravstveniKarton {
     @JsonIgnore
     private Set<Pregled> pregledi;
 
-    @OneToMany(mappedBy = "zdravstveniKarton", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @OneToMany(mappedBy = "zdravstveniKarton", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Set<AlergenZdravstveniKarton> alergenZdravstveniKarton;
+
+    @OneToMany(mappedBy = "zdravstveniKarton", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    Set<Vakcinacija> vakcinacije;
 
     // FKs
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "pacijent")
     private Pacijent pacijent;
+
+    public Set<Vakcinacija> getVakcinacije() {
+        return vakcinacije;
+    }
+
+    public void setVakcinacije(Set<Vakcinacija> vakcinacije) {
+        this.vakcinacije = vakcinacije;
+    }
+
+    public Set<AlergenZdravstveniKarton> getAlergenZdravstveniKarton() {
+        return alergenZdravstveniKarton;
+    }
+
+    public void setAlergenZdravstveniKarton(Set<AlergenZdravstveniKarton> alergenZdravstveniKarton) {
+        this.alergenZdravstveniKarton = alergenZdravstveniKarton;
+    }
 
     public long getZdravstveniKartonId() {
         return zdravstveniKartonId;

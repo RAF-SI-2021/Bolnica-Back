@@ -43,6 +43,8 @@ public class UserDataResponseDTO {
 
     private String username;
 
+    private boolean obrisan;
+
     public UserDataResponseDTO (User user) {
         contact = user.getKontaktTelefon();
         address = user.getAdresaStanovanja();
@@ -58,5 +60,6 @@ public class UserDataResponseDTO {
         name = user.getName();
         surname = user.getSurname();
         username = user.getKorisnickoIme();
+        obrisan = user.isObrisan();
     }
 }

@@ -498,6 +498,10 @@ class PacijentQueriesTests {
 
         zk.setDatumRegistracije(Date.valueOf(LocalDate.now()));
 
+        zk.setAlergenZdravstveniKarton(new HashSet<>());
+
+        zk.setVakcinacije(new HashSet<>());
+
         when(pacijentService.fetchPacijentByLbp(lbp)).thenReturn(p);
 
         ResponseEntity<?> responseFetchPatient = managementController.fetchPatientLbp(lbp.toString());

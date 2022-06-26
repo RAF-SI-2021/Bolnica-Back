@@ -20,11 +20,11 @@ public class AlergenZdravstveniKarton {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "alergen_id")
     private Alergen alergen;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "zdravstveni_karton_id")
     private ZdravstveniKarton zdravstveniKarton;
 

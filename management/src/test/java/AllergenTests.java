@@ -12,11 +12,14 @@ import raf.si.bolnica.management.exceptions.AllergenNotExistException;
 import raf.si.bolnica.management.exceptions.MissingRequestFieldsException;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.AddAllergentToPatientRequestDTO;
+import raf.si.bolnica.management.response.AlegrenZdravstveniKartonDto;
 import raf.si.bolnica.management.services.AlergenZdravstveniKartonService;
 import raf.si.bolnica.management.services.alergen.AlergenService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.EntityManager;
+import java.sql.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -166,6 +169,8 @@ public class AllergenTests {
         });
 
         ZdravstveniKarton zk = new ZdravstveniKarton();
+        zk.setAlergenZdravstveniKarton(new HashSet<>());
+        zk.setDatumRegistracije(new Date(System.currentTimeMillis()));
 
         when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(zk);
         when(alergenZdravstveniKartonService.save(any(AlergenZdravstveniKarton.class))).thenAnswer(i -> {
@@ -179,13 +184,13 @@ public class AllergenTests {
         ResponseEntity<?> response = alergentController.addAllergenToPatient(request);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody()).isInstanceOf(AlergenZdravstveniKarton.class);
+        assertThat(response.getBody()).isInstanceOf(AlegrenZdravstveniKartonDto.class);
 
-        AlergenZdravstveniKarton alergenZdravstveniKarton = (AlergenZdravstveniKarton)response.getBody();
+        AlegrenZdravstveniKartonDto alergenZdravstveniKarton = (AlegrenZdravstveniKartonDto)response.getBody();
 
-        assertThat(alergenZdravstveniKarton.getAlergen().getNaziv()).isEqualTo(request.getNaziv());
-        assertThat(alergenZdravstveniKarton.getAlergen().getAlergenId()).isEqualTo(alergenId);
-        assertThat(alergenZdravstveniKarton.getZdravstveniKarton()).isEqualTo(zk);
+        assert alergenZdravstveniKarton != null;
+        assertThat(alergenZdravstveniKarton.getAlergen()).isEqualTo(request.getNaziv());
+        assertThat(alergenZdravstveniKarton.getZdravstveniKartonId()).isEqualTo(zk.getZdravstveniKartonId());
         assertThat(alergenZdravstveniKarton.getId()).isEqualTo(alergenZdravstveniKartonId);
     }
 

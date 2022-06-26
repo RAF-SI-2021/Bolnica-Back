@@ -16,6 +16,7 @@ import raf.si.bolnica.management.exceptions.MissingRequestFieldsException;
 import raf.si.bolnica.management.exceptions.VaccineNotExistException;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.AddVaccineToPatientRequestDTO;
+import raf.si.bolnica.management.response.VakcinacijaDto;
 import raf.si.bolnica.management.services.AlergenZdravstveniKartonService;
 import raf.si.bolnica.management.services.VakcinacijaService;
 import raf.si.bolnica.management.services.vakcina.VakcinaService;
@@ -23,10 +24,7 @@ import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonSer
 
 import javax.persistence.EntityManager;
 import java.sql.Date;
-import java.util.Calendar;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
@@ -189,6 +187,7 @@ public class VaccineTests {
             return v;
         });
         ZdravstveniKarton zk = new ZdravstveniKarton();
+        zk.setVakcinacije(new HashSet<>());
         when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(zk);
         when(vakcinacijaService.save(any(Vakcinacija.class))).thenAnswer( i -> {
             return i.getArguments()[0];
@@ -201,17 +200,18 @@ public class VaccineTests {
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
 
-        assertThat(response.getBody()).isInstanceOf(Vakcinacija.class);
+        assertThat(response.getBody()).isInstanceOf(VakcinacijaDto.class);
 
-        Vakcinacija vk = (Vakcinacija) response.getBody();
+        VakcinacijaDto vk = (VakcinacijaDto) response.getBody();
 
+        assert vk != null;
         assertThat(vk.getVakcina().getVakcinaId()).isEqualTo(v.getVakcinaId());
         assertThat(vk.getVakcina().getNaziv()).isEqualTo(v.getNaziv());
         assertThat(vk.getDatumVakcinacije()).isEqualTo(request.getDatumVakcinacije());
         assertThat(vk.getVakcina().getOpis()).isEqualTo(v.getOpis());
         assertThat(vk.getVakcina().getProizvodjac()).isEqualTo(v.getProizvodjac());
         assertThat(vk.getVakcina().getTip()).isEqualTo(v.getTip());
-        assertThat(vk.getZdravstveniKarton()).isEqualTo(zk);
+        assertThat(vk.getZdravstveniKartonId()).isEqualTo(zk.getZdravstveniKartonId());
     }
 
 }
