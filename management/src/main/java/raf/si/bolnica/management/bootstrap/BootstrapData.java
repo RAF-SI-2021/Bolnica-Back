@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import raf.si.bolnica.management.entities.*;
-import raf.si.bolnica.management.entities.enums.CountryCode;
-import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
-import raf.si.bolnica.management.entities.enums.Pol;
-import raf.si.bolnica.management.entities.enums.RhFaktor;
+import raf.si.bolnica.management.entities.enums.*;
 import raf.si.bolnica.management.repositories.*;
 
 import java.sql.Date;
@@ -72,7 +69,7 @@ public class BootstrapData implements CommandLineRunner {
         }
 
         Pacijent pacijent = new Pacijent();
-        pacijent.setJmbg("123456789");
+        pacijent.setJmbg("1234567898765");
         pacijent.setLbp(UUID.fromString("237e9877-e79b-12d4-a765-321741963000"));
         pacijent.setIme("Pacijent");
         pacijent.setImeRoditelja("Pacijent");
@@ -85,6 +82,15 @@ public class BootstrapData implements CommandLineRunner {
         pacijent.setZemljaStanovanja(CountryCode.SRB);
         pacijent.setEmail("pacijent@gmail.com");
         pacijent.setKontaktTelefon("+381 632309642");
+        pacijent.setAdresa("Makedonska");
+        pacijent.setBracniStatus(BracniStatus.U_BRAKU);
+        pacijent.setBrojDece(2);
+        pacijent.setImeStaratelj("Staratelj");
+        pacijent.setJmbgStaratelj("1274567898765");
+        pacijent.setMestoStanovanja("Beograd");
+        pacijent.setPorodicniStatus(PorodicniStatus.OBA_RODITELJA);
+        pacijent.setStepenStrucneSpreme(StrucnaSprema.VISOKO);
+        pacijent.setZanimanje("Moler");
         pacijentRepository.save(pacijent);
 
         ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();

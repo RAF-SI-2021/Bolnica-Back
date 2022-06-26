@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -204,13 +205,13 @@ public class ManagementController {
             String msg = PacijentCRUDRequestValidator.checkValid(request);
 
             if (!msg.equals("ok")) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(msg);
             }
 
             Pacijent pacijent = pacijentService.fetchPacijentByLbp(UUID.fromString(lbp));
 
             if (pacijent == null) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
             request.updatePacijentWithData(pacijent);
@@ -570,43 +571,42 @@ public class ManagementController {
         acceptedRoles.add(Constants.MED_SESTRA);
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
-            String pacijentUpitString = "SELECT p FROM Pacijent p";
+            String s = "SELECT p FROM Pacijent p";
 
-            int cnt = 0;
+            HashMap<String, Object> param = new HashMap<>();
 
-            Map<String, Object> mp = new HashMap<>();
-            mp.put("lbp", filterPatientsRequestDTO.getLbp());
-            mp.put("jmbg", filterPatientsRequestDTO.getJmbg());
-            mp.put("ime", filterPatientsRequestDTO.getIme());
-            mp.put("prezime", filterPatientsRequestDTO.getPrezime());
+            String nextOper = " WHERE ";
 
-            for (String key : mp.keySet()) {
-                if (mp.get(key) != null) {
-                    if (cnt == 0) {
-                        pacijentUpitString = pacijentUpitString + " WHERE ";
-                    } else {
-                        pacijentUpitString = pacijentUpitString + " AND ";
-                    }
-                    pacijentUpitString = pacijentUpitString + "p." + key + " = :" + key;
-                    cnt = cnt + 1;
-                }
+            if (filterPatientsRequestDTO.getIme() != null && !filterPatientsRequestDTO.getIme().equals("")) {
+                s = s + nextOper;
+                nextOper = " AND ";
+                s = s + "p.ime like CONCAT('%', :ime, '%') ";
+                param.put("ime", filterPatientsRequestDTO.getIme());
+            }
+            if (filterPatientsRequestDTO.getPrezime() != null && !filterPatientsRequestDTO.getPrezime().equals("")) {
+                s = s + nextOper;
+                nextOper = " AND ";
+                s = s + " p.prezime like CONCAT('%', :prezime, '%') ";
+                param.put("prezime", filterPatientsRequestDTO.getPrezime());
+            }
+            if (filterPatientsRequestDTO.getJmbg() != null && !filterPatientsRequestDTO.getJmbg().equals("")) {
+                s = s + nextOper;
+                nextOper = " AND ";
+                s = s + " p.jmbg like CONCAT('%', :jmbg, '%') ";
+                param.put("jmbg", filterPatientsRequestDTO.getJmbg());
+            }
+            if (filterPatientsRequestDTO.getLbp() != null) {
+                s = s + nextOper;
+                s = s + " p.lbp = :lbp";
+                param.put("lbp", filterPatientsRequestDTO.getLbp());
             }
 
-            List<PacijentResponseDTO> pacijenti = new ArrayList<>();
-
-            TypedQuery<Pacijent> upitPacijent =
-                    entityManager.createQuery(pacijentUpitString, Pacijent.class);
-
-            for (String key : mp.keySet()) {
-                if (mp.get(key) != null) {
-                    upitPacijent.setParameter(key, mp.get(key));
-                }
+            TypedQuery<Pacijent> query = entityManager.createQuery(s, Pacijent.class);
+            for (String t : param.keySet()) {
+                query.setParameter(t, param.get(t));
             }
 
-
-            for (Pacijent p : upitPacijent.getResultList()) {
-                pacijenti.add(new PacijentResponseDTO(p));
-            }
+            List<Pacijent> pacijenti = query.getResultList().stream().filter(pacijent -> !pacijent.getObrisan()).collect(Collectors.toList());
 
             return ok(pacijenti);
         }

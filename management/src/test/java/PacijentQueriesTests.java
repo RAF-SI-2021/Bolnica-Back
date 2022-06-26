@@ -435,7 +435,7 @@ class PacijentQueriesTests {
 
         TypedQuery query = mock(TypedQuery.class);
         when(query.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(eq("SELECT p FROM Pacijent p WHERE p.ime = :ime AND p.prezime = :prezime"),
+        when(entityManager.createQuery(eq("SELECT p FROM Pacijent p WHERE p.ime like CONCAT('%', :ime, '%')  AND  p.prezime like CONCAT('%', :prezime, '%') "),
                 any(Class.class))).thenReturn(query);
 
         when(query.getResultList()).thenReturn(pacijenti);
