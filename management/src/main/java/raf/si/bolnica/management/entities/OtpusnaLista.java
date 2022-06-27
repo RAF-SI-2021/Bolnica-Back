@@ -3,6 +3,7 @@ package raf.si.bolnica.management.entities;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class OtpusnaLista {
     private String terapija;
 
     @Column(nullable = false)
-    private Timestamp datumVremeKreiranja;
+    private Date datumVremeKreiranja;
 
     public long getOtpusnaListaId() {
         return otpusnaListaId;
@@ -134,11 +135,11 @@ public class OtpusnaLista {
         this.terapija = terapija;
     }
 
-    public Timestamp getDatumVremeKreiranja() {
+    public Date getDatumVremeKreiranja() {
         return datumVremeKreiranja;
     }
 
-    public void setDatumVremeKreiranja(Timestamp datumVremeKreiranja) {
+    public void setDatumVremeKreiranja(Date datumVremeKreiranja) {
         this.datumVremeKreiranja = datumVremeKreiranja;
     }
 }

@@ -5,7 +5,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import raf.si.bolnica.user.constants.Constants;
 import raf.si.bolnica.user.models.Odeljenje;
+import raf.si.bolnica.user.models.Role;
 import raf.si.bolnica.user.models.User;
 import raf.si.bolnica.user.repositories.UserRepository;
 import java.security.SecureRandom;
@@ -64,6 +66,24 @@ public class UserServiceImpl implements UserService {
         // Encrypting password before saving it in database
         user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         return userRepository.save(user);
+    }
+
+    @Override
+    public User fetchNacelnikOdeljenja(Long id) {
+
+        Odeljenje odeljenje = odeljenjeService.fetchOdeljenjeById(id);
+        List<User> users = userRepository.findByOdeljenje(odeljenje);
+
+        for(User user: users){
+            for(Role role : user.getRoles()){
+                if(role.getName().equals(Constants.ROLE_DR_SPEC_ODELJENJA)){
+                    return user;
+                }
+            }
+
+        }
+
+        return null;
     }
 
     @Override

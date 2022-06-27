@@ -147,7 +147,7 @@ public class BootstrapData implements CommandLineRunner {
         user.setOdeljenje(odeljenje);
 
         //admin user fields
-        user.setLbz(UUID.randomUUID());
+        user.setLbz(UUID.fromString("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"));
         user.setName("admin");
         user.setSurname("adminic");
         user.setDatumRodjenja(new Date(System.currentTimeMillis()));

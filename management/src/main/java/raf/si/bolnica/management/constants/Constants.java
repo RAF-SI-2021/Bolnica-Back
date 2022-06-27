@@ -15,6 +15,11 @@ public class Constants {
     public static final String ADD_ALLERGEN_TO_PATIENT = "/add-allergen";
     public static final String ADD_VACCINE_TO_PATIENT = "/add-vaccine";
 
+    public static final String REGISTER_LEKARSKI_IZVESTAJ = "/add-lekarski-izvestaj";
+    public static final String SEARCH_LEKARSKI_IZVESTAJ = "/search-lekarski-izvestaj";
+    public static final String REGISTER_OTPUSNA_LISTA = "/add-otpusna-lista";
+    public static final String SEARCH_OTPUSNA_LISTA = "/search-otpusna-lista";
+
     public interface MissingRequestFields {
         String DEVELOPER_MESSAGE = "Invalid request";
         String MESSAGE = "All fields are required.";

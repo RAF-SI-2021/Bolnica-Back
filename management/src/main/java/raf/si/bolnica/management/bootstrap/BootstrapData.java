@@ -8,9 +8,11 @@ import raf.si.bolnica.management.entities.enums.CountryCode;
 import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
 import raf.si.bolnica.management.entities.enums.Pol;
 import raf.si.bolnica.management.entities.enums.RhFaktor;
+import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.repositories.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,6 +36,14 @@ public class BootstrapData implements CommandLineRunner {
 
     @Autowired
     private ZdravstveniKartonRepository zdravstveniKartonRepository;
+
+    @Autowired
+    private HospitalizacijaRepository hospitalizacijaRepository;
+
+    @Autowired
+    private BolnickaSobaRepository bolnickaSobaRepository;
+
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -112,5 +122,28 @@ public class BootstrapData implements CommandLineRunner {
         }
         zdravstveniKarton.setVakcinacije(vakcinacije);
         zdravstveniKartonRepository.save(zdravstveniKarton);
+
+        Hospitalizacija hospitalizacija = new Hospitalizacija();
+        hospitalizacija.setLbpPacijenta(UUID.fromString("237e9877-e79b-12d4-a765-321741963000"));
+        hospitalizacija.setLbzDodeljenogLekara(UUID.fromString("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"));
+        hospitalizacija.setLbzRegistratora(UUID.fromString("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"));
+        hospitalizacija.setDatumVremePrijema(new Timestamp(System.currentTimeMillis()));
+        hospitalizacija.setUputnaDijagnoza("Ovo je uputna dijagnoza");
+        hospitalizacija.setNapomena("Ovo je napomena");
+        hospitalizacija.setBolnickaSobaId(1);
+        hospitalizacijaRepository.save(hospitalizacija);
+
+        BolnickaSoba bolnickaSoba = new BolnickaSoba();
+        bolnickaSoba.setOdeljenjeId(1);
+        bolnickaSoba.setBrojSobe(1);
+        bolnickaSoba.setKapacitet(5);
+        bolnickaSoba.setPopunjenost(4);
+        bolnickaSoba.setNazivSobe("Soba 1");
+        bolnickaSoba.setOpis("Ovo je opis Sobe 1");
+        bolnickaSobaRepository.save(bolnickaSoba);
+
+
+
+
     }
 }
