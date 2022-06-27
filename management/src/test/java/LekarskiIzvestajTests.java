@@ -66,7 +66,7 @@ public class LekarskiIzvestajTests {
 
 
     @Test
-    public void testCreateLekarskiIzvestajSuccessRequest(){
+    public void testCreateLekarskiIzvestajSuccess(){
         Set<String> roles = new TreeSet<>();
 
         roles.add(Constants.SPECIJLISTA_POV);

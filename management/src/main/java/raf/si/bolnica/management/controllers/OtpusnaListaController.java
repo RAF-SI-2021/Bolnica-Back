@@ -47,7 +47,7 @@ public class OtpusnaListaController {
 
 
     @PostMapping(value = Constants.REGISTER_OTPUSNA_LISTA)
-    ResponseEntity<?> registerOtpusnaLista(@RequestBody CreateOtpusnaListaDTO req){
+    public ResponseEntity<?> registerOtpusnaLista(@RequestBody CreateOtpusnaListaDTO req){
 
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
@@ -106,7 +106,7 @@ public class OtpusnaListaController {
     }
 
     @PostMapping(value = Constants.SEARCH_OTPUSNA_LISTA)
-    ResponseEntity<?> searchOtpusneListe(@RequestBody OtpusnaLIstaFilterDTO req){
+    public ResponseEntity<?> searchOtpusneListe(@RequestBody OtpusnaLIstaFilterDTO req){
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
         acceptedRoles.add(Constants.SPECIJALISTA);
