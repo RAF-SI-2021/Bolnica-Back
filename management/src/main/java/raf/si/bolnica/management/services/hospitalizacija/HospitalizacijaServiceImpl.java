@@ -33,4 +33,9 @@ public class HospitalizacijaServiceImpl implements HospitalizacijaService{
         }
         return null;
     }
+
+    @Override
+    public List<Hospitalizacija> findByLbp(UUID lbp) {
+        return hospitalizacijaRepository.findAllByLbpPacijenta(lbp);
+    }
 }

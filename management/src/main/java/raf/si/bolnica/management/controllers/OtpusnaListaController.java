@@ -16,10 +16,14 @@ import raf.si.bolnica.management.entities.OtpusnaLista;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.CreateOtpusnaListaDTO;
 import raf.si.bolnica.management.requests.CreateOtpusnaListaDTOValidator;
+import raf.si.bolnica.management.requests.OtpusnaLIstaFilterDTO;
+import raf.si.bolnica.management.requests.OtpusnaListaFilterDTORequestValidator;
+import raf.si.bolnica.management.response.OtpusnaListaResponseDTO;
 import raf.si.bolnica.management.services.bolnickaSoba.BolnickaSobaService;
 import raf.si.bolnica.management.services.hospitalizacija.HospitalizacijaService;
 import raf.si.bolnica.management.services.otpusnaLista.OtpusnaListaService;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +46,7 @@ public class OtpusnaListaController {
     BolnickaSobaService bolnickaSobaService;
 
 
-    @PostMapping(value = Constants.Register_OTPUSNA_LISTA)
+    @PostMapping(value = Constants.REGISTER_OTPUSNA_LISTA)
     ResponseEntity<?> registerOtpusnaLista(@RequestBody CreateOtpusnaListaDTO req){
 
         List<String> acceptedRoles = new ArrayList<>();
@@ -58,7 +62,7 @@ public class OtpusnaListaController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
         }
 
-        UUID lbzNacelnika = loggedInUser.getLBZ();
+        UUID lbzNacelnika;
 
         if(!loggedInUser.getRoles().stream().anyMatch(Constants.NACELNIK :: contains)){
             String uri = "http://host.docker.internal:8081/api/find-dr-spec-odeljenja/" + req.getPbo();
@@ -69,6 +73,9 @@ public class OtpusnaListaController {
         }
 
         Hospitalizacija hospitalizacija = hospitalizacijaService.findCurrentByLbp(UUID.fromString(req.getLbp()));
+        if(hospitalizacija == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Pacijent nije trenutno hospitalizovan");
+        }
         OtpusnaLista otpusnaLista = new OtpusnaLista();
         otpusnaLista.setLbpPacijenta(UUID.fromString(req.getLbp()));
         otpusnaLista.setLbzOrdinirajucegLekara(loggedInUser.getLBZ());
@@ -80,8 +87,9 @@ public class OtpusnaListaController {
         otpusnaLista.setTokBolesti(req.getTokBolesti());
         otpusnaLista.setZakljucak(req.getZakljucak());
         otpusnaLista.setTerapija(req.getTerapija());
+        Date date = new Date(System.currentTimeMillis());
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        otpusnaLista.setDatumVremeKreiranja(timestamp);
+        otpusnaLista.setDatumVremeKreiranja(date);
         hospitalizacija.setDatumVremeOtpustanja(timestamp);
 
         BolnickaSoba bolnickaSoba = bolnickaSobaService.findById(hospitalizacija.getBolnickaSobaId());
@@ -96,5 +104,58 @@ public class OtpusnaListaController {
 
         return ResponseEntity.ok().body(otpusnaLista);
     }
+
+    @PostMapping(value = Constants.SEARCH_OTPUSNA_LISTA)
+    ResponseEntity<?> searchOtpusneListe(@RequestBody OtpusnaLIstaFilterDTO req){
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
+        acceptedRoles.add(Constants.SPECIJALISTA);
+        acceptedRoles.add(Constants.SPECIJLISTA_POV);
+
+        if(!loggedInUser.getRoles().stream().anyMatch(acceptedRoles :: contains)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+
+        String msg = OtpusnaListaFilterDTORequestValidator.validate(req);
+        if(!msg.equals("OK")){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
+        }
+        UUID lbp = UUID.fromString(req.getLbp());
+        Integer type = OtpusnaListaFilterDTORequestValidator.checkRequest(req);
+        List<OtpusnaLista> otpusnaListaList = new ArrayList<>();
+        switch (type){
+            case 0:
+                otpusnaListaList = otpusnaListaService.findByLBP(lbp);
+                break;
+            case 1:
+                otpusnaListaList = otpusnaListaService.findByLBPAndDate(lbp, req.getStart());
+                break;
+            case 2:
+                otpusnaListaList = otpusnaListaService.findByLBPAndBetweenDates(lbp, req.getStart(), req.getEnd());
+                break;
+
+        }
+        List<Hospitalizacija> hospitalizacijaList = hospitalizacijaService.findByLbp(UUID.fromString(req.getLbp()));
+        List<OtpusnaListaResponseDTO> responseDTOS = new ArrayList<>();
+        for(int i = 0; i < otpusnaListaList.size(); i++){
+            OtpusnaListaResponseDTO o = new OtpusnaListaResponseDTO();
+            String uri1 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzNacelnikOdeljenja();
+            String uri2 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzOrdinirajucegLekara();
+            RestTemplate restTemplate = new RestTemplate();
+            Object nacelnik = restTemplate.getForObject(uri1, Object.class);
+            Object ordinirajuciLekar = restTemplate.getForObject(uri2, Object.class);
+            o.setNacelnikOdeljenja(nacelnik);
+            o.setOrdinirajuciLekar(ordinirajuciLekar);
+            o.setOtpusnaLista(otpusnaListaList.get(i));
+            o.setDatumPrijema(hospitalizacijaList.get(i).getDatumVremePrijema());
+            o.setDatumOtpustanja(hospitalizacijaList.get(i).getDatumVremeOtpustanja());
+            responseDTOS.add(o);
+
+
+        }
+        return ResponseEntity.ok().body(responseDTOS);
+    }
+
 
 }

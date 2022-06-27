@@ -125,8 +125,8 @@ public class BootstrapData implements CommandLineRunner {
 
         Hospitalizacija hospitalizacija = new Hospitalizacija();
         hospitalizacija.setLbpPacijenta(UUID.fromString("237e9877-e79b-12d4-a765-321741963000"));
-        hospitalizacija.setLbzDodeljenogLekara(UUID.randomUUID());
-        hospitalizacija.setLbzRegistratora(UUID.randomUUID());
+        hospitalizacija.setLbzDodeljenogLekara(UUID.fromString("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"));
+        hospitalizacija.setLbzRegistratora(UUID.fromString("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"));
         hospitalizacija.setDatumVremePrijema(new Timestamp(System.currentTimeMillis()));
         hospitalizacija.setUputnaDijagnoza("Ovo je uputna dijagnoza");
         hospitalizacija.setNapomena("Ovo je napomena");

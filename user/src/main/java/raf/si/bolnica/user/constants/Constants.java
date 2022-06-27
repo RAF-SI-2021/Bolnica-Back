@@ -14,8 +14,10 @@ public class Constants {
     public static final String SEARCH_DEPARTMENT_BY_NAME = "/department/search";
     public static final String ALL_DEPARTMENTS = "/departments";
     public static final String ALL_HOSPITALS = "/hospitals";
+    public static final String GET_EMPLOYEE_INFO = "/employee-info/{lbz}";
     public static final String VISA_MED_SESTRA = "ROLE_VISA_MED_SESTRA";
     public static final String ROLE_DR_SPEC_ODELJENJA = "ROLE_DR_SPEC_ODELJENJA";
+
     
     public static final String JWT_KEY = "QnuQblQWn8H9ggiwfGbCxpPA3gdY1oAe";
 

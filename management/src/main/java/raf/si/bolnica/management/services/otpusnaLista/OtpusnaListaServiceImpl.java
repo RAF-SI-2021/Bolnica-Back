@@ -6,6 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.management.entities.OtpusnaLista;
 import raf.si.bolnica.management.repositories.OtpusnaListaRepository;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.UUID;
+
 
 @Service
 @Transactional("transactionManager")
@@ -17,5 +22,20 @@ public class OtpusnaListaServiceImpl implements OtpusnaListaService{
     @Override
     public OtpusnaLista save(OtpusnaLista otpusnaLista) {
         return otpusnaListaRepository.save(otpusnaLista);
+    }
+
+    @Override
+    public List<OtpusnaLista> findByLBP(UUID lbp) {
+        return otpusnaListaRepository.findAllByLbpPacijenta(lbp);
+    }
+
+    @Override
+    public List<OtpusnaLista> findByLBPAndDate(UUID lbp, Date date) {
+        return otpusnaListaRepository.findAllByLbpPacijentaAndDatumVremeKreiranja(lbp, date);
+    }
+
+    @Override
+    public List<OtpusnaLista> findByLBPAndBetweenDates(UUID lbp, Date start, Date end) {
+        return otpusnaListaRepository.findAllByLbpPacijentaAndDatumVremeKreiranjaGreaterThanEqualAndDatumVremeKreiranjaLessThanEqual(lbp, start, end);
     }
 }

@@ -17,6 +17,7 @@ import raf.si.bolnica.user.repositories.RoleRepository;
 import raf.si.bolnica.user.requests.CreateEmployeeRequestDTO;
 import raf.si.bolnica.user.requests.ListEmployeesRequestDTO;
 import raf.si.bolnica.user.requests.UpdateEmployeeRequestDTO;
+import raf.si.bolnica.user.responses.EmployeeInformationResponseDTO;
 import raf.si.bolnica.user.responses.UserDataResponseDTO;
 import raf.si.bolnica.user.responses.UserResponseDTO;
 import raf.si.bolnica.user.service.OdeljenjeService;
@@ -162,6 +163,13 @@ public class UserController {
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @GetMapping(value = Constants.GET_EMPLOYEE_INFO)
+    ResponseEntity<EmployeeInformationResponseDTO> getEmployeeInfo(@PathVariable String lbz){
+        User user = userService.fetchUserByLBZ(UUID.fromString(lbz));
+        EmployeeInformationResponseDTO responseDTO = new EmployeeInformationResponseDTO(user);
+        return ResponseEntity.ok().body(responseDTO);
     }
 
 
