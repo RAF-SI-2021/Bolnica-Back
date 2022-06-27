@@ -206,7 +206,6 @@ public class LaboratoryController {
                 }
             }
         }
-
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 

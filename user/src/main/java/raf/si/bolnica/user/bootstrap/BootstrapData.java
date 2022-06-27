@@ -58,9 +58,9 @@ public class BootstrapData implements CommandLineRunner {
         odeljenjeLaboratorija.setPoslovniBrojOdeljenja(12111);
 
         Odeljenje odeljenjeDijagnostika = new Odeljenje();
-        odeljenjeLaboratorija.setNaziv("Dijagnostika");
-        odeljenjeLaboratorija.setBolnica(zdravstvenaUstanova);
-        odeljenjeLaboratorija.setPoslovniBrojOdeljenja(12311);
+        odeljenjeDijagnostika.setNaziv("Dijagnostika");
+        odeljenjeDijagnostika.setBolnica(zdravstvenaUstanova);
+        odeljenjeDijagnostika.setPoslovniBrojOdeljenja(12315);
 
         Odeljenje odeljenjePedijatrija = new Odeljenje();
         odeljenjePedijatrija.setNaziv("Pedijatrija");
