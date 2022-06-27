@@ -206,7 +206,6 @@ public class LaboratoryController {
                 }
             }
         }
-
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
@@ -519,7 +518,7 @@ public class LaboratoryController {
         Uput noviUput = new Uput(request);
         uputService.saveUput(noviUput);
 
-        return ResponseEntity.ok("Uput napravljen");
+        return ResponseEntity.ok(new UputResponseDTO(noviUput));
     }
 
     @DeleteMapping(value = "/delete-uput")
@@ -604,13 +603,14 @@ public class LaboratoryController {
         for (String t : param.keySet()) {
             query.setParameter(t, param.get(t));
         }
+        query.setFirstResult((page - 1) * size);
+        query.setMaxResults(size);
+
         List<UputResponseDTO> ret = new ArrayList<>();
         for (Uput uput : query.getResultList()) {
             ret.add(new UputResponseDTO(uput));
         }
 
-        query.setFirstResult((page - 1) * size);
-        query.setMaxResults(size);
 
         return ok(ret);
 

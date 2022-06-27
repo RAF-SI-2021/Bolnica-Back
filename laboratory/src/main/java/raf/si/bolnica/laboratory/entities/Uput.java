@@ -51,7 +51,7 @@ public class Uput {
     private String razlogUpucivanja;
 
     // FKs
-    @OneToOne(mappedBy = "uput")
+    @OneToOne(mappedBy = "uput", fetch = FetchType.EAGER)
     private LaboratorijskiRadniNalog laboratorijskiRadniNalog;
 
     public Uput(){
