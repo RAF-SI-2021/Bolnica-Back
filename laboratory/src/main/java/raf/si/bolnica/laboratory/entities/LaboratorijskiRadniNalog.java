@@ -32,7 +32,7 @@ public class LaboratorijskiRadniNalog {
     private UUID lbzBiohemicar = null;
 
     // Fks
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "uput")
     private Uput uput;
 
