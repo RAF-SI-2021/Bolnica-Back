@@ -164,6 +164,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
+
+
     @GetMapping(value = Constants.LIST_EMPLOYEES_BY_PBO)
     public ResponseEntity<List<UserDataResponseDTO>> listEmployeesByPbo(@PathVariable Long pbo) {
         // Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra.
@@ -181,6 +183,12 @@ public class UserController {
             }
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @GetMapping(value = Constants.FIND_DR_SPEC_ODELJENJA)
+    public ResponseEntity<UUID> findDrSpecOdeljenjaByPbo(@PathVariable Long pbo){
+        User user = userService.fetchNacelnikOdeljenja(pbo);
+        return ok(user.getLbz());
     }
 
     @PostMapping(value = Constants.LIST_EMPLOYEES)
@@ -304,4 +312,5 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
 }

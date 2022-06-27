@@ -17,6 +17,7 @@ public class Constants {
 
     public static final String REGISTER_LEKARSKI_IZVESTAJ = "/add-lekarski-izvestaj";
     public static final String SEARCH_LEKARSKI_IZVESTAJ = "/search-lekarski-izvestaj";
+    public static final String Register_OTPUSNA_LISTA = "/add-otpusna-lista";
 
     public interface MissingRequestFields {
         String DEVELOPER_MESSAGE = "Invalid request";
