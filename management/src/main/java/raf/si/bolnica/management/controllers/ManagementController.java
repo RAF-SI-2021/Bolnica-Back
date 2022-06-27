@@ -33,11 +33,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import raf.si.bolnica.management.entities.Pregled;
 import raf.si.bolnica.management.entities.ZakazaniPregled;
+import raf.si.bolnica.management.entities.StanjePacijenta;
 import raf.si.bolnica.management.requests.CreateScheduledAppointmentRequestDTO;
 import raf.si.bolnica.management.requests.SearchForAppointmentDTO;
 import raf.si.bolnica.management.requests.UpdateAppointmentStatusDTO;
 import raf.si.bolnica.management.requests.UpdateArrivalStatusDTO;
 import raf.si.bolnica.management.services.ScheduledAppointmentService;
+import src.main.java.raf.si.bolnica.management.requests.SetPatientsStateDTO;
+import raf.si.bolnica.management.services.StanjePacijentaService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -71,6 +74,9 @@ public class ManagementController {
 
     @Autowired
     private IstorijaBolestiService istorijaBolestiService;
+
+    @Autowired
+    private StanjePacijentaService stanjePacijentaService;
 
     @Autowired
     private EntityManager entityManager;
@@ -659,7 +665,7 @@ public class ManagementController {
         for (int i = 0; i < 4; i++) {
             if (loggedInUser.getRoles().contains(roles[i])) {
                 if (searchForAppointmentDTO.getDate() == null) {
-
+                    String s;
                     Timestamp date = Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
                     List<ZakazaniPregled> allAppointments = appointmentService.getAppointmentByLBZ(UUID.fromString(searchForAppointmentDTO.getLbz()));
                     List<ZakazaniPregled> appointments = new ArrayList<>();
@@ -678,5 +684,68 @@ public class ManagementController {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+    @PostMapping(value = "/searchPatientStateHistory")
+    public ResponseEntity<?> searchPatientStateHistory(@RequestBody SearchPatientStateHistoryDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+        acceptedRoles.add("ROLE_ADMIN");
+        String s = "SELECT u from StanjePacijenta u WHERE u.lbpPacijenta = :lbpp";
+//        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+//
+  //      }
+        Map<String, Object> param = new HashMap<>();
+        param.put("lbpp", requestDTO.getLbp());
 
+        if (requestDTO.getDoDatuma() != null) {
+            param.put("do", requestDTO.getDoDatuma());
+            s = s + " AND u.datumVreme <= :do";
+        }
+        if (requestDTO.getOdDatuma() != null) {
+            param.put("od", requestDTO.getOdDatuma());
+            s = s + " AND u.datumVreme >= :od";
+        }
+        TypedQuery<StanjePacijenta> query
+                = entityManager.createQuery(
+                s, StanjePacijenta.class);
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+        List<StanjePacijenta> ret = new ArrayList<>();
+        for(StanjePacijenta stanje : query.getResultList()){
+            ret.add(stanje);
+        }
+
+        return ok(ret);
+
+    }
+    @PutMapping(value = "/setPatientsState")
+    public ResponseEntity<?> setPatientsState(@RequestBody SetPatientsStateDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+
+        StanjePacijenta stanje = new StanjePacijenta(requestDTO);
+        stanjePacijentaService.saveStanje(stanje);
+
+
+        return ok(stanje);
+
+    }
+
+    @GetMapping(value = "/searchHospitalizedPatients")
+    public ResponseEntity<?> searchHospitalizedPatients(@RequestBody SearchPatientStateHistoryDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+        String s = "SELECT u from Hospitalizacija u WHERE u.datumVreme = :placeholder";
+        Map<String, Object> param = new HashMap<>();
+        param.put("placeholder", null);
+
+
+
+        return ok(acceptedRoles);
+
+    }
 }
