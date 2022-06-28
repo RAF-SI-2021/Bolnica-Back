@@ -112,7 +112,7 @@ public class LaboratoryController {
 
         zakazanLaboratorijskiPregled.setStatusPregleda(StatusPregleda.valueOf(request.getStatus()));
         zakazanLaboratorijskiPregledService.saveZakazanPregled(zakazanLaboratorijskiPregled);
-        return ResponseEntity.ok("Status successfully changed to: " + zakazanLaboratorijskiPregled.getStatusPregleda().toString());
+        return ResponseEntity.ok(new ZakazanPregledDto(zakazanLaboratorijskiPregled));
 
     }
 
