@@ -29,7 +29,6 @@ public class Hospitalizacija {
     @Column(nullable = false)
     private Timestamp datumVremePrijema;
 
-    @Column(nullable = false)
     private Timestamp datumVremeOtpustanja;
 
     @Column(nullable = false)

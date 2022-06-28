@@ -1,5 +1,6 @@
 package raf.si.bolnica.management.controllers;
 
+import org.bouncycastle.util.Times;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -684,6 +685,7 @@ public class ManagementController {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
     @PostMapping(value = "/searchPatientStateHistory")
     public ResponseEntity<?> searchPatientStateHistory(@RequestBody SearchPatientStateHistoryDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
@@ -694,7 +696,7 @@ public class ManagementController {
         String s = "SELECT u from StanjePacijenta u WHERE u.lbpPacijenta = :lbpp";
 //        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 //
-  //      }
+        //      }
         Map<String, Object> param = new HashMap<>();
         param.put("lbpp", requestDTO.getLbp());
 
@@ -713,13 +715,14 @@ public class ManagementController {
             query.setParameter(t, param.get(t));
         }
         List<StanjePacijenta> ret = new ArrayList<>();
-        for(StanjePacijenta stanje : query.getResultList()){
+        for (StanjePacijenta stanje : query.getResultList()) {
             ret.add(stanje);
         }
 
         return ok(ret);
 
     }
+
     @PutMapping(value = "/setPatientsState")
     public ResponseEntity<?> setPatientsState(@RequestBody SetPatientsStateDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
@@ -735,17 +738,109 @@ public class ManagementController {
     }
 
     @GetMapping(value = "/searchHospitalizedPatients")
-    public ResponseEntity<?> searchHospitalizedPatients(@RequestBody SearchPatientStateHistoryDTO requestDTO) {
+    public ResponseEntity<?> searchHospitalizedPatients(@RequestBody SearchHospitalizedPatientsDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
-        String s = "SELECT u from Hospitalizacija u WHERE u.datumVreme = :placeholder";
+        String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
+                "b.brojSobe, b.kapacitet, p.lbp," +
+                "p.ime, p.prezime, p.datumRodjenja, p.jmbg" +
+                " from Hospitalizacija h,  Pacijent p, BolnickaSoba b WHERE h.datumVremeOtpustanja != :placeholder";
         Map<String, Object> param = new HashMap<>();
-        param.put("placeholder", null);
+        param.put("placeholder", Timestamp.valueOf("2007-09-23 10:10:10.0"));
 
+//        if (requestDTO.getPBO() != 0) {
+//            param.put("name", requestDTO.getJmbg());
+//            s = s + " AND p.ime = : name";
+//        }else{
+//            return null;
+//        }
+        if (requestDTO.getLbp() != null) {
+            param.put("lbp", requestDTO.getLbp());
+            s = s + " AND p.lbp = :lbp";
+            //   s = s + " AND h.lbpPacijenta = :lbp";
+        }
+        if (requestDTO.getJmbg() != null) {
+            param.put("jmbg", requestDTO.getJmbg());
+            s = s + " AND p.jmbg = : jmbg";
+        }
+        if (requestDTO.getName() != null) {
+            param.put("name", requestDTO.getName());
+            s = s + " AND p.ime = : name";
+        }
+        if (requestDTO.getSurname() != null) {
+            param.put("surname", requestDTO.getSurname());
+            s = s + " AND p.prezime = : surname";
+        }
 
+        TypedQuery<Object[]> query
+                = entityManager.createQuery(
+                s, Object[].class);
 
-        return ok(acceptedRoles);
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+
+        List<SearchHospitalizedPatientsResponseDTO> ret = new ArrayList<>();
+        for (Object[] row : query.getResultList()) {
+            for (int i = 0; i < row.length; i++) {
+
+                if (row[i] != null) {
+                    System.out.println(row[i].toString() + " row little boat + " + i );
+                } else {
+                    System.out.println(row[i] + " ist nulee" + i);
+                }
+            }
+
+        }
+
+        System.out.println(ret);
+        return ok(ret);
 
     }
+
+
+    @GetMapping(value = "/searchPatientsInHospital")
+    public ResponseEntity<?> searchPatientsInHospital(@RequestBody SearchPatientsInHospitalDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+
+        String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
+                "b.brojSobe, p.lbp," +
+                "p.ime, p.prezime, p.datumRodjenja, p.jmbg" +
+                " from Hospitalizacija h, BolnickaSoba b, Pacijent p  WHERE h.datumVremeOtpustanja != :placeholder";
+        Map<String, Object> param = new HashMap<>();
+        param.put("placeholder", Timestamp.valueOf("2007-09-23 10:10:10.0"));
+
+
+        if (requestDTO.getLbp() != null) {
+            param.put("lbp", requestDTO.getLbp());
+            s = s + " AND p.lbp = :lbp";
+            //   s = s + " AND h.lbpPacijenta = :lbp";
+        }
+        if (requestDTO.getJmbg() != null) {
+            param.put("jmbg", requestDTO.getJmbg());
+            s = s + " AND p.jmbg = : jmbg";
+        }
+        if (requestDTO.getName() != null) {
+            param.put("name", requestDTO.getName());
+            s = s + " AND p.ime = : name";
+        }
+        if (requestDTO.getSurname() != null) {
+            param.put("surname", requestDTO.getSurname());
+            s = s + " AND p.prezime = : surname";
+        }
+
+        TypedQuery<Object[]> query
+                = entityManager.createQuery(
+                s, Object[].class);
+
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+
+        return ok(acceptedRoles);
+    }
+
 }

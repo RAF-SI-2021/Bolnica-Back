@@ -17,6 +17,8 @@ public class LoggedInUser {
 
     private UUID lbz;
 
+    private long PBB;
+
     public LoggedInUser() {}
 
     public String getUsername() {
@@ -41,5 +43,14 @@ public class LoggedInUser {
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
+    }
+
+
+    public long getPBB() {
+        return PBB;
+    }
+
+    public void setPBB(long PBB) {
+        this.PBB = PBB;
     }
 }
