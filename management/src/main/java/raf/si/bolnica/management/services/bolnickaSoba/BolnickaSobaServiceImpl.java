@@ -29,4 +29,10 @@ public class BolnickaSobaServiceImpl implements BolnickaSobaService{
         bolnickaSoba.setPopunjenost(bolnickaSoba.getPopunjenost() - 1);
         return bolnickaSoba.getPopunjenost();
     }
+
+    @Override
+    public synchronized int increment(BolnickaSoba bolnickaSoba) {
+        bolnickaSoba.setPopunjenost(bolnickaSoba.getPopunjenost() + 1);
+        return bolnickaSoba.getPopunjenost();
+    }
 }

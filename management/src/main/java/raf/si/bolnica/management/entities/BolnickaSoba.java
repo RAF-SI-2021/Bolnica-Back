@@ -18,6 +18,9 @@ public class BolnickaSoba {
     @Column(nullable = false)
     private int brojSobe;
 
+    @Column(nullable = false)
+    private int bolnicaId;
+
     private String nazivSobe;
 
     @Column(nullable = false)
@@ -83,5 +86,13 @@ public class BolnickaSoba {
 
     public void setOpis(String opis) {
         this.opis = opis;
+    }
+
+    public int getBolnicaId() {
+        return bolnicaId;
+    }
+
+    public void setBolnicaId(int bolnicaId) {
+        this.bolnicaId = bolnicaId;
     }
 }

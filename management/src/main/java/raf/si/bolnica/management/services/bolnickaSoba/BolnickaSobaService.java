@@ -8,4 +8,5 @@ public interface BolnickaSobaService {
     BolnickaSoba findById(long id);
     BolnickaSoba save(BolnickaSoba bolnickaSoba);
     int decrement(BolnickaSoba bolnickaSoba);
+    int increment(BolnickaSoba bolnickaSoba);
 }

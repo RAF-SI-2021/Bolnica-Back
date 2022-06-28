@@ -15,11 +15,14 @@ import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.*;
 import raf.si.bolnica.management.response.*;
 import raf.si.bolnica.management.services.*;
+import raf.si.bolnica.management.services.bolnickaSoba.BolnickaSobaService;
+import raf.si.bolnica.management.services.hospitalizacija.HospitalizacijaService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,6 +88,12 @@ public class ManagementController {
 
     @Autowired
     private ScheduledAppointmentService appointmentService;
+
+    @Autowired
+    private HospitalizacijaService hospitalizacijaService;
+
+    @Autowired
+    private BolnickaSobaService bolnickaSobaService;
 
     @PostMapping(value = "/create-examination-report")
     public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
@@ -686,7 +695,7 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @PostMapping(value = "/searchPatientStateHistory")
+    @GetMapping(value = "/searchPatientStateHistory")
     public ResponseEntity<?> searchPatientStateHistory(@RequestBody SearchPatientStateHistoryDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
@@ -694,9 +703,9 @@ public class ManagementController {
         acceptedRoles.add("ROLE_MED_SESTRA");
         acceptedRoles.add("ROLE_ADMIN");
         String s = "SELECT u from StanjePacijenta u WHERE u.lbpPacijenta = :lbpp";
-//        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-//
-        //      }
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         Map<String, Object> param = new HashMap<>();
         param.put("lbpp", requestDTO.getLbp());
 
@@ -723,11 +732,16 @@ public class ManagementController {
 
     }
 
+    //Registrovanje zdravstvenog stanja pacijenta
     @PutMapping(value = "/setPatientsState")
     public ResponseEntity<?> setPatientsState(@RequestBody SetPatientsStateDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
+
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         StanjePacijenta stanje = new StanjePacijenta(requestDTO);
         stanjePacijentaService.saveStanje(stanje);
@@ -737,28 +751,36 @@ public class ManagementController {
 
     }
 
+    //Pretraga pacijenata na odeljenju
     @GetMapping(value = "/searchHospitalizedPatients")
     public ResponseEntity<?> searchHospitalizedPatients(@RequestBody SearchHospitalizedPatientsDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
+        acceptedRoles.add("ROLE_ADMIN");
+        acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
+        acceptedRoles.add( "ROLE_DR_SPEC");
+
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
                 "b.brojSobe, b.kapacitet, p.lbp," +
                 "p.ime, p.prezime, p.datumRodjenja, p.jmbg" +
-                " from Hospitalizacija h,  Pacijent p, BolnickaSoba b WHERE h.datumVremeOtpustanja != :placeholder";
+                " from Hospitalizacija h,  Pacijent p, BolnickaSoba b WHERE h.datumVremeOtpustanja IS NULL" +
+                " AND h.lbpPacijenta = p.lbp AND h.bolnickaSobaId = b.bolnickaSobaId";
         Map<String, Object> param = new HashMap<>();
-        param.put("placeholder", Timestamp.valueOf("2007-09-23 10:10:10.0"));
 
-//        if (requestDTO.getPBO() != 0) {
-//            param.put("name", requestDTO.getJmbg());
-//            s = s + " AND p.ime = : name";
-//        }else{
-//            return null;
-//        }
+        if (requestDTO.getPbo() == 0) {
+            System.out.println("Ne moze ovako, break");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } else {
+            param.put("pbo", requestDTO.getPbo());
+            s = s + " AND b.odeljenjeId = :pbo";
+        }
         if (requestDTO.getLbp() != null) {
             param.put("lbp", requestDTO.getLbp());
             s = s + " AND p.lbp = :lbp";
-            //   s = s + " AND h.lbpPacijenta = :lbp";
         }
         if (requestDTO.getJmbg() != null) {
             param.put("jmbg", requestDTO.getJmbg());
@@ -783,41 +805,92 @@ public class ManagementController {
 
         List<SearchHospitalizedPatientsResponseDTO> ret = new ArrayList<>();
         for (Object[] row : query.getResultList()) {
+            SearchHospitalizedPatientsResponseDTO dto = new SearchHospitalizedPatientsResponseDTO();
             for (int i = 0; i < row.length; i++) {
-
                 if (row[i] != null) {
-                    System.out.println(row[i].toString() + " row little boat + " + i );
-                } else {
-                    System.out.println(row[i] + " ist nulee" + i);
+                    switch (i) {
+                        case 0:
+                            dto.setDatumVremePrijema(Timestamp.valueOf((row[0]).toString()));
+                            break;
+                        case 1:
+                            dto.setNapomena(row[1].toString());
+                            break;
+                        case 2:
+                            dto.setUputnaDijagnoza(row[2].toString());
+                            break;
+                        case 3:
+                            dto.setBolnickaSobaId(Long.parseLong(row[3].toString()));
+                            break;
+                        case 4:
+                            dto.setBrojSobe(Integer.parseInt(row[4].toString()));
+                            break;
+                        case 5:
+                            dto.setKapacitetSobe(Integer.parseInt(row[5].toString()));
+                            break;
+                        case 6:
+                            dto.setLbp(UUID.fromString(row[6].toString()));
+                            break;
+
+                        case 7:
+                            dto.setIme(row[7].toString());
+                            break;
+                        case 8:
+                            dto.setPrezime(row[8].toString());
+                            break;
+                        case 9:
+                            dto.setDatumRodjenja(Date.valueOf(row[9].toString()));
+                            break;
+
+                        case 10:
+                            dto.setJmbg(row[10].toString());
+                            break;
+
+                    }
                 }
+
             }
+            ret.add(dto);
 
         }
 
-        System.out.println(ret);
         return ok(ret);
 
     }
 
 
+    //Pretraga pacijenata u bolnici
     @GetMapping(value = "/searchPatientsInHospital")
     public ResponseEntity<?> searchPatientsInHospital(@RequestBody SearchPatientsInHospitalDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
+        acceptedRoles.add("ROLE_ADMIN");
+        acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
+        acceptedRoles.add( "ROLE_DR_SPEC");
+        acceptedRoles.add(Constants.RECEPCIONER);
+
+            if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
 
         String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
                 "b.brojSobe, p.lbp," +
                 "p.ime, p.prezime, p.datumRodjenja, p.jmbg" +
-                " from Hospitalizacija h, BolnickaSoba b, Pacijent p  WHERE h.datumVremeOtpustanja != :placeholder";
+                " from Hospitalizacija h, BolnickaSoba b, Pacijent p  WHERE h.datumVremeOtpustanja IS NULL" +
+                " AND h.lbpPacijenta = p.lbp AND h.bolnickaSobaId = b.bolnickaSobaId";
         Map<String, Object> param = new HashMap<>();
-        param.put("placeholder", Timestamp.valueOf("2007-09-23 10:10:10.0"));
 
+        if (requestDTO.getPbb() == 0) {
+            System.out.println("Ne moze ovako, break");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } else {
 
+            param.put("pbb", requestDTO.getPbb());
+            s = s + " AND b.bolnicaId = :pbb";
+        }
         if (requestDTO.getLbp() != null) {
             param.put("lbp", requestDTO.getLbp());
             s = s + " AND p.lbp = :lbp";
-            //   s = s + " AND h.lbpPacijenta = :lbp";
         }
         if (requestDTO.getJmbg() != null) {
             param.put("jmbg", requestDTO.getJmbg());
@@ -831,7 +904,6 @@ public class ManagementController {
             param.put("surname", requestDTO.getSurname());
             s = s + " AND p.prezime = : surname";
         }
-
         TypedQuery<Object[]> query
                 = entityManager.createQuery(
                 s, Object[].class);
@@ -839,8 +911,90 @@ public class ManagementController {
         for (String t : param.keySet()) {
             query.setParameter(t, param.get(t));
         }
+        List<SearchPatientsInHospitalResponseDTO> ret = new ArrayList<>();
+        for (Object[] row : query.getResultList()) {
+            SearchPatientsInHospitalResponseDTO dto = new SearchPatientsInHospitalResponseDTO();
+            for (int i = 0; i < row.length; i++) {
+                if (row[i] != null) {
+                    System.err.println(row[i] + " row row " + i);
+                    switch (i) {
+                        case 0:
+                            dto.setDatumVremePrijema(Timestamp.valueOf((row[0]).toString()));
+                            break;
+                        case 1:
+                            dto.setNapomena(row[1].toString());
+                            break;
+                        case 2:
+                            dto.setUputnaDijagnoza(row[2].toString());
+                            break;
+                        case 3:
+                            dto.setBolnickaSobaId(Long.parseLong(row[3].toString()));
+                            break;
+                        case 4:
+                            dto.setBrojSobe(Integer.parseInt(row[4].toString()));
+                            break;
+                        case 5:
+                            dto.setLbp(UUID.fromString(row[5].toString()));
+                            break;
+                        case 6:
+                            dto.setIme(row[6].toString());
+                            break;
+                        case 7:
+                            dto.setPrezime(row[7].toString());
+                            break;
+                        case 8:
+                            dto.setDatumRodjenja(Date.valueOf(row[8].toString()));
+                            break;
+                        case 9:
+                            dto.setJmbg(row[9].toString());
+                            break;
 
-        return ok(acceptedRoles);
+                    }
+                }
+
+            }
+            ret.add(dto);
+
+        }
+        return ok(ret);
     }
 
+    //Hospitalizacija pacijenta
+    @PutMapping(value = "/hospitalizePatient")
+    public ResponseEntity<?> hospitalizePatient(@RequestBody HospitalizePatientDTO requestDTO) {
+
+        long bolnickaSobaID = requestDTO.getBolnickaSobaId();
+
+        Hospitalizacija hospitalizacija = new Hospitalizacija();
+        hospitalizacija.setBolnickaSobaId(bolnickaSobaID);
+        hospitalizacija.setLbpPacijenta(requestDTO.getLbp());
+        hospitalizacija.setLbzDodeljenogLekara(requestDTO.getLbzLekara());
+        hospitalizacija.setLbzRegistratora(UUID.fromString("ac43c1ae-f6f6-11ec-b939-0242ac120002"));
+        //hospitalizacija.setLbzRegistratora(loggedInUser.getLBZ());
+        hospitalizacija.setDatumVremePrijema(new Timestamp(System.currentTimeMillis()));
+        hospitalizacija.setUputnaDijagnoza(requestDTO.getUputnaDijagnoza());
+
+        if(requestDTO.getNapomena() != null) {
+            hospitalizacija.setNapomena(requestDTO.getNapomena());
+        }
+
+        hospitalizacijaService.save(hospitalizacija);
+
+
+        BolnickaSoba bolnickaSoba = bolnickaSobaService.findById(bolnickaSobaID);
+        bolnickaSoba.setPopunjenost(bolnickaSobaService.increment(bolnickaSoba));
+        bolnickaSobaService.save(bolnickaSoba);
+
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+
+//        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
+
+
+        return ok("Its good");
+
+    }
 }
