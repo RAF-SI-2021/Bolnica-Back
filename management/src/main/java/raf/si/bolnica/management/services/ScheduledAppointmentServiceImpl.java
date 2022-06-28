@@ -32,6 +32,7 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
         Optional<ZakazaniPregled> toSave = scheduledAppointmentRepository
                 .findByLbzLekaraAndDatumIVremePregledaBetweenAndStatusPregleda(appointment.getLbzLekara(), startTime, endTime, StatusPregleda.ZAKAZANO);
         if (toSave.isPresent()) {
+            System.out.println(toSave.get().getStatusPregleda());
             throw new AccessDeniedException("Already appointed!");
         }
         return scheduledAppointmentRepository.save(appointment);

@@ -15,6 +15,9 @@ public class Hospitalizacija {
     private long hospitalizacijaId;
 
     @Column(nullable = false)
+    private long bolnickaSobaId;
+
+    @Column(nullable = false)
     @Type(type="org.hibernate.type.UUIDCharType")
     private UUID lbpPacijenta;
 
@@ -83,6 +86,14 @@ public class Hospitalizacija {
 
     public void setDatumVremeOtpustanja(Timestamp datumVremeOtpustanja) {
         this.datumVremeOtpustanja = datumVremeOtpustanja;
+    }
+
+    public long getBolnickaSobaId() {
+        return bolnickaSobaId;
+    }
+
+    public void setBolnickaSobaId(long bolnickaSobaId) {
+        this.bolnickaSobaId = bolnickaSobaId;
     }
 
     public String getUputnaDijagnoza() {

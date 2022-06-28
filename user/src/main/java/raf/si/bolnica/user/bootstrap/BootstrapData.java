@@ -52,6 +52,16 @@ public class BootstrapData implements CommandLineRunner {
         odeljenje.setBolnica(zdravstvenaUstanova);
         odeljenje.setPoslovniBrojOdeljenja(12345);
 
+        Odeljenje odeljenjeLaboratorija = new Odeljenje();
+        odeljenjeLaboratorija.setNaziv("Laboratorija");
+        odeljenjeLaboratorija.setBolnica(zdravstvenaUstanova);
+        odeljenjeLaboratorija.setPoslovniBrojOdeljenja(12111);
+
+        Odeljenje odeljenjeDijagnostika = new Odeljenje();
+        odeljenjeDijagnostika.setNaziv("Dijagnostika");
+        odeljenjeDijagnostika.setBolnica(zdravstvenaUstanova);
+        odeljenjeDijagnostika.setPoslovniBrojOdeljenja(12315);
+
         Odeljenje odeljenjePedijatrija = new Odeljenje();
         odeljenjePedijatrija.setNaziv("Pedijatrija");
         odeljenjePedijatrija.setBolnica(zdravstvenaUstanova);
@@ -83,6 +93,8 @@ public class BootstrapData implements CommandLineRunner {
         odeljenjeKardiologija.setPoslovniBrojOdeljenja(66666);
 
         odeljenje = odeljenjeRepository.save(odeljenje);
+        odeljenjeRepository.save(odeljenjeLaboratorija);
+        odeljenjeRepository.save(odeljenjeDijagnostika);
         odeljenjeRepository.save(odeljenjePedijatrija);
         odeljenjeRepository.save(odeljenjeToksikologija);
         odeljenjeRepository.save(odeljenjeGinekologija);
@@ -147,7 +159,7 @@ public class BootstrapData implements CommandLineRunner {
         user.setOdeljenje(odeljenje);
 
         //admin user fields
-        user.setLbz(UUID.randomUUID());
+        user.setLbz(UUID.fromString("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"));
         user.setName("admin");
         user.setSurname("adminic");
         user.setDatumRodjenja(new Date(System.currentTimeMillis()));
