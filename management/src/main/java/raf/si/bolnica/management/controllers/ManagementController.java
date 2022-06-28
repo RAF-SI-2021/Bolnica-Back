@@ -916,7 +916,6 @@ public class ManagementController {
             SearchPatientsInHospitalResponseDTO dto = new SearchPatientsInHospitalResponseDTO();
             for (int i = 0; i < row.length; i++) {
                 if (row[i] != null) {
-                    System.err.println(row[i] + " row row " + i);
                     switch (i) {
                         case 0:
                             dto.setDatumVremePrijema(Timestamp.valueOf((row[0]).toString()));
@@ -963,14 +962,22 @@ public class ManagementController {
     @PutMapping(value = "/hospitalizePatient")
     public ResponseEntity<?> hospitalizePatient(@RequestBody HospitalizePatientDTO requestDTO) {
 
+
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
         long bolnickaSobaID = requestDTO.getBolnickaSobaId();
 
         Hospitalizacija hospitalizacija = new Hospitalizacija();
         hospitalizacija.setBolnickaSobaId(bolnickaSobaID);
         hospitalizacija.setLbpPacijenta(requestDTO.getLbp());
         hospitalizacija.setLbzDodeljenogLekara(requestDTO.getLbzLekara());
-        hospitalizacija.setLbzRegistratora(UUID.fromString("ac43c1ae-f6f6-11ec-b939-0242ac120002"));
-        //hospitalizacija.setLbzRegistratora(loggedInUser.getLBZ());
+        hospitalizacija.setLbzRegistratora(loggedInUser.getLBZ());
         hospitalizacija.setDatumVremePrijema(new Timestamp(System.currentTimeMillis()));
         hospitalizacija.setUputnaDijagnoza(requestDTO.getUputnaDijagnoza());
 
@@ -979,19 +986,11 @@ public class ManagementController {
         }
 
         hospitalizacijaService.save(hospitalizacija);
-
-
         BolnickaSoba bolnickaSoba = bolnickaSobaService.findById(bolnickaSobaID);
         bolnickaSoba.setPopunjenost(bolnickaSobaService.increment(bolnickaSoba));
         bolnickaSobaService.save(bolnickaSoba);
 
-        List<String> acceptedRoles = new ArrayList<>();
-        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
-        acceptedRoles.add("ROLE_MED_SESTRA");
 
-//        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
 
 
         return ok("Its good");
