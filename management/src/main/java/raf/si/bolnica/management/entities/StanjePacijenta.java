@@ -1,5 +1,6 @@
 package raf.si.bolnica.management.entities;
-
+import lombok.NoArgsConstructor;
+import raf.si.bolnica.management.requests.SetPatientsStateDTO;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
 public class StanjePacijenta {
 
     @Id
@@ -105,5 +107,17 @@ public class StanjePacijenta {
 
     public void setOpis(String opis) {
         this.opis = opis;
+    }
+
+    public StanjePacijenta(SetPatientsStateDTO dto){
+        this.lbpPacijenta = dto.getLbpPacijenta();
+        this.lbzRegistratora = dto.getLbzRegistratora();
+        this.temperatura = dto.getTemperatura();
+        this.krvniPritisak = dto.getKrvniPritisak();
+        this.puls   =    dto.getPuls();
+        this.primenjeneTerapije = dto.getPrimenjeneTerapije();
+        this.opis = dto.getOpis();
+        this.datumVreme = dto.getDatumVreme();
+
     }
 }

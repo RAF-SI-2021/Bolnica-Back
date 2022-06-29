@@ -19,6 +19,8 @@ public class LoggedInUser {
 
     private long odeljenjeId;
 
+    private long PBB;
+
     public LoggedInUser() {}
 
     public String getUsername() {
@@ -51,5 +53,13 @@ public class LoggedInUser {
 
     public void setOdeljenjeId(long odeljenjeId) {
         this.odeljenjeId = odeljenjeId;
+    }
+
+    public long getPBB() {
+        return PBB;
+    }
+
+    public void setPBB(long PBB) {
+        this.PBB = PBB;
     }
 }
