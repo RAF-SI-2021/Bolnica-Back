@@ -43,7 +43,7 @@ import raf.si.bolnica.management.requests.SearchForAppointmentDTO;
 import raf.si.bolnica.management.requests.UpdateAppointmentStatusDTO;
 import raf.si.bolnica.management.requests.UpdateArrivalStatusDTO;
 import raf.si.bolnica.management.services.ScheduledAppointmentService;
-import src.main.java.raf.si.bolnica.management.requests.SetPatientsStateDTO;
+import raf.si.bolnica.management.requests.SetPatientsStateDTO;
 import raf.si.bolnica.management.services.StanjePacijentaService;
 
 import java.util.ArrayList;
@@ -959,7 +959,7 @@ public class ManagementController {
     }
 
     //Hospitalizacija pacijenta
-    @PutMapping(value = "/hospitalizePatient")
+    @PostMapping(value = "/hospitalizePatient")
     public ResponseEntity<?> hospitalizePatient(@RequestBody HospitalizePatientDTO requestDTO) {
 
 
@@ -967,17 +967,17 @@ public class ManagementController {
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
 
-        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        
+//        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
         long bolnickaSobaID = requestDTO.getBolnickaSobaId();
 
         Hospitalizacija hospitalizacija = new Hospitalizacija();
         hospitalizacija.setBolnickaSobaId(bolnickaSobaID);
         hospitalizacija.setLbpPacijenta(requestDTO.getLbp());
         hospitalizacija.setLbzDodeljenogLekara(requestDTO.getLbzLekara());
-        hospitalizacija.setLbzRegistratora(loggedInUser.getLBZ());
+        hospitalizacija.setLbzRegistratora(requestDTO.getLbzLekara());
+        //hospitalizacija.setLbzRegistratora(loggedInUser.getLBZ());
         hospitalizacija.setDatumVremePrijema(new Timestamp(System.currentTimeMillis()));
         hospitalizacija.setUputnaDijagnoza(requestDTO.getUputnaDijagnoza());
 

@@ -1,6 +1,6 @@
 package raf.si.bolnica.management.entities;
 import lombok.NoArgsConstructor;
-import src.main.java.raf.si.bolnica.management.requests.SetPatientsStateDTO;
+import raf.si.bolnica.management.requests.SetPatientsStateDTO;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
