@@ -33,6 +33,7 @@ public class UserInfoInterceptor implements HandlerInterceptor {
             loggedInUser.setUsername(jws.getBody().getSubject());
             loggedInUser.setLBZ(UUID.fromString((String) jws.getBody().get("LBZ")));
             loggedInUser.setRoles(new HashSet<>(Arrays.asList(roles)));
+            loggedInUser.setOdeljenjeId(((Integer) jws.getBody().get("odeljenjeId")).longValue());
         }
 
         return true;

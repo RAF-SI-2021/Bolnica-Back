@@ -37,6 +37,7 @@ public class JwtTokenProvider {
                 .claim("profession", user.getZanimanje())
                 .claim("LBZ", user.getLbz().toString())
                 .claim("PBO", user.getOdeljenje().getPoslovniBrojOdeljenja())
+                .claim("odeljenjeId", user.getOdeljenje().getOdeljenjeId())
                 .claim("department", user.getOdeljenje().getNaziv())
                 .claim("PBB", user.getOdeljenje().getBolnica().getPoslovniBrojBolnice())
                 .claim("hospital", user.getOdeljenje().getBolnica().getNaziv())

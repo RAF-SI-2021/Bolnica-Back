@@ -10,6 +10,7 @@ import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
 import raf.si.bolnica.management.entities.enums.RezultatLecenja;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
+import raf.si.bolnica.management.entities.enums.StatusTermina;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.*;
 import raf.si.bolnica.management.response.*;
@@ -78,6 +79,9 @@ public class ManagementController {
 
     @Autowired
     private ScheduledAppointmentService appointmentService;
+
+    @Autowired
+    private ZakazaniTerminPrijemaService zakazaniTerminPrijemaService;
 
     @PostMapping(value = "/create-examination-report")
     public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
@@ -677,6 +681,60 @@ public class ManagementController {
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @PostMapping(value = "create-zakazani-termin-prijema")
+    public ResponseEntity<?> createTerminPrijema(@RequestBody CreateZakazaniTerminPrijemaRequestDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        ZakazaniTerminPrijema terminPrijema = new ZakazaniTerminPrijema();
+        terminPrijema.setLbzZaposlenog(loggedInUser.getLBZ());
+        terminPrijema.setLbpPacijenta(requestDTO.getLbp());
+        terminPrijema.setOdeljenjeId(loggedInUser.getOdeljenjeId());
+        terminPrijema.setNapomena(requestDTO.getNapomena());
+        terminPrijema.setDatumVremePrijema(requestDTO.getDatumVremePrijema());
+        terminPrijema.setStatusTermina(StatusTermina.ZAKAZAN);
+
+        zakazaniTerminPrijemaService.save(terminPrijema);
+
+        return ResponseEntity.ok("Usesno kreirano.");
+    }
+
+    @GetMapping(value = "get-zakazani-termini-prijema")
+    public ResponseEntity<?> getTerminiPrijema(@RequestParam(required = false) String date,
+                                               @RequestParam(required = false) String lbp) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<ZakazaniTerminPrijema> terminiPrijema = zakazaniTerminPrijemaService
+                .getAll(loggedInUser.getOdeljenjeId(), date != null ? Date.valueOf(date) : null,
+                        lbp != null ? UUID.fromString(lbp) : null);
+
+        return ResponseEntity.ok(terminiPrijema);
+    }
+
+    @PutMapping(value = "update-zakazani-termin-prijema-status")
+    public ResponseEntity<?> updateStatus(@RequestBody UpdateZakazaniTerminPrijemaStatusDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        zakazaniTerminPrijemaService.setStatus(requestDTO.getId(), requestDTO.getStatus());
+
+        return ResponseEntity.ok("Status uspesno promenjen.");
+
     }
 
 }
