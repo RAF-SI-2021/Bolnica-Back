@@ -6,5 +6,5 @@ import raf.si.bolnica.laboratory.entities.Uput;
 
 @Repository
 public interface UputRepository extends JpaRepository<Uput, Long> {
-    Uput findByUputId(Long id);
+    Uput findByUputId(Long uputId);
 }

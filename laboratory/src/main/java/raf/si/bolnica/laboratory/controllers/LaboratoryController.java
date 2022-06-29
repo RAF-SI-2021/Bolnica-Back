@@ -173,7 +173,6 @@ public class LaboratoryController {
         }
 
         UUID lbz = loggedInUser.getLBZ();
-
         UUID lbp = uput.getLbp();
 
         LaboratorijskiRadniNalog laboratorijskiRadniNalog = new LaboratorijskiRadniNalog();
@@ -190,7 +189,7 @@ public class LaboratoryController {
         laboratorijskiRadniNalog.setStatusObrade(StatusObrade.OBRADJEN);
         */
 
-        laboratorijskiRadniNalog = radniNalogService.saveRadniNalog(laboratorijskiRadniNalog);
+        LaboratorijskiRadniNalog noviNalog = radniNalogService.saveRadniNalog(laboratorijskiRadniNalog);
 
         String zahtevaneAnalize = uput.getZahtevaneAnalize();
 
@@ -200,13 +199,13 @@ public class LaboratoryController {
                 List<ParametarAnalize> parametriAnalize = parametarAnalizeService.getParametarAnalizeByLaboratorijskaAnaliza(analiza);
                 for (ParametarAnalize parametarAnalize : parametriAnalize) {
                     RezultatParametraAnalize rezultat = new RezultatParametraAnalize();
-                    rezultat.setLaboratorijskiRadniNalog(laboratorijskiRadniNalog);
+                    rezultat.setLaboratorijskiRadniNalog(noviNalog);
                     rezultat.setParametarAnalize(parametarAnalize);
                     rezultatParametraAnalizeService.saveRezultatParametraAnalize(rezultat);
                 }
             }
         }
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.ok(new LaboratorijskiRadniNalogResponseDTO(noviNalog));
     }
 
     @PostMapping(value = "/laboratory-work-order-history")
@@ -383,28 +382,53 @@ public class LaboratoryController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab";
+//        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab";
+        String s = "";
+        if (request.getLbp() == null && request.getDoDatuma() == null && request.getOdDatuma() == null && request.getStatusObrade() == null) {
+            s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn";
+        } else {
+            s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn";
+        }
         Map<String, Object> param = new HashMap<>();
-        param.put("lab", loggedInUser.getOdeljenjeId());
+//        param.put("lab", loggedInUser.getOdeljenjeId());
+        boolean hasAnyParams = false;
 
         if (request.getLbp() != null) {
-            s = s + " AND lrn.lbp = :lbp";
+            hasAnyParams = true;
             param.put("lbp", request.getLbp());
+            s = s + " WHERE lrn.lbp = :lbp";
         }
 
         if (request.getDoDatuma() != null) {
+            if (!hasAnyParams) {
+                hasAnyParams = true;
+                s = s + " WHERE";
+            } else {
+                s = s + " AND";
+            }
             param.put("do", request.getDoDatuma());
-            s = s + " AND lrn.datumVremeKreiranja <= :do";
+            s = s + " lrn.datumVremeKreiranja <= :do";
         }
 
         if (request.getStatusObrade() != null) {
+            if (!hasAnyParams) {
+                hasAnyParams = true;
+                s = s + " WHERE";
+            } else {
+                s = s + " AND";
+            }
             param.put("status", request.getStatusObrade());
-            s = s + " AND lrn.statusObrade = :status";
+            s = s + " lrn.statusObrade = :status";
         }
 
         if (request.getOdDatuma() != null) {
+            if (hasAnyParams) {
+                s = s + " AND";
+            } else {
+                s = s + " WHERE";
+            }
             param.put("od", request.getOdDatuma());
-            s = s + " AND lrn.datumVremeKreiranja >= :od";
+            s = s + " lrn.datumVremeKreiranja >= :od";
         }
 
         TypedQuery<LaboratorijskiRadniNalog> query

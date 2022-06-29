@@ -569,6 +569,10 @@ public class ManagementController {
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
         acceptedRoles.add(Constants.MED_SESTRA);
+        acceptedRoles.add(Constants.ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE);
+        acceptedRoles.add(Constants.ROLE_MEDICINSKI_BIOHEMICAR);
+        acceptedRoles.add(Constants.ROLE_LABORATORIJSKI_TEHNICAR);
+        acceptedRoles.add(Constants.ROLE_VISI_LABORATORIJSKI_TEHNICAR);
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
 
             String s = "SELECT p FROM Pacijent p";

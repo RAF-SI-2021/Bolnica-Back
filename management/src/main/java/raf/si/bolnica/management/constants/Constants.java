@@ -9,6 +9,10 @@ public class Constants {
     public static final String NACELNIK_ODELJENJA = "ROLE_NACELNIK_ODELJENJA";
     public static final String ADMIN = "ROLE_ADMIN";
     public static final String RECEPCIONER = "ROLE_RECEPCIONER";
+    public static final String ROLE_VISI_LABORATORIJSKI_TEHNICAR = "ROLE_VISI_LABORATORIJSKI_TEHNICAR";
+    public static final String ROLE_LABORATORIJSKI_TEHNICAR = "ROLE_LABORATORIJSKI_TEHNICAR";
+    public static final String ROLE_MEDICINSKI_BIOHEMICAR = "ROLE_MEDICINSKI_BIOHEMICAR";
+    public static final String ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE = "ROLE_SPECIJALISTA_MEDICINSKE_BIOHEMIJE";
 
     public static final String BASE_API = "/api";
     public static final String UPDATE_PATIENT_MEDICAL_RECORD_BLOODTYPE_RHFACTOR = "/update-medical-record";

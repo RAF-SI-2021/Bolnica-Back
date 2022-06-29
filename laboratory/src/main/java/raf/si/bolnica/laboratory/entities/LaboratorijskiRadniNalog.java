@@ -5,6 +5,7 @@ import raf.si.bolnica.laboratory.entities.enums.StatusObrade;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -36,6 +37,17 @@ public class LaboratorijskiRadniNalog {
     @JoinColumn(name = "uput")
     private Uput uput;
 
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "laboratorijskiRadniNalog")
+    private List<RezultatParametraAnalize> rezultati;
+
+    public List<RezultatParametraAnalize> getRezultati() {
+        return rezultati;
+    }
+
+    public void setRezultati(List<RezultatParametraAnalize> rezultati) {
+        this.rezultati = rezultati;
+    }
 
     public long getLaboratorijskiRadniNalogId() {
         return laboratorijskiRadniNalogId;

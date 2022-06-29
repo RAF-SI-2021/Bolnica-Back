@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 import raf.si.bolnica.laboratory.entities.LaboratorijskiRadniNalog;
+import raf.si.bolnica.laboratory.entities.RezultatParametraAnalize;
 import raf.si.bolnica.laboratory.entities.enums.StatusObrade;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -32,13 +31,22 @@ public class LaboratorijskiRadniNalogResponseDTO {
 
     private UUID lbzBiohemicar;
 
+    private UputResponseDTO uput;
+
+    private List<RezultatParametraAnalizeResponseDTO> rezultati;
+
     public LaboratorijskiRadniNalogResponseDTO(LaboratorijskiRadniNalog nalog) {
         this.laboratorijskiRadniNalogId = nalog.getLaboratorijskiRadniNalogId();
         this.lbp = nalog.getLbp();
-
         this.datumVremeKreiranja = nalog.getDatumVremeKreiranja();
         this.statusObrade = nalog.getStatusObrade();
         this.lbzTehnicar = nalog.getLbzTehnicar();
         this.lbzBiohemicar = nalog.getLbzBiohemicar();
+        this.uput = new UputResponseDTO(nalog.getUput());
+        List<RezultatParametraAnalizeResponseDTO> rezultati = new ArrayList<>();
+        for (RezultatParametraAnalize rezultatParametraAnalize : nalog.getRezultati()) {
+            rezultati.add(new RezultatParametraAnalizeResponseDTO(rezultatParametraAnalize));
+        }
+        this.rezultati = rezultati;
     }
 }
