@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service;
 import raf.si.bolnica.laboratory.entities.LaboratorijskaAnaliza;
 import raf.si.bolnica.laboratory.repositories.LaboratorijskaAnalizaRepository;
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class LaboratorijskaAnalizaServiceImpl implements LaboratorijskaAnalizaService{

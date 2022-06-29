@@ -133,7 +133,7 @@ public class AppointmentTests {
         UpdateAppointmentStatusDTO requestDTO = new UpdateAppointmentStatusDTO();
         requestDTO.setAppointmentStatus(StatusPregleda.U_TOKU.toString());
         when(appointmentService.fetchById(any(Long.class))).thenReturn(new ZakazaniPregled());
-        when(appointmentService.saveAppointment(any(ZakazaniPregled.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(appointmentService.saveAppointmentStatus(any(ZakazaniPregled.class))).thenAnswer(i -> i.getArguments()[0]);
         ResponseEntity<?> response = managementController.updateAppointmentStatus(requestDTO);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);

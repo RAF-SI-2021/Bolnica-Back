@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.util.List;
 
 
 @Getter
@@ -37,4 +38,6 @@ public class CreateEmployeeRequestDTO {
     private String profession;
 
     private long department;
+
+    private List<String> roles;
 }

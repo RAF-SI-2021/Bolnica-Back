@@ -15,16 +15,16 @@ import java.sql.Date;
 @AllArgsConstructor
 public class Vakcinacija {
 
-    @EmbeddedId
-    private VakcinacijaKey id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    @ManyToOne
-    @MapsId("vakcinaId")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "vakcina_id")
     private Vakcina vakcina;
 
-    @ManyToOne
-    @MapsId("zdravstveniKartonId")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "zdravstveni_karton_id")
     private ZdravstveniKarton zdravstveniKarton;
 
@@ -34,12 +34,11 @@ public class Vakcinacija {
     @Column(nullable = false)
     private Boolean obrisan = false;
 
-
-    public VakcinacijaKey getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(VakcinacijaKey id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

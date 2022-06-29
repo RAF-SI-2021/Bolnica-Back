@@ -435,7 +435,7 @@ class PacijentQueriesTests {
 
         TypedQuery query = mock(TypedQuery.class);
         when(query.getResultList()).thenReturn(new LinkedList<>());
-        when(entityManager.createQuery(eq("SELECT p FROM Pacijent p WHERE p.ime = :ime AND p.prezime = :prezime"),
+        when(entityManager.createQuery(eq("SELECT p FROM Pacijent p WHERE p.ime like CONCAT('%', :ime, '%')  AND  p.prezime like CONCAT('%', :prezime, '%') "),
                 any(Class.class))).thenReturn(query);
 
         when(query.getResultList()).thenReturn(pacijenti);
@@ -497,6 +497,10 @@ class PacijentQueriesTests {
         zk.setObrisan(true);
 
         zk.setDatumRegistracije(Date.valueOf(LocalDate.now()));
+
+        zk.setAlergenZdravstveniKarton(new HashSet<>());
+
+        zk.setVakcinacije(new HashSet<>());
 
         when(pacijentService.fetchPacijentByLbp(lbp)).thenReturn(p);
 

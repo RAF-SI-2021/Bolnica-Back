@@ -22,6 +22,8 @@ public interface UserService {
 
     User savePassword(User user, String password);
 
+    User fetchNacelnikOdeljenja(Long id);
+
     void deleteById(Long id);
 
 }

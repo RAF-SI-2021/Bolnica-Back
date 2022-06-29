@@ -1,7 +1,6 @@
 package raf.si.bolnica.laboratory.requests;
 
 import java.sql.Date;
-import java.util.UUID;
 
 public class ScheduleLabExaminationDTO {
 

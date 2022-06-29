@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import raf.si.bolnica.laboratory.entities.Uput;
+import raf.si.bolnica.laboratory.entities.enums.StatusUputa;
 import raf.si.bolnica.laboratory.entities.enums.TipUputa;
 
 import java.sql.Timestamp;
@@ -23,6 +24,7 @@ public class UputResponseDTO {
     private Integer zaOdeljenjeId;
     private UUID lbp;
     private Timestamp datumVremeKreiranja;
+    private StatusUputa status;
 
 
     //opcioni parametri
@@ -43,5 +45,6 @@ public class UputResponseDTO {
         this.komentar = uput.getKomentar();
         this.uputnaDijagnoza = uput.getUputnaDijagnoza();
         this.razlogUpucivanja = uput.getRazlogUpucivanja();
+        this.status = uput.getStatus();
     }
 }

@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.Alergen;
 import raf.si.bolnica.management.entities.AlergenZdravstveniKarton;
+import raf.si.bolnica.management.entities.Vakcinacija;
 import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.exceptions.AllergenNotExistException;
 import raf.si.bolnica.management.exceptions.MissingRequestFieldsException;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.AddAllergentToPatientRequestDTO;
+import raf.si.bolnica.management.response.AlegrenZdravstveniKartonDto;
 import raf.si.bolnica.management.services.AlergenZdravstveniKartonService;
 import raf.si.bolnica.management.services.alergen.AlergenService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
@@ -61,14 +63,23 @@ public class AlergentController {
                 if (zdravstveniKarton == null) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                 }
+                for(AlergenZdravstveniKarton alergenZdravstveniKarton: zdravstveniKarton.getAlergenZdravstveniKarton()) {
+                    if(alergenZdravstveniKarton.getAlergen().getNaziv().equals(requestDTO.getNaziv())) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                    }
+                }
                 AlergenZdravstveniKarton alergenZdravstveniKarton = new AlergenZdravstveniKarton();
                 alergenZdravstveniKarton.setAlergen(allergen);
                 alergenZdravstveniKarton.setZdravstveniKarton(zdravstveniKarton);
+                alergenZdravstveniKarton.setObrisan(false);
 
                 AlergenZdravstveniKarton alergenZdravstveniKartonToReturn =
                         alergenZdravstveniKartonService.save(alergenZdravstveniKarton);
 
-                return ResponseEntity.ok(alergenZdravstveniKartonToReturn);
+                zdravstveniKarton.getAlergenZdravstveniKarton().add(alergenZdravstveniKarton);
+                zdravstveniKartonService.saveZdravstveniKarton(zdravstveniKarton);
+
+                return ResponseEntity.ok(new AlegrenZdravstveniKartonDto(alergenZdravstveniKartonToReturn, zdravstveniKarton.getZdravstveniKartonId()));
             }
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

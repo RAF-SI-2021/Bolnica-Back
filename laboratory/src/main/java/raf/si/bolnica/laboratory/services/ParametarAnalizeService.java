@@ -1,7 +1,6 @@
 package raf.si.bolnica.laboratory.services;
 
 import raf.si.bolnica.laboratory.entities.LaboratorijskaAnaliza;
-import raf.si.bolnica.laboratory.entities.Parametar;
 import raf.si.bolnica.laboratory.entities.ParametarAnalize;
 
 import java.util.List;

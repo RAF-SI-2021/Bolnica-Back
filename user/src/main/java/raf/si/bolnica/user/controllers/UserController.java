@@ -17,6 +17,7 @@ import raf.si.bolnica.user.repositories.RoleRepository;
 import raf.si.bolnica.user.requests.CreateEmployeeRequestDTO;
 import raf.si.bolnica.user.requests.ListEmployeesRequestDTO;
 import raf.si.bolnica.user.requests.UpdateEmployeeRequestDTO;
+import raf.si.bolnica.user.responses.EmployeeInformationResponseDTO;
 import raf.si.bolnica.user.responses.UserDataResponseDTO;
 import raf.si.bolnica.user.responses.UserResponseDTO;
 import raf.si.bolnica.user.service.OdeljenjeService;
@@ -97,6 +98,7 @@ public class UserController {
             userExceptionHandler.validateUserProfession.accept(requestDTO.getProfession());
             userExceptionHandler.validateUserGender.accept(requestDTO.getGender());
 
+
             User user = new User();
 
             user.setLbz(UUID.randomUUID());
@@ -116,8 +118,10 @@ public class UserController {
             user.setZanimanje(requestDTO.getProfession());
 
             Set<Role> roles = new HashSet<>();
-            roles.add(roleRepository.findByName("ROLE_ADMIN"));
             user.setRoles(roles);
+            for(String roleString: requestDTO.getRoles()) {
+                user.getRoles().add(roleRepository.findByName(roleString));
+            }
 
             User userToReturn = userService.saveEmployee(user);
 
@@ -161,6 +165,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
+    @GetMapping(value = Constants.GET_EMPLOYEE_INFO)
+    ResponseEntity<EmployeeInformationResponseDTO> getEmployeeInfo(@PathVariable String lbz){
+        User user = userService.fetchUserByLBZ(UUID.fromString(lbz));
+        EmployeeInformationResponseDTO responseDTO = new EmployeeInformationResponseDTO(user);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+
+
     @GetMapping(value = Constants.LIST_EMPLOYEES_BY_PBO)
     public ResponseEntity<List<UserDataResponseDTO>> listEmployeesByPbo(@PathVariable Long pbo) {
         // Načelnik odeljenja, Doktor specijalista, Viša medicinska sestra i Medicinska sestra.
@@ -180,7 +193,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @GetMapping(value = Constants.LIST_EMPLOYEES)
+    @GetMapping(value = Constants.FIND_DR_SPEC_ODELJENJA)
+    public ResponseEntity<UUID> findDrSpecOdeljenjaByPbo(@PathVariable Long pbo){
+        User user = userService.fetchNacelnikOdeljenja(pbo);
+        return ok(user.getLbz());
+    }
+
+    @PostMapping(value = Constants.LIST_EMPLOYEES)
     public ResponseEntity<List<UserDataResponseDTO>> listEmployees(@RequestBody ListEmployeesRequestDTO requestDTO,
                                                                    @RequestParam int page,
                                                                    @RequestParam int size) {
@@ -201,16 +220,16 @@ public class UserController {
 
         String nextOper = " WHERE ";
 
-        if (requestDTO.getName() != null) {
+        if (requestDTO.getName() != null && !requestDTO.getName().equals("")) {
             s = s + nextOper;
             nextOper = " AND ";
-            s = s + " u.name like :name ";
+            s = s + " u.name like CONCAT('%', :name, '%') ";
             param.put("name", requestDTO.getName());
         }
-        if (requestDTO.getSurname() != null) {
+        if (requestDTO.getSurname() != null && !requestDTO.getSurname().equals("")) {
             s = s + nextOper;
             nextOper = " AND ";
-            s = s + " u.surname like :surname ";
+            s = s + " u.surname like CONCAT('%', :surname, '%') ";
             param.put("surname", requestDTO.getSurname());
         }
 
@@ -219,14 +238,14 @@ public class UserController {
         s = s + " u.obrisan = :obrisan ";
         param.put("obrisan", false);
 
-        if (requestDTO.getDepartment() != null) {
+        if (requestDTO.getDepartment() != null && requestDTO.getDepartment() != -1) {
             s = s + nextOper;
             nextOper = " AND ";
             s = s + " o.odeljenjeId = :odeljenje";
             param.put("odeljenje", requestDTO.getDepartment());
         }
 
-        if (requestDTO.getHospital() != null) {
+        if (requestDTO.getHospital() != null && requestDTO.getHospital() != -1) {
             s = s + nextOper;
             s = s + " z.zdravstvenaUstanovaId = :bolnica";
             param.put("bolnica", requestDTO.getHospital());
@@ -269,7 +288,7 @@ public class UserController {
             }
 
             user.setOdeljenje(odeljenje);
-            user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+            if (password != null && !password.equals("")) user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
             user.setKorisnickoIme(user.getKorisnickoIme());
             user.setEmail(user.getEmail());
             user.setName(requestDTO.getName());
@@ -292,7 +311,7 @@ public class UserController {
                 if (requestDTO.getContact() != null) {
                     user.setKontaktTelefon(requestDTO.getContact());
                 }
-                if (requestDTO.getNewPassword() != null && BCrypt.checkpw(requestDTO.getOldPassword(),user.getPassword())) {
+                if (requestDTO.getNewPassword() != null && BCrypt.checkpw(requestDTO.getOldPassword(), user.getPassword())) {
                     user.setPassword(BCrypt.hashpw(requestDTO.getNewPassword(), BCrypt.gensalt()));
                 }
                 user = userService.saveEmployee(user);
@@ -301,4 +320,5 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
 }

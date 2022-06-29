@@ -1,7 +1,5 @@
 package raf.si.bolnica.laboratory.services;
 
-import raf.si.bolnica.laboratory.entities.LaboratorijskaAnaliza;
-import raf.si.bolnica.laboratory.entities.ParametarAnalize;
 import raf.si.bolnica.laboratory.entities.RezultatParametraAnalize;
 import raf.si.bolnica.laboratory.entities.RezultatParametraAnalizeKey;
 

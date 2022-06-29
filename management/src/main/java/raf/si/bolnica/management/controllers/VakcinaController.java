@@ -12,6 +12,8 @@ import raf.si.bolnica.management.exceptions.MissingRequestFieldsException;
 import raf.si.bolnica.management.exceptions.VaccineNotExistException;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.AddVaccineToPatientRequestDTO;
+import raf.si.bolnica.management.response.VakcinacijaDto;
+import raf.si.bolnica.management.response.ZdravstveniKartonResponseDTO;
 import raf.si.bolnica.management.services.VakcinacijaService;
 import raf.si.bolnica.management.services.vakcina.VakcinaService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
@@ -60,15 +62,23 @@ public class VakcinaController {
                 if (zdravstveniKarton == null) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                 }
+                for(Vakcinacija vakcinacija: zdravstveniKarton.getVakcinacije()) {
+                    if(vakcinacija.getVakcina().getNaziv().equals(requestDTO.getNaziv())) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                    }
+                }
                 Vakcinacija vakcinacija = new Vakcinacija();
                 vakcinacija.setVakcina(vakcina);
                 vakcinacija.setDatumVakcinacije(requestDTO.getDatumVakcinacije());
                 vakcinacija.setZdravstveniKarton(zdravstveniKarton);
-
+                vakcinacija.setObrisan(false);
 
                 Vakcinacija vakcinacijaToReturn = vakcinacijaService.save(vakcinacija);
 
-                return ResponseEntity.ok(vakcinacijaToReturn);
+                zdravstveniKarton.getVakcinacije().add(vakcinacijaToReturn);
+                zdravstveniKartonService.saveZdravstveniKarton(zdravstveniKarton);
+
+                return ResponseEntity.ok(new VakcinacijaDto(vakcinacijaToReturn, zdravstveniKarton.getZdravstveniKartonId()));
             }
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
