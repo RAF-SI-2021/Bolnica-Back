@@ -7,7 +7,6 @@ import lombok.Setter;
 import raf.si.bolnica.laboratory.entities.enums.TipUputa;
 
 import java.sql.Timestamp;
-import java.util.UUID;
 
 @Getter
 @Setter

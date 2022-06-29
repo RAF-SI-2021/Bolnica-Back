@@ -1,32 +1,26 @@
 package raf.si.bolnica.laboratory.controllers;
 
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.laboratory.constants.Constants;
-import raf.si.bolnica.laboratory.dto.request.UputHistoryRequestDTO;
-import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
-import raf.si.bolnica.laboratory.entities.enums.StatusPregleda;
 import raf.si.bolnica.laboratory.dto.request.LaboratorijskiRadniNalogRequestDTO;
 import raf.si.bolnica.laboratory.dto.request.LaboratorijskiRadniNalogSearchRequestDTO;
-import raf.si.bolnica.laboratory.dto.response.*;
 import raf.si.bolnica.laboratory.dto.request.RezultatParametraAnalizeSaveRequestDTO;
+import raf.si.bolnica.laboratory.dto.request.UputHistoryRequestDTO;
+import raf.si.bolnica.laboratory.dto.response.*;
 import raf.si.bolnica.laboratory.entities.*;
 import raf.si.bolnica.laboratory.entities.enums.StatusObrade;
+import raf.si.bolnica.laboratory.entities.enums.StatusPregleda;
 import raf.si.bolnica.laboratory.entities.enums.StatusUputa;
 import raf.si.bolnica.laboratory.interceptors.LoggedInUser;
 import raf.si.bolnica.laboratory.requests.*;
 import raf.si.bolnica.laboratory.services.*;
 
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -384,11 +378,7 @@ public class LaboratoryController {
 
 //        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab";
         String s = "";
-        if (request.getLbp() == null && request.getDoDatuma() == null && request.getOdDatuma() == null && request.getStatusObrade() == null) {
-            s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn";
-        } else {
-            s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn";
-        }
+        s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn";
         Map<String, Object> param = new HashMap<>();
 //        param.put("lab", loggedInUser.getOdeljenjeId());
         boolean hasAnyParams = false;

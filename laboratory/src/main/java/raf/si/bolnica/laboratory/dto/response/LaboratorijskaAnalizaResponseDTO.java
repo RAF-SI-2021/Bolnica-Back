@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import raf.si.bolnica.laboratory.entities.LaboratorijskaAnaliza;
 
-import javax.persistence.Column;
-
 @Getter
 @Setter
 @AllArgsConstructor
