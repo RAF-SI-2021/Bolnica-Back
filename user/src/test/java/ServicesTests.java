@@ -64,13 +64,6 @@ public class ServicesTests {
     UserServiceImpl userService;
 
     @Test
-    public void sendEmailTest() {
-        when(emailProperties.getEmail()).thenReturn("mejl");
-        when(emailProperties.getPassword()).thenReturn("sifra");
-        emailService.sendEmail("username", "pass");
-    }
-
-    @Test
     public void loginTest() {
         UserExceptionHandler handler = new UserExceptionHandler();
 
