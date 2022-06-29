@@ -39,7 +39,7 @@ public class LekarskiIzvestajController {
         }
         String msg = LekarskiIzvestajDTORequestValidator.validate(lekarskiIzvestajDTO);
         if(!msg.equals("OK")){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
         }
         if(lekarskiIzvestajDTO.isIndikatorPoverljivosti() && !loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Nemate privilegije za postavljanje poverljivosti");
@@ -72,7 +72,7 @@ public class LekarskiIzvestajController {
         }
         String msg = LekarskiIzvestajFilterDTORequestValidator.validate(lekarskiIzvestajFilterDTO);
         if(!msg.equals("OK")){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
         }
         boolean indikator = loggedInUser.getRoles().contains(Constants.SPECIJLISTA_POV);
         int type = LekarskiIzvestajFilterDTORequestValidator.checkRequest(lekarskiIzvestajFilterDTO);
