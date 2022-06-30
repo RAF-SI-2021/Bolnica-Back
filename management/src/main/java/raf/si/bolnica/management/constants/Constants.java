@@ -19,7 +19,6 @@ public class Constants {
     public static final String SEARCH_LEKARSKI_IZVESTAJ = "/search-lekarski-izvestaj";
     public static final String REGISTER_OTPUSNA_LISTA = "/add-otpusna-lista";
     public static final String SEARCH_OTPUSNA_LISTA = "/search-otpusna-lista";
-
     public interface MissingRequestFields {
         String DEVELOPER_MESSAGE = "Invalid request";
         String MESSAGE = "All fields are required.";

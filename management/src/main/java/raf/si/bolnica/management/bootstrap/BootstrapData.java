@@ -45,7 +45,6 @@ public class BootstrapData implements CommandLineRunner {
     private BolnickaSobaRepository bolnickaSobaRepository;
 
 
-
     @Override
     public void run(String... args) throws Exception {
         String[] nazivi = {"PRIORIX", "HIBERIX", "INFLUVAC", "SYNFLORIX", "BCG VAKCINA"};
@@ -114,7 +113,7 @@ public class BootstrapData implements CommandLineRunner {
         zdravstveniKarton.setDatumRegistracije(Date.valueOf("2010-01-01"));
         zdravstveniKartonRepository.save(zdravstveniKarton);
         Set<AlergenZdravstveniKarton> alergenZdravstveniKartonSet = new HashSet<>();
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) {
             AlergenZdravstveniKarton alergenZdravstveniKarton = new AlergenZdravstveniKarton();
             alergenZdravstveniKarton.setAlergen(alergens.get(i));
             alergenZdravstveniKarton.setZdravstveniKarton(zdravstveniKarton);
@@ -123,7 +122,7 @@ public class BootstrapData implements CommandLineRunner {
         }
         zdravstveniKarton.setAlergenZdravstveniKarton(alergenZdravstveniKartonSet);
         Set<Vakcinacija> vakcinacije = new HashSet<>();
-        for(int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) {
             Vakcinacija vakcinacija = new Vakcinacija();
             vakcinacija.setVakcina(vakcine.get(i));
             vakcinacija.setDatumVakcinacije(new Date(System.currentTimeMillis()));
@@ -152,7 +151,14 @@ public class BootstrapData implements CommandLineRunner {
         bolnickaSoba.setOpis("Ovo je opis Sobe 1");
         bolnickaSobaRepository.save(bolnickaSoba);
 
-
+        BolnickaSoba bolnickaSoba2 = new BolnickaSoba();
+        bolnickaSoba2.setOdeljenjeId(1);
+        bolnickaSoba2.setBrojSobe(2);
+        bolnickaSoba2.setKapacitet(10);
+        bolnickaSoba2.setPopunjenost(2);
+        bolnickaSoba2.setNazivSobe("Soba 2");
+        bolnickaSoba2.setOpis("Ovo je opis Sobe 2");
+        bolnickaSobaRepository.save(bolnickaSoba2);
 
 
     }

@@ -1,6 +1,5 @@
 package raf.si.bolnica.management.controllers;
 
-import org.bouncycastle.util.Times;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,6 @@ import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonSer
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -817,7 +815,7 @@ public class ManagementController {
         acceptedRoles.add("ROLE_MED_SESTRA");
         acceptedRoles.add("ROLE_ADMIN");
         acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
-        acceptedRoles.add( "ROLE_DR_SPEC");
+        acceptedRoles.add("ROLE_DR_SPEC");
 
         if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -924,12 +922,12 @@ public class ManagementController {
         acceptedRoles.add("ROLE_MED_SESTRA");
         acceptedRoles.add("ROLE_ADMIN");
         acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
-        acceptedRoles.add( "ROLE_DR_SPEC");
+        acceptedRoles.add("ROLE_DR_SPEC");
         acceptedRoles.add(Constants.RECEPCIONER);
 
-            if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
                 "b.brojSobe, p.lbp," +
@@ -1039,7 +1037,7 @@ public class ManagementController {
         hospitalizacija.setDatumVremePrijema(new Timestamp(System.currentTimeMillis()));
         hospitalizacija.setUputnaDijagnoza(requestDTO.getUputnaDijagnoza());
 
-        if(requestDTO.getNapomena() != null) {
+        if (requestDTO.getNapomena() != null) {
             hospitalizacija.setNapomena(requestDTO.getNapomena());
         }
 
@@ -1049,9 +1047,20 @@ public class ManagementController {
         bolnickaSobaService.save(bolnickaSoba);
 
 
-
-
         return ok("Its good");
 
+    }
+
+    @GetMapping(value = "/hospital-rooms/{pbo}")
+    public ResponseEntity<List<BolnickaSoba>> getHospitalRoomsForDepartmentId(@PathVariable int pbo) {
+        if (loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_MED_SESTRA")) {
+
+            List<BolnickaSoba> hospitalRooms = bolnickaSobaService.findAllByDepartmentId(pbo);
+
+            return ResponseEntity.ok(hospitalRooms);
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }
