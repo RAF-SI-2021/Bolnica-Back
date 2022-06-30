@@ -33,8 +33,6 @@ public class LaboratorijskiRadniNalogResponseDTO {
 
     private UputResponseDTO uput;
 
-    private List<RezultatParametraAnalizeResponseDTO> rezultati;
-
     public LaboratorijskiRadniNalogResponseDTO(LaboratorijskiRadniNalog nalog) {
         this.laboratorijskiRadniNalogId = nalog.getLaboratorijskiRadniNalogId();
         this.lbp = nalog.getLbp();
@@ -43,10 +41,5 @@ public class LaboratorijskiRadniNalogResponseDTO {
         this.lbzTehnicar = nalog.getLbzTehnicar();
         this.lbzBiohemicar = nalog.getLbzBiohemicar();
         this.uput = new UputResponseDTO(nalog.getUput());
-        List<RezultatParametraAnalizeResponseDTO> rezultati = new ArrayList<>();
-        for (RezultatParametraAnalize rezultatParametraAnalize : nalog.getRezultati()) {
-            rezultati.add(new RezultatParametraAnalizeResponseDTO(rezultatParametraAnalize));
-        }
-        this.rezultati = rezultati;
     }
 }

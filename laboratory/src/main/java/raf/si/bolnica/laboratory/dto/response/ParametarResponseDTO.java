@@ -17,6 +17,8 @@ import javax.persistence.Enumerated;
 @NoArgsConstructor
 public class ParametarResponseDTO {
 
+    private long parametarId;
+
     private String nazivParametra;
 
     private TipVrednosti tipVrednosti;
@@ -28,6 +30,7 @@ public class ParametarResponseDTO {
     private double gornjaGranica;
 
     public ParametarResponseDTO(Parametar parametar) {
+        this.parametarId = parametar.getParametarId();
         this.nazivParametra = parametar.getNazivParametra();
         this.tipVrednosti = parametar.getTipVrednosti();
         this.jedinicaMere = parametar.getJedinicaMere();

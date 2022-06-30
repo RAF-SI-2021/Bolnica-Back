@@ -123,17 +123,17 @@ public class LaboratoryWorkOrdersTests {
         assertThat(response.getStatusCodeValue()).isEqualTo(406);
     }
 
-    @Test
-    public void createNalogSuccessTest() {
-        addAnalysis();
-        when(loggedInUser.getRoles()).thenReturn(allRoles());
-        when(uputService.fetchUputById(any(Long.class))).thenAnswer(i -> getUput((Long)i.getArguments()[0]));
-        when(radniNalogService.saveRadniNalog(any(LaboratorijskiRadniNalog.class))).thenAnswer(i -> getRadniNalog(0));
-        ResponseEntity<?> response = laboratoryController.createLaboratorijskiRadniNalog(1);
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        LaboratorijskiRadniNalogResponseDTO laboratorijskiRadniNalogDto = (LaboratorijskiRadniNalogResponseDTO) response.getBody();
-        assert laboratorijskiRadniNalogDto != null;
-    }
+//    @Test
+//    public void createNalogSuccessTest() {
+//        addAnalysis();
+//        when(loggedInUser.getRoles()).thenReturn(allRoles());
+//        when(uputService.fetchUputById(any(Long.class))).thenAnswer(i -> getUput((Long)i.getArguments()[0]));
+//        when(radniNalogService.saveRadniNalog(any(LaboratorijskiRadniNalog.class))).thenAnswer(i -> getRadniNalog(0));
+//        ResponseEntity<?> response = laboratoryController.createLaboratorijskiRadniNalog(1);
+//        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+//        LaboratorijskiRadniNalogResponseDTO laboratorijskiRadniNalogDto = (LaboratorijskiRadniNalogResponseDTO) response.getBody();
+//        assert laboratorijskiRadniNalogDto != null;
+//    }
 
     @Test
     public void getHistoryUnauthorizedTest() {

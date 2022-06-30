@@ -281,10 +281,10 @@ public class LaboratoryController {
         acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);
         acceptedRoles.add(Constants.VISI_LABORATORIJSKI_TEHNICAR);
         String msg = "";
-        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-            s = s + " AND l.statusObrade = raf.si.bolnica.laboratory.entities.enums.StatusObrade.OBRADJEN";
-            msg = "koji je obradjen ";
-        }
+//        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+//            s = s + " AND l.statusObrade = raf.si.bolnica.laboratory.entities.enums.StatusObrade.OBRADJEN";
+//            msg = "koji je obradjen ";
+//        }
 
         TypedQuery<LaboratorijskiRadniNalog> queryNalog
                 = entityManager.createQuery(
@@ -364,7 +364,6 @@ public class LaboratoryController {
         rezultatParametraAnalize.setDatumVreme(Timestamp.valueOf(LocalDateTime.now()));
 
         rezultatParametraAnalizeService.saveRezultatParametraAnalize(rezultatParametraAnalize);
-
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
