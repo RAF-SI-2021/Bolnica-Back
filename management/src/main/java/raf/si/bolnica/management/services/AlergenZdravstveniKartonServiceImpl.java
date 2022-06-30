@@ -8,7 +8,7 @@ import raf.si.bolnica.management.repositories.AlergenZdravstveniKartonRepository
 
 @Service
 @Transactional("transactionManager")
-public class AlergenZdravstveniKartonServiceImpl implements AlergenZdravstveniKartonService{
+public class AlergenZdravstveniKartonServiceImpl implements AlergenZdravstveniKartonService {
 
     @Autowired
     AlergenZdravstveniKartonRepository alergenZdravstveniKartonRepository;

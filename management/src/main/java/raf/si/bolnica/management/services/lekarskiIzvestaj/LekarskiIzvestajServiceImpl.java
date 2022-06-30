@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Service
 @Transactional("transactionManager")
-public class LekarskiIzvestajServiceImpl implements LekarskiIzvestajService{
+public class LekarskiIzvestajServiceImpl implements LekarskiIzvestajService {
 
     @Autowired
     LekarskiIzvestajRepository lekarskiIzvestajRepository;
@@ -27,13 +27,13 @@ public class LekarskiIzvestajServiceImpl implements LekarskiIzvestajService{
     @Override
     public List<LekarskiIzvestajStacionar> findByLBP(UUID lbp, boolean indikator) {
         List<LekarskiIzvestajStacionar> lis = new ArrayList<>();
-        for(LekarskiIzvestajStacionar l: lekarskiIzvestajRepository.findAllByLbpPacijenta(lbp)){
-            if(!l.isObrisan()){
-                if(l.isIndikatorPoverljivosti()){
-                    if(indikator){
+        for (LekarskiIzvestajStacionar l : lekarskiIzvestajRepository.findAllByLbpPacijenta(lbp)) {
+            if (!l.isObrisan()) {
+                if (l.isIndikatorPoverljivosti()) {
+                    if (indikator) {
                         lis.add(l);
                     }
-                } else{
+                } else {
                     lis.add(l);
                 }
 
@@ -45,13 +45,13 @@ public class LekarskiIzvestajServiceImpl implements LekarskiIzvestajService{
     @Override
     public List<LekarskiIzvestajStacionar> findByLBPAndDate(UUID lbp, Date date, boolean indikator) {
         List<LekarskiIzvestajStacionar> lekarskiIzvestajStacionars = new ArrayList<>();
-        for(LekarskiIzvestajStacionar l : lekarskiIzvestajRepository.findAllByLbpPacijentaAndDatumVremeKreiranja(lbp, date)){
-            if(!l.isObrisan()){
-                if(l.isIndikatorPoverljivosti()){
-                    if(indikator){
+        for (LekarskiIzvestajStacionar l : lekarskiIzvestajRepository.findAllByLbpPacijentaAndDatumVremeKreiranja(lbp, date)) {
+            if (!l.isObrisan()) {
+                if (l.isIndikatorPoverljivosti()) {
+                    if (indikator) {
                         lekarskiIzvestajStacionars.add(l);
                     }
-                } else{
+                } else {
                     lekarskiIzvestajStacionars.add(l);
                 }
             }
@@ -62,13 +62,13 @@ public class LekarskiIzvestajServiceImpl implements LekarskiIzvestajService{
     @Override
     public List<LekarskiIzvestajStacionar> findByLBPAndBetweenDates(UUID lbp, Date start, Date end, boolean indikator) {
         List<LekarskiIzvestajStacionar> lekarskiIzvestajStacionars = new ArrayList<>();
-        for(LekarskiIzvestajStacionar l : lekarskiIzvestajRepository.findAllByLbpPacijentaAndDatumVremeKreiranjaGreaterThanEqualAndDatumVremeKreiranjaLessThanEqual(lbp, start, end)){
-            if(!l.isObrisan()){
-                if(l.isIndikatorPoverljivosti()){
-                    if(indikator){
+        for (LekarskiIzvestajStacionar l : lekarskiIzvestajRepository.findAllByLbpPacijentaAndDatumVremeKreiranjaGreaterThanEqualAndDatumVremeKreiranjaLessThanEqual(lbp, start, end)) {
+            if (!l.isObrisan()) {
+                if (l.isIndikatorPoverljivosti()) {
+                    if (indikator) {
                         lekarskiIzvestajStacionars.add(l);
                     }
-                } else{
+                } else {
                     lekarskiIzvestajStacionars.add(l);
                 }
             }

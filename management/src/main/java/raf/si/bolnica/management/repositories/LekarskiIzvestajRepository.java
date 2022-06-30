@@ -12,6 +12,8 @@ import java.util.UUID;
 public interface LekarskiIzvestajRepository extends JpaRepository<LekarskiIzvestajStacionar, Long> {
 
     List<LekarskiIzvestajStacionar> findAllByLbpPacijenta(UUID lbpPacijenta);
+
     List<LekarskiIzvestajStacionar> findAllByLbpPacijentaAndDatumVremeKreiranja(UUID lbpPacijenta, Date datumVremeKreiranja);
+
     List<LekarskiIzvestajStacionar> findAllByLbpPacijentaAndDatumVremeKreiranjaGreaterThanEqualAndDatumVremeKreiranjaLessThanEqual(UUID lbpPacijenta, Date datumVremeKreiranja, Date datumVremeKreiranja2);
 }

@@ -14,21 +14,21 @@ import java.util.Set;
 @Getter
 public class ZdravstveniKartonResponseDTO {
 
-    private Long zdravstveniKartonId;
+    private final Long zdravstveniKartonId;
 
-    private Date datumRegistracije;
+    private final Date datumRegistracije;
 
-    private KrvnaGrupa krvnaGrupa;
+    private final KrvnaGrupa krvnaGrupa;
 
-    private RhFaktor rhFaktor;
+    private final RhFaktor rhFaktor;
 
     private Boolean obrisan = false;
 
-    private PacijentResponseDTO pacijent;
+    private final PacijentResponseDTO pacijent;
 
-    private Set<AlegrenZdravstveniKartonDto> alergeni;
+    private final Set<AlegrenZdravstveniKartonDto> alergeni;
 
-    private Set<VakcinacijaDto> vakcinacije;
+    private final Set<VakcinacijaDto> vakcinacije;
 
     public ZdravstveniKartonResponseDTO(ZdravstveniKarton zdravstveniKarton) {
         zdravstveniKartonId = zdravstveniKarton.getZdravstveniKartonId();

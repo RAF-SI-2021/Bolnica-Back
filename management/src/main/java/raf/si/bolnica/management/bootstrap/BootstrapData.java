@@ -4,17 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import raf.si.bolnica.management.entities.*;
-import raf.si.bolnica.management.entities.enums.CountryCode;
-import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
-import raf.si.bolnica.management.entities.enums.Pol;
-import raf.si.bolnica.management.entities.enums.RhFaktor;
-import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.entities.enums.*;
 import raf.si.bolnica.management.repositories.*;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -28,9 +22,6 @@ public class BootstrapData implements CommandLineRunner {
 
     @Autowired
     private AlergenRepository alergenRepository;
-
-    @Autowired
-    private AlergenZdravstveniKartonRepository alergenZdravstveniKartonRepository;
 
     @Autowired
     private PacijentRepository pacijentRepository;
@@ -66,7 +57,7 @@ public class BootstrapData implements CommandLineRunner {
             vakcinaRepository.save(vakcina);
         }
 
-        List<Alergen> alergens = new ArrayList<Alergen>();
+        List<Alergen> alergens = new ArrayList<>();
         alergens.add(new Alergen("Mleko"));
         alergens.add(new Alergen("Jaja"));
         alergens.add(new Alergen("Orašasti plodovi"));
@@ -109,25 +100,10 @@ public class BootstrapData implements CommandLineRunner {
         pacijent.setZanimanje("Moler");
         pacijentRepository.save(pacijent);
 
-        PosetaPacijentu posetaPacijentu1 = new PosetaPacijentu();
-        posetaPacijentu1.setLbpPacijenta(pacijent.getLbp());
-        posetaPacijentu1.setImePosetioca(pacijent.getIme());
-        posetaPacijentu1.setJmbgPosetioca(pacijent.getJmbg());
-        posetaPacijentu1.setNapomena("Ovo je napomena za Pacijenta");
-        posetaPacijentu1.setPrezimePosetioca(pacijent.getPrezime());
-        posetaPacijentu1.setLbzRegistratora(pacijent.getLbp());
-        posetaPacijentu1.setDatumVreme(new Timestamp(System.currentTimeMillis()));
+        PosetaPacijentu posetaPacijentu = createPosetaPacijentu(pacijent);
+        posetPacijentuRepository.save(posetaPacijentu);
 
-        PosetaPacijentu posetaPacijentu2 = new PosetaPacijentu();
-        posetaPacijentu2.setLbpPacijenta(pacijent.getLbp());
-        posetaPacijentu2.setImePosetioca(pacijent.getIme());
-        posetaPacijentu2.setJmbgPosetioca(pacijent.getJmbg());
-        posetaPacijentu2.setNapomena("Ovo je napomena za Pacijenta");
-        posetaPacijentu2.setPrezimePosetioca(pacijent.getPrezime());
-        posetaPacijentu2.setLbzRegistratora(pacijent.getLbp());
-        posetaPacijentu2.setDatumVreme(new Timestamp(System.currentTimeMillis()));
-
-        posetPacijentuRepository.save(posetaPacijentu1);
+        PosetaPacijentu posetaPacijentu2 = createPosetaPacijentu(pacijent);
         posetPacijentuRepository.save(posetaPacijentu2);
 
         ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();
@@ -185,5 +161,17 @@ public class BootstrapData implements CommandLineRunner {
         bolnickaSobaRepository.save(bolnickaSoba2);
 
 
+    }
+
+    private PosetaPacijentu createPosetaPacijentu(Pacijent pacijent) {
+        PosetaPacijentu posetaPacijentu = new PosetaPacijentu();
+        posetaPacijentu.setLbpPacijenta(pacijent.getLbp());
+        posetaPacijentu.setImePosetioca(pacijent.getIme());
+        posetaPacijentu.setJmbgPosetioca(pacijent.getJmbg());
+        posetaPacijentu.setNapomena("Ovo je napomena za Pacijenta");
+        posetaPacijentu.setPrezimePosetioca(pacijent.getPrezime());
+        posetaPacijentu.setLbzRegistratora(pacijent.getLbp());
+        posetaPacijentu.setDatumVreme(new Timestamp(System.currentTimeMillis()));
+        return posetaPacijentu;
     }
 }

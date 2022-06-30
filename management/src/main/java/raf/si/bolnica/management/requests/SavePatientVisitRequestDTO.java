@@ -1,7 +1,6 @@
 package raf.si.bolnica.management.requests;
 
 import lombok.Data;
-import raf.si.bolnica.management.entities.enums.RezultatLecenja;
 
 @Data
 public class SavePatientVisitRequestDTO {

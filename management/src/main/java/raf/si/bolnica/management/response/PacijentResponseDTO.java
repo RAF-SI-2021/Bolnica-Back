@@ -1,15 +1,15 @@
 package raf.si.bolnica.management.response;
 
 import lombok.Getter;
-import raf.si.bolnica.management.requests.PacijentCRUDDTO;
 import raf.si.bolnica.management.entities.Pacijent;
+import raf.si.bolnica.management.requests.PacijentCRUDDTO;
 
 import java.util.UUID;
 
 @Getter
 public class PacijentResponseDTO extends PacijentCRUDDTO {
 
-    private UUID lbp;
+    private final UUID lbp;
 
     public PacijentResponseDTO(Pacijent pacijent) {
         lbp = pacijent.getLbp();

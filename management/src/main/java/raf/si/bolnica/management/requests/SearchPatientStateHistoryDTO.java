@@ -1,4 +1,5 @@
 package raf.si.bolnica.management.requests;
+
 import lombok.Getter;
 import lombok.Setter;
 

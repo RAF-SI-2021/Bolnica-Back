@@ -2,7 +2,8 @@ package raf.si.bolnica.management.constants;
 
 public class Constants {
 
-    private Constants() { }
+    private Constants() {
+    }
 
     public static final String VISA_MED_SESTRA = "ROLE_VISA_MED_SESTRA";
     public static final String MED_SESTRA = "ROLE_MED_SESTRA";
@@ -19,6 +20,7 @@ public class Constants {
     public static final String SEARCH_LEKARSKI_IZVESTAJ = "/search-lekarski-izvestaj";
     public static final String REGISTER_OTPUSNA_LISTA = "/add-otpusna-lista";
     public static final String SEARCH_OTPUSNA_LISTA = "/search-otpusna-lista";
+
     public interface MissingRequestFields {
         String DEVELOPER_MESSAGE = "Invalid request";
         String MESSAGE = "All fields are required.";
@@ -28,6 +30,7 @@ public class Constants {
         String DEVELOPER_MESSAGE = "Invalid request";
         String MESSAGE = "Allergen not exist.";
     }
+
     public static final String NACELNIK = "ROLE_DR_SPEC_ODELJENJA";
     public static final String SPECIJALISTA = "ROLE_DR_SPEC";
     public static final String SPECIJLISTA_POV = "ROLE_DR_SPEC_POV";

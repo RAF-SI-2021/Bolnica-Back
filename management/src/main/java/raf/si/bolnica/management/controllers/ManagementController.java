@@ -27,29 +27,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.ok;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import raf.si.bolnica.management.entities.Pregled;
-import raf.si.bolnica.management.entities.ZakazaniPregled;
-import raf.si.bolnica.management.entities.StanjePacijenta;
-import raf.si.bolnica.management.requests.CreateScheduledAppointmentRequestDTO;
-import raf.si.bolnica.management.requests.SearchForAppointmentDTO;
-import raf.si.bolnica.management.requests.UpdateAppointmentStatusDTO;
-import raf.si.bolnica.management.requests.UpdateArrivalStatusDTO;
-import raf.si.bolnica.management.services.ScheduledAppointmentService;
-import raf.si.bolnica.management.requests.SetPatientsStateDTO;
-import raf.si.bolnica.management.services.StanjePacijentaService;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")

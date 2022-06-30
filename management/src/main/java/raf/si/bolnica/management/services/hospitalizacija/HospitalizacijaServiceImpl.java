@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Service
 @Transactional("transactionManager")
-public class HospitalizacijaServiceImpl implements HospitalizacijaService{
+public class HospitalizacijaServiceImpl implements HospitalizacijaService {
 
     @Autowired
     HospitalizacijaRepository hospitalizacijaRepository;
@@ -26,8 +26,8 @@ public class HospitalizacijaServiceImpl implements HospitalizacijaService{
     @Override
     public Hospitalizacija findCurrentByLbp(UUID lbp) {
         List<Hospitalizacija> hospitalizacijas = hospitalizacijaRepository.findAllByLbpPacijenta(lbp);
-        for(Hospitalizacija h : hospitalizacijas){
-            if(h.getDatumVremeOtpustanja() == null){
+        for (Hospitalizacija h : hospitalizacijas) {
+            if (h.getDatumVremeOtpustanja() == null) {
                 return h;
             }
         }

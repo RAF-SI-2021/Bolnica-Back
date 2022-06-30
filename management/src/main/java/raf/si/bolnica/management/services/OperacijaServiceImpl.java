@@ -8,7 +8,7 @@ import raf.si.bolnica.management.repositories.OperacijaRepository;
 
 @Service
 @Transactional("transactionManager")
-public class OperacijaServiceImpl implements OperacijaService{
+public class OperacijaServiceImpl implements OperacijaService {
 
     @Autowired
     OperacijaRepository operacijaRepository;

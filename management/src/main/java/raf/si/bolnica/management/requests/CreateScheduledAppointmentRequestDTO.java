@@ -1,8 +1,6 @@
 package raf.si.bolnica.management.requests;
-import java.sql.Date;
-import java.sql.Time;
+
 import java.sql.Timestamp;
-import java.util.UUID;
 
 public class CreateScheduledAppointmentRequestDTO {
 

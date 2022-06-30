@@ -3,11 +3,13 @@ package raf.si.bolnica.management.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.Alergen;
 import raf.si.bolnica.management.entities.AlergenZdravstveniKarton;
-import raf.si.bolnica.management.entities.Vakcinacija;
 import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.exceptions.AllergenNotExistException;
 import raf.si.bolnica.management.exceptions.MissingRequestFieldsException;
@@ -21,8 +23,6 @@ import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonSer
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping(value = Constants.BASE_API)
@@ -63,8 +63,8 @@ public class AlergentController {
                 if (zdravstveniKarton == null) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                 }
-                for(AlergenZdravstveniKarton alergenZdravstveniKarton: zdravstveniKarton.getAlergenZdravstveniKarton()) {
-                    if(alergenZdravstveniKarton.getAlergen().getNaziv().equals(requestDTO.getNaziv())) {
+                for (AlergenZdravstveniKarton alergenZdravstveniKarton : zdravstveniKarton.getAlergenZdravstveniKarton()) {
+                    if (alergenZdravstveniKarton.getAlergen().getNaziv().equals(requestDTO.getNaziv())) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                     }
                 }

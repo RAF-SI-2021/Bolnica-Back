@@ -7,14 +7,13 @@ import raf.si.bolnica.management.entities.OtpusnaLista;
 import raf.si.bolnica.management.repositories.OtpusnaListaRepository;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
 
 @Service
 @Transactional("transactionManager")
-public class OtpusnaListaServiceImpl implements OtpusnaListaService{
+public class OtpusnaListaServiceImpl implements OtpusnaListaService {
 
     @Autowired
     OtpusnaListaRepository otpusnaListaRepository;
