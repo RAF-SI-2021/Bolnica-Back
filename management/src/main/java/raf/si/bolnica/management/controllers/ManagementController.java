@@ -1,5 +1,6 @@
 package raf.si.bolnica.management.controllers;
 
+import org.bouncycastle.util.Times;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,15 +11,19 @@ import raf.si.bolnica.management.entities.*;
 import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
 import raf.si.bolnica.management.entities.enums.RezultatLecenja;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
+import raf.si.bolnica.management.entities.enums.StatusTermina;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.*;
 import raf.si.bolnica.management.response.*;
 import raf.si.bolnica.management.services.*;
+import raf.si.bolnica.management.services.bolnickaSoba.BolnickaSobaService;
+import raf.si.bolnica.management.services.hospitalizacija.HospitalizacijaService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,11 +38,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import raf.si.bolnica.management.entities.Pregled;
 import raf.si.bolnica.management.entities.ZakazaniPregled;
+import raf.si.bolnica.management.entities.StanjePacijenta;
 import raf.si.bolnica.management.requests.CreateScheduledAppointmentRequestDTO;
 import raf.si.bolnica.management.requests.SearchForAppointmentDTO;
 import raf.si.bolnica.management.requests.UpdateAppointmentStatusDTO;
 import raf.si.bolnica.management.requests.UpdateArrivalStatusDTO;
 import raf.si.bolnica.management.services.ScheduledAppointmentService;
+import raf.si.bolnica.management.requests.SetPatientsStateDTO;
+import raf.si.bolnica.management.services.StanjePacijentaService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -74,10 +82,22 @@ public class ManagementController {
     private IstorijaBolestiService istorijaBolestiService;
 
     @Autowired
+    private StanjePacijentaService stanjePacijentaService;
+
+    @Autowired
     private EntityManager entityManager;
 
     @Autowired
     private ScheduledAppointmentService appointmentService;
+
+    @Autowired
+    private ZakazaniTerminPrijemaService zakazaniTerminPrijemaService;
+
+    @Autowired
+    private HospitalizacijaService hospitalizacijaService;
+
+    @Autowired
+    private BolnickaSobaService bolnickaSobaService;
 
     @PostMapping(value = "/create-examination-report")
     public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
@@ -663,7 +683,7 @@ public class ManagementController {
         for (int i = 0; i < 4; i++) {
             if (loggedInUser.getRoles().contains(roles[i])) {
                 if (searchForAppointmentDTO.getDate() == null) {
-
+                    String s;
                     Timestamp date = Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
                     List<ZakazaniPregled> allAppointments = appointmentService.getAppointmentByLBZ(UUID.fromString(searchForAppointmentDTO.getLbz()));
                     List<ZakazaniPregled> appointments = new ArrayList<>();
@@ -683,4 +703,359 @@ public class ManagementController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
+    @PostMapping(value = "create-zakazani-termin-prijema")
+    public ResponseEntity<?> createTerminPrijema(@RequestBody CreateZakazaniTerminPrijemaRequestDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        ZakazaniTerminPrijema terminPrijema = new ZakazaniTerminPrijema();
+        terminPrijema.setLbzZaposlenog(loggedInUser.getLBZ());
+        terminPrijema.setLbpPacijenta(requestDTO.getLbp());
+        terminPrijema.setOdeljenjeId(loggedInUser.getOdeljenjeId());
+        terminPrijema.setNapomena(requestDTO.getNapomena());
+        terminPrijema.setDatumVremePrijema(requestDTO.getDatumVremePrijema());
+        terminPrijema.setStatusTermina(StatusTermina.ZAKAZAN);
+
+        zakazaniTerminPrijemaService.save(terminPrijema);
+
+        return ResponseEntity.ok("Usesno kreirano.");
+    }
+
+    @GetMapping(value = "get-zakazani-termini-prijema")
+    public ResponseEntity<?> getTerminiPrijema(@RequestParam(required = false) String date,
+                                               @RequestParam(required = false) String lbp) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<ZakazaniTerminPrijema> terminiPrijema = zakazaniTerminPrijemaService
+                .getAll(loggedInUser.getOdeljenjeId(), date != null ? Date.valueOf(date) : null,
+                        lbp != null ? UUID.fromString(lbp) : null);
+
+        return ResponseEntity.ok(terminiPrijema);
+    }
+
+    @PutMapping(value = "update-zakazani-termin-prijema-status")
+    public ResponseEntity<?> updateStatus(@RequestBody UpdateZakazaniTerminPrijemaStatusDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        zakazaniTerminPrijemaService.setStatus(requestDTO.getId(), requestDTO.getStatus());
+
+        return ResponseEntity.ok("Status uspesno promenjen.");
+
+    }
+
+    @GetMapping(value = "/searchPatientStateHistory")
+    public ResponseEntity<?> searchPatientStateHistory(@RequestBody SearchPatientStateHistoryDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+        acceptedRoles.add("ROLE_ADMIN");
+        String s = "SELECT u from StanjePacijenta u WHERE u.lbpPacijenta = :lbpp";
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Map<String, Object> param = new HashMap<>();
+        param.put("lbpp", requestDTO.getLbp());
+
+        if (requestDTO.getDoDatuma() != null) {
+            param.put("do", requestDTO.getDoDatuma());
+            s = s + " AND u.datumVreme <= :do";
+        }
+        if (requestDTO.getOdDatuma() != null) {
+            param.put("od", requestDTO.getOdDatuma());
+            s = s + " AND u.datumVreme >= :od";
+        }
+        TypedQuery<StanjePacijenta> query
+                = entityManager.createQuery(
+                s, StanjePacijenta.class);
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+        List<StanjePacijenta> ret = new ArrayList<>();
+        for (StanjePacijenta stanje : query.getResultList()) {
+            ret.add(stanje);
+        }
+
+        return ok(ret);
+
+    }
+
+    //Registrovanje zdravstvenog stanja pacijenta
+    @PutMapping(value = "/setPatientsState")
+    public ResponseEntity<?> setPatientsState(@RequestBody SetPatientsStateDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        StanjePacijenta stanje = new StanjePacijenta(requestDTO);
+        stanjePacijentaService.saveStanje(stanje);
+
+
+        return ok(stanje);
+
+    }
+
+    //Pretraga pacijenata na odeljenju
+    @GetMapping(value = "/searchHospitalizedPatients")
+    public ResponseEntity<?> searchHospitalizedPatients(@RequestBody SearchHospitalizedPatientsDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+        acceptedRoles.add("ROLE_ADMIN");
+        acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
+        acceptedRoles.add( "ROLE_DR_SPEC");
+
+        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
+                "b.brojSobe, b.kapacitet, p.lbp," +
+                "p.ime, p.prezime, p.datumRodjenja, p.jmbg" +
+                " from Hospitalizacija h,  Pacijent p, BolnickaSoba b WHERE h.datumVremeOtpustanja IS NULL" +
+                " AND h.lbpPacijenta = p.lbp AND h.bolnickaSobaId = b.bolnickaSobaId";
+        Map<String, Object> param = new HashMap<>();
+
+        if (requestDTO.getPbo() == 0) {
+            System.out.println("Ne moze ovako, break");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } else {
+            param.put("pbo", requestDTO.getPbo());
+            s = s + " AND b.odeljenjeId = :pbo";
+        }
+        if (requestDTO.getLbp() != null) {
+            param.put("lbp", requestDTO.getLbp());
+            s = s + " AND p.lbp = :lbp";
+        }
+        if (requestDTO.getJmbg() != null) {
+            param.put("jmbg", requestDTO.getJmbg());
+            s = s + " AND p.jmbg = : jmbg";
+        }
+        if (requestDTO.getName() != null) {
+            param.put("name", requestDTO.getName());
+            s = s + " AND p.ime = : name";
+        }
+        if (requestDTO.getSurname() != null) {
+            param.put("surname", requestDTO.getSurname());
+            s = s + " AND p.prezime = : surname";
+        }
+
+        TypedQuery<Object[]> query
+                = entityManager.createQuery(
+                s, Object[].class);
+
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+
+        List<SearchHospitalizedPatientsResponseDTO> ret = new ArrayList<>();
+        for (Object[] row : query.getResultList()) {
+            SearchHospitalizedPatientsResponseDTO dto = new SearchHospitalizedPatientsResponseDTO();
+            for (int i = 0; i < row.length; i++) {
+                if (row[i] != null) {
+                    switch (i) {
+                        case 0:
+                            dto.setDatumVremePrijema(Timestamp.valueOf((row[0]).toString()));
+                            break;
+                        case 1:
+                            dto.setNapomena(row[1].toString());
+                            break;
+                        case 2:
+                            dto.setUputnaDijagnoza(row[2].toString());
+                            break;
+                        case 3:
+                            dto.setBolnickaSobaId(Long.parseLong(row[3].toString()));
+                            break;
+                        case 4:
+                            dto.setBrojSobe(Integer.parseInt(row[4].toString()));
+                            break;
+                        case 5:
+                            dto.setKapacitetSobe(Integer.parseInt(row[5].toString()));
+                            break;
+                        case 6:
+                            dto.setLbp(UUID.fromString(row[6].toString()));
+                            break;
+
+                        case 7:
+                            dto.setIme(row[7].toString());
+                            break;
+                        case 8:
+                            dto.setPrezime(row[8].toString());
+                            break;
+                        case 9:
+                            dto.setDatumRodjenja(Date.valueOf(row[9].toString()));
+                            break;
+
+                        case 10:
+                            dto.setJmbg(row[10].toString());
+                            break;
+
+                    }
+                }
+
+            }
+            ret.add(dto);
+
+        }
+
+        return ok(ret);
+
+    }
+
+
+    //Pretraga pacijenata u bolnici
+    @GetMapping(value = "/searchPatientsInHospital")
+    public ResponseEntity<?> searchPatientsInHospital(@RequestBody SearchPatientsInHospitalDTO requestDTO) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+        acceptedRoles.add("ROLE_ADMIN");
+        acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
+        acceptedRoles.add( "ROLE_DR_SPEC");
+        acceptedRoles.add(Constants.RECEPCIONER);
+
+            if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+        String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
+                "b.brojSobe, p.lbp," +
+                "p.ime, p.prezime, p.datumRodjenja, p.jmbg" +
+                " from Hospitalizacija h, BolnickaSoba b, Pacijent p  WHERE h.datumVremeOtpustanja IS NULL" +
+                " AND h.lbpPacijenta = p.lbp AND h.bolnickaSobaId = b.bolnickaSobaId";
+        Map<String, Object> param = new HashMap<>();
+
+        if (requestDTO.getPbb() == 0) {
+            System.out.println("Ne moze ovako, break");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } else {
+
+            param.put("pbb", requestDTO.getPbb());
+            s = s + " AND b.bolnicaId = :pbb";
+        }
+        if (requestDTO.getLbp() != null) {
+            param.put("lbp", requestDTO.getLbp());
+            s = s + " AND p.lbp = :lbp";
+        }
+        if (requestDTO.getJmbg() != null) {
+            param.put("jmbg", requestDTO.getJmbg());
+            s = s + " AND p.jmbg = : jmbg";
+        }
+        if (requestDTO.getName() != null) {
+            param.put("name", requestDTO.getName());
+            s = s + " AND p.ime = : name";
+        }
+        if (requestDTO.getSurname() != null) {
+            param.put("surname", requestDTO.getSurname());
+            s = s + " AND p.prezime = : surname";
+        }
+        TypedQuery<Object[]> query
+                = entityManager.createQuery(
+                s, Object[].class);
+
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+        List<SearchPatientsInHospitalResponseDTO> ret = new ArrayList<>();
+        for (Object[] row : query.getResultList()) {
+            SearchPatientsInHospitalResponseDTO dto = new SearchPatientsInHospitalResponseDTO();
+            for (int i = 0; i < row.length; i++) {
+                if (row[i] != null) {
+                    switch (i) {
+                        case 0:
+                            dto.setDatumVremePrijema(Timestamp.valueOf((row[0]).toString()));
+                            break;
+                        case 1:
+                            dto.setNapomena(row[1].toString());
+                            break;
+                        case 2:
+                            dto.setUputnaDijagnoza(row[2].toString());
+                            break;
+                        case 3:
+                            dto.setBolnickaSobaId(Long.parseLong(row[3].toString()));
+                            break;
+                        case 4:
+                            dto.setBrojSobe(Integer.parseInt(row[4].toString()));
+                            break;
+                        case 5:
+                            dto.setLbp(UUID.fromString(row[5].toString()));
+                            break;
+                        case 6:
+                            dto.setIme(row[6].toString());
+                            break;
+                        case 7:
+                            dto.setPrezime(row[7].toString());
+                            break;
+                        case 8:
+                            dto.setDatumRodjenja(Date.valueOf(row[8].toString()));
+                            break;
+                        case 9:
+                            dto.setJmbg(row[9].toString());
+                            break;
+
+                    }
+                }
+
+            }
+            ret.add(dto);
+
+        }
+        return ok(ret);
+    }
+
+    //Hospitalizacija pacijenta
+    @PostMapping(value = "/hospitalizePatient")
+    public ResponseEntity<?> hospitalizePatient(@RequestBody HospitalizePatientDTO requestDTO) {
+
+
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add("ROLE_VISA_MED_SESTRA");
+        acceptedRoles.add("ROLE_MED_SESTRA");
+
+//        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
+        long bolnickaSobaID = requestDTO.getBolnickaSobaId();
+
+        Hospitalizacija hospitalizacija = new Hospitalizacija();
+        hospitalizacija.setBolnickaSobaId(bolnickaSobaID);
+        hospitalizacija.setLbpPacijenta(requestDTO.getLbp());
+        hospitalizacija.setLbzDodeljenogLekara(requestDTO.getLbzLekara());
+        hospitalizacija.setLbzRegistratora(requestDTO.getLbzLekara());
+        //hospitalizacija.setLbzRegistratora(loggedInUser.getLBZ());
+        hospitalizacija.setDatumVremePrijema(new Timestamp(System.currentTimeMillis()));
+        hospitalizacija.setUputnaDijagnoza(requestDTO.getUputnaDijagnoza());
+
+        if(requestDTO.getNapomena() != null) {
+            hospitalizacija.setNapomena(requestDTO.getNapomena());
+        }
+
+        hospitalizacijaService.save(hospitalizacija);
+        BolnickaSoba bolnickaSoba = bolnickaSobaService.findById(bolnickaSobaID);
+        bolnickaSoba.setPopunjenost(bolnickaSobaService.increment(bolnickaSoba));
+        bolnickaSobaService.save(bolnickaSoba);
+
+
+
+
+        return ok("Its good");
+
+    }
 }

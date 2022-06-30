@@ -7,10 +7,6 @@ import lombok.Setter;
 import raf.si.bolnica.laboratory.entities.Parametar;
 import raf.si.bolnica.laboratory.entities.enums.TipVrednosti;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
 @Getter
 @Setter
 @AllArgsConstructor

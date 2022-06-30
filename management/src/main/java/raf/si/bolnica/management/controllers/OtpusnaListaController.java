@@ -47,7 +47,7 @@ public class OtpusnaListaController {
 
 
     @PostMapping(value = Constants.REGISTER_OTPUSNA_LISTA)
-    ResponseEntity<?> registerOtpusnaLista(@RequestBody CreateOtpusnaListaDTO req){
+    public ResponseEntity<?> registerOtpusnaLista(@RequestBody CreateOtpusnaListaDTO req){
 
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
@@ -59,7 +59,7 @@ public class OtpusnaListaController {
         }
         String msg = CreateOtpusnaListaDTOValidator.validate(req);
         if(!msg.equals("OK")){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
         }
 
         UUID lbzNacelnika;
@@ -74,7 +74,7 @@ public class OtpusnaListaController {
 
         Hospitalizacija hospitalizacija = hospitalizacijaService.findCurrentByLbp(UUID.fromString(req.getLbp()));
         if(hospitalizacija == null){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Pacijent nije trenutno hospitalizovan");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Pacijent nije trenutno hospitalizovan");
         }
         OtpusnaLista otpusnaLista = new OtpusnaLista();
         otpusnaLista.setLbpPacijenta(UUID.fromString(req.getLbp()));
@@ -106,7 +106,7 @@ public class OtpusnaListaController {
     }
 
     @PostMapping(value = Constants.SEARCH_OTPUSNA_LISTA)
-    ResponseEntity<?> searchOtpusneListe(@RequestBody OtpusnaLIstaFilterDTO req){
+    public ResponseEntity<?> searchOtpusneListe(@RequestBody OtpusnaLIstaFilterDTO req){
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
         acceptedRoles.add(Constants.SPECIJALISTA);
@@ -119,7 +119,7 @@ public class OtpusnaListaController {
 
         String msg = OtpusnaListaFilterDTORequestValidator.validate(req);
         if(!msg.equals("OK")){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(msg);
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
         }
         UUID lbp = UUID.fromString(req.getLbp());
         Integer type = OtpusnaListaFilterDTORequestValidator.checkRequest(req);

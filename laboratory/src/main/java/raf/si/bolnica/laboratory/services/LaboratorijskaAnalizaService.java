@@ -3,7 +3,6 @@ package raf.si.bolnica.laboratory.services;
 import raf.si.bolnica.laboratory.entities.LaboratorijskaAnaliza;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface LaboratorijskaAnalizaService {
 

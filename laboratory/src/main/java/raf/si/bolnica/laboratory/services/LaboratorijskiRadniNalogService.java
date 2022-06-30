@@ -1,6 +1,5 @@
 package raf.si.bolnica.laboratory.services;
 
-import org.w3c.dom.stylesheets.LinkStyle;
 import raf.si.bolnica.laboratory.entities.LaboratorijskiRadniNalog;
 
 import java.util.List;
