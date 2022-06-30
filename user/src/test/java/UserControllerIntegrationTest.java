@@ -111,7 +111,8 @@ class UserControllerIntegrationTest {
                         "  \"name\": \"string\",\n" +
                         "  \"profession\": \"Spec. hirurg\",\n" +
                         "  \"surname\": \"string\",\n" +
-                        "  \"title\": \"Prof. dr. med.\"\n" +
+                        "  \"title\": \"Prof. dr. med.\",\n" +
+                        "  \"roles\": [ \"ROLE_MED_SESTRA\" ]\n" +
                         "}"));
         String content = resultActions.andReturn().getResponse().getContentAsString();
 
@@ -139,7 +140,8 @@ class UserControllerIntegrationTest {
                         "    \"title\": \"Prof. dr. med.\",\n" +
                         "    \"profession\": \"Spec. hirurg\",\n" +
                         "    \"department\": 1,\n" +
-                        "    \"username\": \"zaposleni\"\n" +
+                        "    \"username\": \"zaposleni\",\n" +
+                        "    \"obrisan\" : false\n" +
                         "}"));
     }
 
@@ -271,8 +273,8 @@ class UserControllerIntegrationTest {
                         "        \"city\": \"SRBIJA\",\n" +
                         "        \"contact\": \"+381 69312321\",\n" +
                         "        \"email\": \"test@gmail.com\",\n" +
-                        "        \"title\": \"titula\",\n" +
-                        "        \"profession\": \"zanimanje\",\n" +
+                        "        \"title\": \"Dr. sci. med\",\n" +
+                        "        \"profession\": \"Spec. endrokrinolog\",\n" +
                         "        \"department\": 1,\n" +
                         "        \"username\": \"superadmin\"\n" +
                         "    },\n" +
@@ -297,7 +299,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void listEmployees() throws Exception {
-        ResultActions resultActions = mockMvc.perform(get("/api/list-employees")
+        ResultActions resultActions = mockMvc.perform(post("/api/list-employees")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                         .contentType("application/json")
                         .content("{}")
@@ -323,8 +325,8 @@ class UserControllerIntegrationTest {
                         "        \"city\": \"SRBIJA\",\n" +
                         "        \"contact\": \"+381 69312321\",\n" +
                         "        \"email\": \"test@gmail.com\",\n" +
-                        "        \"title\": \"titula\",\n" +
-                        "        \"profession\": \"zanimanje\",\n" +
+                        "        \"title\": \"Dr. sci. med\",\n" +
+                        "        \"profession\": \"Spec. endrokrinolog\",\n" +
                         "        \"department\": 1,\n" +
                         "        \"username\": \"superadmin\"\n" +
                         "    },\n" +
