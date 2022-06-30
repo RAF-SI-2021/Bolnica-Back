@@ -1081,4 +1081,27 @@ public class ManagementController {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
+    @PostMapping(value = "/patient-visit/save")
+    public ResponseEntity<PosetaPacijentu> savePatientVisit(@RequestBody SavePatientVisitRequestDTO requestDTO) {
+        if (loggedInUser.getRoles().contains("ROLE_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_RECEPCIONER")) {
+
+            PosetaPacijentu posetaPacijentu = new PosetaPacijentu();
+            posetaPacijentu.setPrezimePosetioca(requestDTO.getPatientSurname());
+            posetaPacijentu.setJmbgPosetioca(requestDTO.getPatientPID());
+            posetaPacijentu.setNapomena(requestDTO.getNote());
+            posetaPacijentu.setLbpPacijenta(UUID.fromString(requestDTO.getLbp()));
+            posetaPacijentu.setLbzRegistratora(loggedInUser.getLBZ());
+            posetaPacijentu.setDatumVreme(new Timestamp(System.currentTimeMillis()));
+            posetaPacijentu.setImePosetioca(requestDTO.getPatientName());
+
+            PosetaPacijentu patientVisit = posetaPacijentuService.save(posetaPacijentu);
+
+            return ResponseEntity.ok(patientVisit);
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 }

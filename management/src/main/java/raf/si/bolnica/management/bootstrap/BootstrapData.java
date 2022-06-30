@@ -111,6 +111,7 @@ public class BootstrapData implements CommandLineRunner {
 
         PosetaPacijentu posetaPacijentu1 = new PosetaPacijentu();
         posetaPacijentu1.setLbpPacijenta(pacijent.getLbp());
+        posetaPacijentu1.setImePosetioca(pacijent.getIme());
         posetaPacijentu1.setJmbgPosetioca(pacijent.getJmbg());
         posetaPacijentu1.setNapomena("Ovo je napomena za Pacijenta");
         posetaPacijentu1.setPrezimePosetioca(pacijent.getPrezime());
@@ -119,6 +120,7 @@ public class BootstrapData implements CommandLineRunner {
 
         PosetaPacijentu posetaPacijentu2 = new PosetaPacijentu();
         posetaPacijentu2.setLbpPacijenta(pacijent.getLbp());
+        posetaPacijentu2.setImePosetioca(pacijent.getIme());
         posetaPacijentu2.setJmbgPosetioca(pacijent.getJmbg());
         posetaPacijentu2.setNapomena("Ovo je napomena za Pacijenta");
         posetaPacijentu2.setPrezimePosetioca(pacijent.getPrezime());
