@@ -97,6 +97,9 @@ public class ManagementController {
     @Autowired
     private BolnickaSobaService bolnickaSobaService;
 
+    @Autowired
+    private PosetaPacijentuService posetaPacijentuService;
+
     @PostMapping(value = "/create-examination-report")
     public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
@@ -1059,6 +1062,21 @@ public class ManagementController {
             List<BolnickaSoba> hospitalRooms = bolnickaSobaService.findAllByDepartmentId(pbo);
 
             return ResponseEntity.ok(hospitalRooms);
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @GetMapping(value = "/patient-visits/{lbp}")
+    public ResponseEntity<List<PosetaPacijentu>> getAllPatientVisitsByLBP(@PathVariable String lbp) {
+        if (loggedInUser.getRoles().contains("ROLE_DR_SPEC_POV") ||
+                loggedInUser.getRoles().contains("ROLE_DR_SPEC") ||
+                loggedInUser.getRoles().contains("ROLE_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA")) {
+
+            List<PosetaPacijentu> patientVisits = posetaPacijentuService.findAllByLBP(UUID.fromString(lbp));
+
+            return ResponseEntity.ok(patientVisits);
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

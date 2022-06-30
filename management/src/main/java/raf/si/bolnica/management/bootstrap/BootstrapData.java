@@ -44,6 +44,9 @@ public class BootstrapData implements CommandLineRunner {
     @Autowired
     private BolnickaSobaRepository bolnickaSobaRepository;
 
+    @Autowired
+    private PosetPacijentuRepository posetPacijentuRepository;
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -105,6 +108,25 @@ public class BootstrapData implements CommandLineRunner {
         pacijent.setStepenStrucneSpreme(StrucnaSprema.VISOKO);
         pacijent.setZanimanje("Moler");
         pacijentRepository.save(pacijent);
+
+        PosetaPacijentu posetaPacijentu1 = new PosetaPacijentu();
+        posetaPacijentu1.setLbpPacijenta(pacijent.getLbp());
+        posetaPacijentu1.setJmbgPosetioca(pacijent.getJmbg());
+        posetaPacijentu1.setNapomena("Ovo je napomena za Pacijenta");
+        posetaPacijentu1.setPrezimePosetioca(pacijent.getPrezime());
+        posetaPacijentu1.setLbzRegistratora(pacijent.getLbp());
+        posetaPacijentu1.setDatumVreme(new Timestamp(System.currentTimeMillis()));
+
+        PosetaPacijentu posetaPacijentu2 = new PosetaPacijentu();
+        posetaPacijentu2.setLbpPacijenta(pacijent.getLbp());
+        posetaPacijentu2.setJmbgPosetioca(pacijent.getJmbg());
+        posetaPacijentu2.setNapomena("Ovo je napomena za Pacijenta");
+        posetaPacijentu2.setPrezimePosetioca(pacijent.getPrezime());
+        posetaPacijentu2.setLbzRegistratora(pacijent.getLbp());
+        posetaPacijentu2.setDatumVreme(new Timestamp(System.currentTimeMillis()));
+
+        posetPacijentuRepository.save(posetaPacijentu1);
+        posetPacijentuRepository.save(posetaPacijentu2);
 
         ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();
         zdravstveniKarton.setRhFaktor(RhFaktor.MINUS);
