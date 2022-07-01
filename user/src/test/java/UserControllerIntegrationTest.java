@@ -1,4 +1,4 @@
-/*import com.google.common.reflect.TypeToken;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.*;
@@ -346,4 +346,3 @@ class UserControllerIntegrationTest {
     }
 
 }
-*/
