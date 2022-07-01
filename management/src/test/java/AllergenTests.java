@@ -175,7 +175,7 @@ public class AllergenTests {
         when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(zk);
         when(alergenZdravstveniKartonService.save(any(AlergenZdravstveniKarton.class))).thenAnswer(i -> {
             AlergenZdravstveniKarton azk = (AlergenZdravstveniKarton) i.getArguments()[0];
-            azk.setId(Long.valueOf(alergenZdravstveniKartonId));
+            azk.setId((long) alergenZdravstveniKartonId);
             return azk;
         });
 

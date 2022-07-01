@@ -87,7 +87,7 @@ public class ManagementController {
         acceptedRoles.add(Constants.NACELNIK);
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String msg = PregledReportRequestValidator.validate(requestDTO);
@@ -689,7 +689,7 @@ public class ManagementController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
         acceptedRoles.add(Constants.MED_SESTRA);
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -713,7 +713,7 @@ public class ManagementController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
         acceptedRoles.add(Constants.MED_SESTRA);
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -729,7 +729,7 @@ public class ManagementController {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
         acceptedRoles.add(Constants.MED_SESTRA);
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -747,7 +747,7 @@ public class ManagementController {
         acceptedRoles.add("ROLE_MED_SESTRA");
         acceptedRoles.add("ROLE_ADMIN");
         String s = "SELECT u from StanjePacijenta u WHERE u.lbpPacijenta = :lbpp";
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         Map<String, Object> param = new HashMap<>();
@@ -767,10 +767,7 @@ public class ManagementController {
         for (String t : param.keySet()) {
             query.setParameter(t, param.get(t));
         }
-        List<StanjePacijenta> ret = new ArrayList<>();
-        for (StanjePacijenta stanje : query.getResultList()) {
-            ret.add(stanje);
-        }
+        List<StanjePacijenta> ret = new ArrayList<>(query.getResultList());
 
         return ok(ret);
 
@@ -783,7 +780,7 @@ public class ManagementController {
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
 
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -805,7 +802,7 @@ public class ManagementController {
         acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
         acceptedRoles.add("ROLE_DR_SPEC");
 
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
@@ -910,7 +907,7 @@ public class ManagementController {
         acceptedRoles.add("ROLE_DR_SPEC");
         acceptedRoles.add(Constants.RECEPCIONER);
 
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -1008,7 +1005,7 @@ public class ManagementController {
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
 
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         long bolnickaSobaID = requestDTO.getBolnickaSobaId();

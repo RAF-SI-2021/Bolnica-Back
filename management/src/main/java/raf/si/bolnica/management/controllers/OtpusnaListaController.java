@@ -27,6 +27,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -54,7 +55,7 @@ public class OtpusnaListaController {
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);
 
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String msg = CreateOtpusnaListaDTOValidator.validate(req);
@@ -64,10 +65,10 @@ public class OtpusnaListaController {
 
         UUID lbzNacelnika;
 
-        if (!loggedInUser.getRoles().stream().anyMatch(Constants.NACELNIK::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(Constants.NACELNIK::contains)) {
             String uri = "http://host.docker.internal:8081/api/find-dr-spec-odeljenja/" + req.getPbo();
             RestTemplate restTemplate = new RestTemplate();
-            lbzNacelnika = UUID.fromString(restTemplate.getForObject(uri, String.class));
+            lbzNacelnika = UUID.fromString(Objects.requireNonNull(restTemplate.getForObject(uri, String.class)));
         } else {
             lbzNacelnika = loggedInUser.getLBZ();
         }
@@ -110,7 +111,7 @@ public class OtpusnaListaController {
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);
 
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 

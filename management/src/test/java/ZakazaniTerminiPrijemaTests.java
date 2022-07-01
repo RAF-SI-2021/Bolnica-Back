@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
-import raf.si.bolnica.management.requests.CreateScheduledAppointmentRequestDTO;
 import raf.si.bolnica.management.requests.CreateZakazaniTerminPrijemaRequestDTO;
 import raf.si.bolnica.management.services.ZakazaniTerminPrijemaService;
 

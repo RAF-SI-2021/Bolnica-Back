@@ -1,9 +1,7 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
@@ -189,9 +187,7 @@ public class VaccineTests {
         ZdravstveniKarton zk = new ZdravstveniKarton();
         zk.setVakcinacije(new HashSet<>());
         when(zdravstveniKartonService.findZdravstveniKartonByPacijentLbp(any(UUID.class))).thenReturn(zk);
-        when(vakcinacijaService.save(any(Vakcinacija.class))).thenAnswer( i -> {
-            return i.getArguments()[0];
-                }
+        when(vakcinacijaService.save(any(Vakcinacija.class))).thenAnswer( i -> i.getArguments()[0]
         );
 
         AddVaccineToPatientRequestDTO request = getRequest();

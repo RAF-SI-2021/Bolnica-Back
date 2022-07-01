@@ -40,7 +40,7 @@ public class LekarskiIzvestajController {
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);
 
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String msg = LekarskiIzvestajDTORequestValidator.validate(lekarskiIzvestajDTO);
@@ -73,7 +73,7 @@ public class LekarskiIzvestajController {
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);
-        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String msg = LekarskiIzvestajFilterDTORequestValidator.validate(lekarskiIzvestajFilterDTO);
