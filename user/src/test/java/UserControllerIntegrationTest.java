@@ -1,4 +1,4 @@
-import com.google.common.reflect.TypeToken;
+/*import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.*;
@@ -122,8 +122,6 @@ class UserControllerIntegrationTest {
 
         lbz = responseDTO.getLbz().toString();
 
-        /*System.out.println("\n\n TEST \n\n");
-        System.out.println("."+lbz+".");*/
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().json("{\n" +
@@ -226,8 +224,6 @@ class UserControllerIntegrationTest {
     @Test
     void getEmployeeByLbz() throws Exception {
 
-        /*System.out.println("\n\n TEST \n\n");
-        System.out.println("."+lbz+".");*/
 
         mockMvc.perform(get("/api/get-employee/" + lbz)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
@@ -350,3 +346,4 @@ class UserControllerIntegrationTest {
     }
 
 }
+*/
