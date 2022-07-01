@@ -1,6 +1,5 @@
 package raf.si.bolnica.management.controllers;
 
-import org.bouncycastle.util.Times;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,35 +22,14 @@ import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonSer
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.ok;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import raf.si.bolnica.management.entities.Pregled;
-import raf.si.bolnica.management.entities.ZakazaniPregled;
-import raf.si.bolnica.management.entities.StanjePacijenta;
-import raf.si.bolnica.management.requests.CreateScheduledAppointmentRequestDTO;
-import raf.si.bolnica.management.requests.SearchForAppointmentDTO;
-import raf.si.bolnica.management.requests.UpdateAppointmentStatusDTO;
-import raf.si.bolnica.management.requests.UpdateArrivalStatusDTO;
-import raf.si.bolnica.management.services.ScheduledAppointmentService;
-import raf.si.bolnica.management.requests.SetPatientsStateDTO;
-import raf.si.bolnica.management.services.StanjePacijentaService;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -98,6 +76,9 @@ public class ManagementController {
 
     @Autowired
     private BolnickaSobaService bolnickaSobaService;
+
+    @Autowired
+    private PosetaPacijentuService posetaPacijentuService;
 
     @PostMapping(value = "/create-examination-report")
     public ResponseEntity<?> createPregledReport(@RequestBody CreatePregledReportRequestDTO requestDTO) {
@@ -1053,5 +1034,56 @@ public class ManagementController {
 
         return ok("Its good");
 
+    }
+
+    @GetMapping(value = "/hospital-rooms/{pbo}")
+    public ResponseEntity<List<BolnickaSoba>> getHospitalRoomsForDepartmentId(@PathVariable int pbo) {
+        if (loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_MED_SESTRA")) {
+
+            List<BolnickaSoba> hospitalRooms = bolnickaSobaService.findAllByDepartmentId(pbo);
+
+            return ResponseEntity.ok(hospitalRooms);
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @GetMapping(value = "/patient-visits/{lbp}")
+    public ResponseEntity<List<PosetaPacijentu>> getAllPatientVisitsByLBP(@PathVariable String lbp) {
+        if (loggedInUser.getRoles().contains("ROLE_DR_SPEC_POV") ||
+                loggedInUser.getRoles().contains("ROLE_DR_SPEC") ||
+                loggedInUser.getRoles().contains("ROLE_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA")) {
+
+            List<PosetaPacijentu> patientVisits = posetaPacijentuService.findAllByLBP(UUID.fromString(lbp));
+
+            return ResponseEntity.ok(patientVisits);
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @PostMapping(value = "/patient-visit/save")
+    public ResponseEntity<PosetaPacijentu> savePatientVisit(@RequestBody SavePatientVisitRequestDTO requestDTO) {
+        if (loggedInUser.getRoles().contains("ROLE_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_VISA_MED_SESTRA") ||
+                loggedInUser.getRoles().contains("ROLE_RECEPCIONER")) {
+
+            PosetaPacijentu posetaPacijentu = new PosetaPacijentu();
+            posetaPacijentu.setPrezimePosetioca(requestDTO.getPatientSurname());
+            posetaPacijentu.setJmbgPosetioca(requestDTO.getPatientPID());
+            posetaPacijentu.setNapomena(requestDTO.getNote());
+            posetaPacijentu.setLbpPacijenta(UUID.fromString(requestDTO.getLbp()));
+            posetaPacijentu.setLbzRegistratora(loggedInUser.getLBZ());
+            posetaPacijentu.setDatumVreme(new Timestamp(System.currentTimeMillis()));
+            posetaPacijentu.setImePosetioca(requestDTO.getPatientName());
+
+            PosetaPacijentu patientVisit = posetaPacijentuService.save(posetaPacijentu);
+
+            return ResponseEntity.ok(patientVisit);
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

@@ -4,7 +4,6 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
@@ -16,18 +15,18 @@ public class OtpusnaLista {
     private long otpusnaListaId;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbpPacijenta;
 
     @Column(nullable = false)
     private long hospitalizacijaId;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbzOrdinirajucegLekara;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbzNacelnikOdeljenja;
 
     private String prateceDijagnoze;

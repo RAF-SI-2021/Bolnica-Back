@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.management.entities.BolnickaSoba;
 import raf.si.bolnica.management.repositories.BolnickaSobaRepository;
 
+import java.util.List;
+
 @Service
 @Transactional("transactionManager")
-public class BolnickaSobaServiceImpl implements BolnickaSobaService{
+public class BolnickaSobaServiceImpl implements BolnickaSobaService {
 
     @Autowired
     BolnickaSobaRepository bolnickaSobaRepository;
@@ -22,6 +24,11 @@ public class BolnickaSobaServiceImpl implements BolnickaSobaService{
     @Override
     public BolnickaSoba save(BolnickaSoba bolnickaSoba) {
         return bolnickaSobaRepository.save(bolnickaSoba);
+    }
+
+    @Override
+    public List<BolnickaSoba> findAllByDepartmentId(long departmentId) {
+        return bolnickaSobaRepository.getBolnickaSobaByOdeljenjeId(departmentId);
     }
 
     @Override

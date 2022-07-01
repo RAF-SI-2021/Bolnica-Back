@@ -1,7 +1,8 @@
 package raf.si.bolnica.management.entities;
+
 import lombok.NoArgsConstructor;
-import raf.si.bolnica.management.requests.SetPatientsStateDTO;
 import org.hibernate.annotations.Type;
+import raf.si.bolnica.management.requests.SetPatientsStateDTO;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -17,11 +18,11 @@ public class StanjePacijenta {
     private long stanjePacijentaId;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbpPacijenta;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbzRegistratora;
 
     @Column(nullable = false)
@@ -109,12 +110,12 @@ public class StanjePacijenta {
         this.opis = opis;
     }
 
-    public StanjePacijenta(SetPatientsStateDTO dto){
+    public StanjePacijenta(SetPatientsStateDTO dto) {
         this.lbpPacijenta = dto.getLbpPacijenta();
         this.lbzRegistratora = dto.getLbzRegistratora();
         this.temperatura = dto.getTemperatura();
         this.krvniPritisak = dto.getKrvniPritisak();
-        this.puls   =    dto.getPuls();
+        this.puls = dto.getPuls();
         this.primenjeneTerapije = dto.getPrimenjeneTerapije();
         this.opis = dto.getOpis();
         this.datumVreme = dto.getDatumVreme();

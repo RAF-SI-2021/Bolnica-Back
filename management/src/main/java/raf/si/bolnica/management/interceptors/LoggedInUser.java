@@ -21,7 +21,8 @@ public class LoggedInUser {
 
     private long PBB;
 
-    public LoggedInUser() {}
+    public LoggedInUser() {
+    }
 
     public String getUsername() {
         return username;

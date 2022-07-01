@@ -8,6 +8,8 @@ import java.util.UUID;
 public interface HospitalizacijaService {
 
     Hospitalizacija save(Hospitalizacija hospitalizacija);
+
     Hospitalizacija findCurrentByLbp(UUID lbp);
+
     List<Hospitalizacija> findByLbp(UUID lbp);
 }

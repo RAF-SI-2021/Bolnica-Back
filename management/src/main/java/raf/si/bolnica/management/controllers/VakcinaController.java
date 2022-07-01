@@ -3,7 +3,10 @@ package raf.si.bolnica.management.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.entities.Vakcina;
 import raf.si.bolnica.management.entities.Vakcinacija;
@@ -13,7 +16,6 @@ import raf.si.bolnica.management.exceptions.VaccineNotExistException;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.AddVaccineToPatientRequestDTO;
 import raf.si.bolnica.management.response.VakcinacijaDto;
-import raf.si.bolnica.management.response.ZdravstveniKartonResponseDTO;
 import raf.si.bolnica.management.services.VakcinacijaService;
 import raf.si.bolnica.management.services.vakcina.VakcinaService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
@@ -21,8 +23,6 @@ import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonSer
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping(value = Constants.BASE_API)
@@ -62,8 +62,8 @@ public class VakcinaController {
                 if (zdravstveniKarton == null) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                 }
-                for(Vakcinacija vakcinacija: zdravstveniKarton.getVakcinacije()) {
-                    if(vakcinacija.getVakcina().getNaziv().equals(requestDTO.getNaziv())) {
+                for (Vakcinacija vakcinacija : zdravstveniKarton.getVakcinacije()) {
+                    if (vakcinacija.getVakcina().getNaziv().equals(requestDTO.getNaziv())) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
                     }
                 }

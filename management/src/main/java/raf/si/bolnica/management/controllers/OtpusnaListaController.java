@@ -47,33 +47,33 @@ public class OtpusnaListaController {
 
 
     @PostMapping(value = Constants.REGISTER_OTPUSNA_LISTA)
-    public ResponseEntity<?> registerOtpusnaLista(@RequestBody CreateOtpusnaListaDTO req){
+    public ResponseEntity<?> registerOtpusnaLista(@RequestBody CreateOtpusnaListaDTO req) {
 
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);
 
-        if(!loggedInUser.getRoles().stream().anyMatch(acceptedRoles :: contains)){
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String msg = CreateOtpusnaListaDTOValidator.validate(req);
-        if(!msg.equals("OK")){
+        if (!msg.equals("OK")) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
         }
 
         UUID lbzNacelnika;
 
-        if(!loggedInUser.getRoles().stream().anyMatch(Constants.NACELNIK :: contains)){
+        if (!loggedInUser.getRoles().stream().anyMatch(Constants.NACELNIK::contains)) {
             String uri = "http://host.docker.internal:8081/api/find-dr-spec-odeljenja/" + req.getPbo();
             RestTemplate restTemplate = new RestTemplate();
             lbzNacelnika = UUID.fromString(restTemplate.getForObject(uri, String.class));
-        } else{
+        } else {
             lbzNacelnika = loggedInUser.getLBZ();
         }
 
         Hospitalizacija hospitalizacija = hospitalizacijaService.findCurrentByLbp(UUID.fromString(req.getLbp()));
-        if(hospitalizacija == null){
+        if (hospitalizacija == null) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Pacijent nije trenutno hospitalizovan");
         }
         OtpusnaLista otpusnaLista = new OtpusnaLista();
@@ -100,31 +100,29 @@ public class OtpusnaListaController {
         otpusnaListaService.save(otpusnaLista);
 
 
-
-
         return ResponseEntity.ok().body(otpusnaLista);
     }
 
     @PostMapping(value = Constants.SEARCH_OTPUSNA_LISTA)
-    public ResponseEntity<?> searchOtpusneListe(@RequestBody OtpusnaLIstaFilterDTO req){
+    public ResponseEntity<?> searchOtpusneListe(@RequestBody OtpusnaLIstaFilterDTO req) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);
 
-        if(!loggedInUser.getRoles().stream().anyMatch(acceptedRoles :: contains)){
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
 
         String msg = OtpusnaListaFilterDTORequestValidator.validate(req);
-        if(!msg.equals("OK")){
+        if (!msg.equals("OK")) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(msg);
         }
         UUID lbp = UUID.fromString(req.getLbp());
         Integer type = OtpusnaListaFilterDTORequestValidator.checkRequest(req);
         List<OtpusnaLista> otpusnaListaList = new ArrayList<>();
-        switch (type){
+        switch (type) {
             case 0:
                 otpusnaListaList = otpusnaListaService.findByLBP(lbp);
                 break;
@@ -138,7 +136,7 @@ public class OtpusnaListaController {
         }
         List<Hospitalizacija> hospitalizacijaList = hospitalizacijaService.findByLbp(UUID.fromString(req.getLbp()));
         List<OtpusnaListaResponseDTO> responseDTOS = new ArrayList<>();
-        for(int i = 0; i < otpusnaListaList.size(); i++){
+        for (int i = 0; i < otpusnaListaList.size(); i++) {
             OtpusnaListaResponseDTO o = new OtpusnaListaResponseDTO();
             String uri1 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzNacelnikOdeljenja();
             String uri2 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzOrdinirajucegLekara();

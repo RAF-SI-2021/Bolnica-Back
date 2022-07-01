@@ -12,12 +12,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableAutoConfiguration(exclude = {
-		SecurityAutoConfiguration.class,
-		ManagementWebSecurityAutoConfiguration.class})
+        SecurityAutoConfiguration.class,
+        ManagementWebSecurityAutoConfiguration.class})
 public class ManagementApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ManagementApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ManagementApplication.class, args);
+    }
 
 }

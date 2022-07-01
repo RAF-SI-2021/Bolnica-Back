@@ -1,7 +1,6 @@
 package raf.si.bolnica.management.response;
 
 import lombok.Getter;
-import lombok.Setter;
 import raf.si.bolnica.management.entities.Pregled;
 
 import java.sql.Date;
@@ -9,29 +8,29 @@ import java.sql.Date;
 @Getter
 public class PregledResponseDTO {
 
-    private Date datumPregleda;
+    private final Date datumPregleda;
 
-    private Boolean indikatorPoverljivosti;
+    private final Boolean indikatorPoverljivosti;
 
-    private String glavneTegobe;
+    private final String glavneTegobe;
 
-    private String sadasnjaBolest;
+    private final String sadasnjaBolest;
 
-    private String licnaAnamneza;
+    private final String licnaAnamneza;
 
-    private String porodicnaAnamneza;
+    private final String porodicnaAnamneza;
 
-    private String misljenjePacijenta;
+    private final String misljenjePacijenta;
 
-    private String objektivniNalaz;
+    private final String objektivniNalaz;
 
-    private String dijagnoza;
+    private final String dijagnoza;
 
-    private String predlozenaTerapija;
+    private final String predlozenaTerapija;
 
-    private String savet;
+    private final String savet;
 
-    private Boolean obrisan;
+    private final Boolean obrisan;
 
     public PregledResponseDTO(Pregled p) {
         datumPregleda = p.getDatumPregleda();

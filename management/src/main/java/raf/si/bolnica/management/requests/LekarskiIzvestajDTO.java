@@ -20,5 +20,4 @@ public class LekarskiIzvestajDTO {
     private boolean indikatorPoverljivosti;
 
 
-
 }

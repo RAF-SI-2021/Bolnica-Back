@@ -4,17 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import raf.si.bolnica.management.entities.*;
-import raf.si.bolnica.management.entities.enums.CountryCode;
-import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
-import raf.si.bolnica.management.entities.enums.Pol;
-import raf.si.bolnica.management.entities.enums.RhFaktor;
-import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.entities.enums.*;
 import raf.si.bolnica.management.repositories.*;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -30,9 +24,6 @@ public class BootstrapData implements CommandLineRunner {
     private AlergenRepository alergenRepository;
 
     @Autowired
-    private AlergenZdravstveniKartonRepository alergenZdravstveniKartonRepository;
-
-    @Autowired
     private PacijentRepository pacijentRepository;
 
     @Autowired
@@ -44,6 +35,8 @@ public class BootstrapData implements CommandLineRunner {
     @Autowired
     private BolnickaSobaRepository bolnickaSobaRepository;
 
+    @Autowired
+    private PosetPacijentuRepository posetPacijentuRepository;
 
 
     @Override
@@ -64,7 +57,7 @@ public class BootstrapData implements CommandLineRunner {
             vakcinaRepository.save(vakcina);
         }
 
-        List<Alergen> alergens = new ArrayList<Alergen>();
+        List<Alergen> alergens = new ArrayList<>();
         alergens.add(new Alergen("Mleko"));
         alergens.add(new Alergen("Jaja"));
         alergens.add(new Alergen("Orašasti plodovi"));
@@ -107,6 +100,12 @@ public class BootstrapData implements CommandLineRunner {
         pacijent.setZanimanje("Moler");
         pacijentRepository.save(pacijent);
 
+        PosetaPacijentu posetaPacijentu = createPosetaPacijentu(pacijent);
+        posetPacijentuRepository.save(posetaPacijentu);
+
+        PosetaPacijentu posetaPacijentu2 = createPosetaPacijentu(pacijent);
+        posetPacijentuRepository.save(posetaPacijentu2);
+
         ZdravstveniKarton zdravstveniKarton = new ZdravstveniKarton();
         zdravstveniKarton.setRhFaktor(RhFaktor.MINUS);
         zdravstveniKarton.setKrvnaGrupa(KrvnaGrupa.AB);
@@ -114,7 +113,7 @@ public class BootstrapData implements CommandLineRunner {
         zdravstveniKarton.setDatumRegistracije(Date.valueOf("2010-01-01"));
         zdravstveniKartonRepository.save(zdravstveniKarton);
         Set<AlergenZdravstveniKarton> alergenZdravstveniKartonSet = new HashSet<>();
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) {
             AlergenZdravstveniKarton alergenZdravstveniKarton = new AlergenZdravstveniKarton();
             alergenZdravstveniKarton.setAlergen(alergens.get(i));
             alergenZdravstveniKarton.setZdravstveniKarton(zdravstveniKarton);
@@ -123,7 +122,7 @@ public class BootstrapData implements CommandLineRunner {
         }
         zdravstveniKarton.setAlergenZdravstveniKarton(alergenZdravstveniKartonSet);
         Set<Vakcinacija> vakcinacije = new HashSet<>();
-        for(int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) {
             Vakcinacija vakcinacija = new Vakcinacija();
             vakcinacija.setVakcina(vakcine.get(i));
             vakcinacija.setDatumVakcinacije(new Date(System.currentTimeMillis()));
@@ -151,8 +150,17 @@ public class BootstrapData implements CommandLineRunner {
         bolnickaSoba2.setOpis("Ovo je opis Sobe 2");
         bolnickaSobaRepository.save(bolnickaSoba2);
 
+    }
 
-
-
+    private PosetaPacijentu createPosetaPacijentu(Pacijent pacijent) {
+        PosetaPacijentu posetaPacijentu = new PosetaPacijentu();
+        posetaPacijentu.setLbpPacijenta(pacijent.getLbp());
+        posetaPacijentu.setImePosetioca(pacijent.getIme());
+        posetaPacijentu.setJmbgPosetioca(pacijent.getJmbg());
+        posetaPacijentu.setNapomena("Ovo je napomena za Pacijenta");
+        posetaPacijentu.setPrezimePosetioca(pacijent.getPrezime());
+        posetaPacijentu.setLbzRegistratora(pacijent.getLbp());
+        posetaPacijentu.setDatumVreme(new Timestamp(System.currentTimeMillis()));
+        return posetaPacijentu;
     }
 }

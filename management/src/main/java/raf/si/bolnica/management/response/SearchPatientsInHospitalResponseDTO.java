@@ -28,5 +28,5 @@ public class SearchPatientsInHospitalResponseDTO {
     private String uputnaDijagnoza;
     private String napomena;
     private int idOdeljenja;
-   //  private String nazivOdeljenja; //uzeti iz usera
+    //  private String nazivOdeljenja; //uzeti iz usera
 }

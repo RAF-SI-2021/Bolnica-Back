@@ -1,7 +1,5 @@
 package raf.si.bolnica.management.entities;
 
-import lombok.Cleanup;
-
 import javax.persistence.*;
 
 @Entity

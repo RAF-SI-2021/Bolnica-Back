@@ -3,9 +3,12 @@ package raf.si.bolnica.management.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import raf.si.bolnica.management.constants.Constants;
-import raf.si.bolnica.management.entities.*;
+import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.exceptions.MissingRequestFieldsException;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.UpdateMedicalRecordBloodTypeRhFactorRequestDTO;
@@ -14,8 +17,6 @@ import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonSer
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping(value = Constants.BASE_API)
