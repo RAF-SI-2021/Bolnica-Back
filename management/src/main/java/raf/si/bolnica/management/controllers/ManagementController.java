@@ -720,14 +720,15 @@ public class ManagementController {
         terminPrijema.setDatumVremePrijema(requestDTO.getDatumVremePrijema());
         terminPrijema.setStatusTermina(StatusTermina.ZAKAZAN);
 
-        zakazaniTerminPrijemaService.save(terminPrijema);
+        ZakazaniTerminPrijema noviTermin = zakazaniTerminPrijemaService.save(terminPrijema);
 
-        return ResponseEntity.ok("Usesno kreirano.");
+        return ResponseEntity.ok(new ZakazaniTerminPrijemaDto(noviTermin));
     }
 
-    @GetMapping(value = "get-zakazani-termini-prijema")
-    public ResponseEntity<?> getTerminiPrijema(@RequestParam(required = false) String date,
-                                               @RequestParam(required = false) String lbp) {
+    @PostMapping(value = "get-zakazani-termini-prijema")
+    public ResponseEntity<?> getTerminiPrijema(GetPrijemiDto getPrijemiDto) {
+        String lbp = getPrijemiDto.getLbp();
+        String date = getPrijemiDto.getDate();
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.VISA_MED_SESTRA);
         acceptedRoles.add(Constants.MED_SESTRA);
@@ -757,7 +758,7 @@ public class ManagementController {
 
     }
 
-    @GetMapping(value = "/searchPatientStateHistory")
+    @PostMapping(value = "/searchPatientStateHistory")
     public ResponseEntity<?> searchPatientStateHistory(@RequestBody SearchPatientStateHistoryDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
@@ -765,7 +766,7 @@ public class ManagementController {
         acceptedRoles.add("ROLE_MED_SESTRA");
         acceptedRoles.add("ROLE_ADMIN");
         String s = "SELECT u from StanjePacijenta u WHERE u.lbpPacijenta = :lbpp";
-        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         Map<String, Object> param = new HashMap<>();
@@ -801,7 +802,7 @@ public class ManagementController {
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
 
-        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -814,16 +815,16 @@ public class ManagementController {
     }
 
     //Pretraga pacijenata na odeljenju
-    @GetMapping(value = "/searchHospitalizedPatients")
+    @PostMapping(value = "/searchHospitalizedPatients")
     public ResponseEntity<?> searchHospitalizedPatients(@RequestBody SearchHospitalizedPatientsDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
         acceptedRoles.add("ROLE_ADMIN");
         acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
-        acceptedRoles.add( "ROLE_DR_SPEC");
+        acceptedRoles.add("ROLE_DR_SPEC");
 
-        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
@@ -833,10 +834,7 @@ public class ManagementController {
                 " AND h.lbpPacijenta = p.lbp AND h.bolnickaSobaId = b.bolnickaSobaId";
         Map<String, Object> param = new HashMap<>();
 
-        if (requestDTO.getPbo() == 0) {
-            System.out.println("Ne moze ovako, break");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } else {
+        if (requestDTO.getPbo() != 0) {
             param.put("pbo", requestDTO.getPbo());
             s = s + " AND b.odeljenjeId = :pbo";
         }
@@ -921,19 +919,19 @@ public class ManagementController {
 
 
     //Pretraga pacijenata u bolnici
-    @GetMapping(value = "/searchPatientsInHospital")
+    @PostMapping(value = "/searchPatientsInHospital")
     public ResponseEntity<?> searchPatientsInHospital(@RequestBody SearchPatientsInHospitalDTO requestDTO) {
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
         acceptedRoles.add("ROLE_ADMIN");
         acceptedRoles.add("ROLE_DR_SPEC_ODELJENJA");
-        acceptedRoles.add( "ROLE_DR_SPEC");
+        acceptedRoles.add("ROLE_DR_SPEC");
         acceptedRoles.add(Constants.RECEPCIONER);
 
-            if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         String s = "SELECT h.datumVremePrijema, h.napomena,h.uputnaDijagnoza, b.bolnickaSobaId," +
                 "b.brojSobe, p.lbp," +
@@ -956,15 +954,15 @@ public class ManagementController {
         }
         if (requestDTO.getJmbg() != null) {
             param.put("jmbg", requestDTO.getJmbg());
-            s = s + " AND p.jmbg = : jmbg";
+            s = s + " AND p.jmbg = :jmbg";
         }
         if (requestDTO.getName() != null) {
             param.put("name", requestDTO.getName());
-            s = s + " AND p.ime = : name";
+            s = s + " AND p.ime = :name";
         }
         if (requestDTO.getSurname() != null) {
             param.put("surname", requestDTO.getSurname());
-            s = s + " AND p.prezime = : surname";
+            s = s + " AND p.prezime = :surname";
         }
         TypedQuery<Object[]> query
                 = entityManager.createQuery(
@@ -1029,9 +1027,9 @@ public class ManagementController {
         acceptedRoles.add("ROLE_VISA_MED_SESTRA");
         acceptedRoles.add("ROLE_MED_SESTRA");
 
-//        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         long bolnickaSobaID = requestDTO.getBolnickaSobaId();
 
         Hospitalizacija hospitalizacija = new Hospitalizacija();
@@ -1043,7 +1041,7 @@ public class ManagementController {
         hospitalizacija.setDatumVremePrijema(new Timestamp(System.currentTimeMillis()));
         hospitalizacija.setUputnaDijagnoza(requestDTO.getUputnaDijagnoza());
 
-        if(requestDTO.getNapomena() != null) {
+        if (requestDTO.getNapomena() != null) {
             hospitalizacija.setNapomena(requestDTO.getNapomena());
         }
 
@@ -1051,8 +1049,6 @@ public class ManagementController {
         BolnickaSoba bolnickaSoba = bolnickaSobaService.findById(bolnickaSobaID);
         bolnickaSoba.setPopunjenost(bolnickaSobaService.increment(bolnickaSoba));
         bolnickaSobaService.save(bolnickaSoba);
-
-
 
 
         return ok("Its good");

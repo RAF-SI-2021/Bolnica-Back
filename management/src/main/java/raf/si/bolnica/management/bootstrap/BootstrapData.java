@@ -133,16 +133,6 @@ public class BootstrapData implements CommandLineRunner {
         zdravstveniKarton.setVakcinacije(vakcinacije);
         zdravstveniKartonRepository.save(zdravstveniKarton);
 
-        Hospitalizacija hospitalizacija = new Hospitalizacija();
-        hospitalizacija.setLbpPacijenta(UUID.fromString("237e9877-e79b-12d4-a765-321741963000"));
-        hospitalizacija.setLbzDodeljenogLekara(UUID.fromString("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"));
-        hospitalizacija.setLbzRegistratora(UUID.fromString("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"));
-        hospitalizacija.setDatumVremePrijema(new Timestamp(System.currentTimeMillis()));
-        hospitalizacija.setUputnaDijagnoza("Ovo je uputna dijagnoza");
-        hospitalizacija.setNapomena("Ovo je napomena");
-        hospitalizacija.setBolnickaSobaId(1);
-        hospitalizacijaRepository.save(hospitalizacija);
-
         BolnickaSoba bolnickaSoba = new BolnickaSoba();
         bolnickaSoba.setOdeljenjeId(1);
         bolnickaSoba.setBrojSobe(1);
@@ -151,6 +141,15 @@ public class BootstrapData implements CommandLineRunner {
         bolnickaSoba.setNazivSobe("Soba 1");
         bolnickaSoba.setOpis("Ovo je opis Sobe 1");
         bolnickaSobaRepository.save(bolnickaSoba);
+
+        BolnickaSoba bolnickaSoba2 = new BolnickaSoba();
+        bolnickaSoba2.setOdeljenjeId(2);
+        bolnickaSoba2.setBrojSobe(2);
+        bolnickaSoba2.setKapacitet(10);
+        bolnickaSoba2.setPopunjenost(0);
+        bolnickaSoba2.setNazivSobe("Soba 2");
+        bolnickaSoba2.setOpis("Ovo je opis Sobe 2");
+        bolnickaSobaRepository.save(bolnickaSoba2);
 
 
 
