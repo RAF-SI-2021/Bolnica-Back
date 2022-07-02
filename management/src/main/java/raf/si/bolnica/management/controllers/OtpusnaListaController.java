@@ -51,6 +51,7 @@ public class OtpusnaListaController {
     public ResponseEntity<?> registerOtpusnaLista(@RequestBody CreateOtpusnaListaDTO req) {
 
         List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.NACELNIK);
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
         acceptedRoles.add(Constants.SPECIJALISTA);
         acceptedRoles.add(Constants.SPECIJLISTA_POV);

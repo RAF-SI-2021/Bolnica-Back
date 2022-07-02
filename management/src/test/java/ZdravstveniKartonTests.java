@@ -8,6 +8,9 @@ import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.LekarskiIzvestajController;
 import raf.si.bolnica.management.controllers.OtpusnaListaController;
 import raf.si.bolnica.management.controllers.ZdravstveniKartonController;
+import raf.si.bolnica.management.entities.BolnickaSoba;
+import raf.si.bolnica.management.entities.Hospitalizacija;
+import raf.si.bolnica.management.entities.OtpusnaLista;
 import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
 import raf.si.bolnica.management.entities.enums.RhFaktor;
@@ -16,14 +19,18 @@ import raf.si.bolnica.management.exceptions.MissingRequestFieldsException;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.requests.CreateOtpusnaListaDTO;
 import raf.si.bolnica.management.requests.LekarskiIzvestajDTO;
+import raf.si.bolnica.management.requests.LekarskiIzvestajFilterDTO;
 import raf.si.bolnica.management.requests.UpdateMedicalRecordBloodTypeRhFactorRequestDTO;
 import raf.si.bolnica.management.services.AlergenZdravstveniKartonService;
+import raf.si.bolnica.management.services.bolnickaSoba.BolnickaSobaService;
+import raf.si.bolnica.management.services.hospitalizacija.HospitalizacijaService;
 import raf.si.bolnica.management.services.lekarskiIzvestaj.LekarskiIzvestajService;
 import raf.si.bolnica.management.services.otpusnaLista.OtpusnaListaService;
 import raf.si.bolnica.management.services.vakcina.VakcinaService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
 import javax.persistence.EntityManager;
+import java.sql.Date;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -50,6 +57,12 @@ public class ZdravstveniKartonTests {
 
     @Mock
     AllergenRecordExceptionHandler allergenRecordExceptionHandler;
+
+    @Mock
+    HospitalizacijaService hospitalizacijaService;
+
+    @Mock
+    BolnickaSobaService bolnickaSobaService;
 
     @Mock
     OtpusnaListaService otpusnaListaService;
@@ -222,6 +235,66 @@ public class ZdravstveniKartonTests {
 
     }
 
+    @Test
+    public void testSearchLekarskiIzvestaji1Success(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK_ODELJENJA);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+        LekarskiIzvestajFilterDTO lekarskiIzvestajFilterDTO = new LekarskiIzvestajFilterDTO();
+        lekarskiIzvestajFilterDTO.setLbp(UUID.randomUUID().toString());
+        lekarskiIzvestajFilterDTO.setDate(new Date(1000));
+        lekarskiIzvestajFilterDTO.setEnd(new Date(100000));
+        ResponseEntity<?> response = lekarskiIzvestajController.searchLekarskiIzvestaji(lekarskiIzvestajFilterDTO);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+    }
+
+    @Test
+    public void testSearchLekarskiIzvestaji2Success(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK_ODELJENJA);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+        LekarskiIzvestajFilterDTO lekarskiIzvestajFilterDTO = new LekarskiIzvestajFilterDTO();
+        lekarskiIzvestajFilterDTO.setLbp(UUID.randomUUID().toString());
+        lekarskiIzvestajFilterDTO.setEnd(new Date(100000));
+        ResponseEntity<?> response = lekarskiIzvestajController.searchLekarskiIzvestaji(lekarskiIzvestajFilterDTO);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+    }
+
+    @Test
+    public void testSearchLekarskiIzvestaji3Success(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK_ODELJENJA);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+        LekarskiIzvestajFilterDTO lekarskiIzvestajFilterDTO = new LekarskiIzvestajFilterDTO();
+        lekarskiIzvestajFilterDTO.setLbp(UUID.randomUUID().toString());
+        lekarskiIzvestajFilterDTO.setDate(new Date(1000));
+        ResponseEntity<?> response = lekarskiIzvestajController.searchLekarskiIzvestaji(lekarskiIzvestajFilterDTO);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+    }
+
+    @Test
+    public void testSearchLekarskiIzvestajiSuccess(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK_ODELJENJA);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+        LekarskiIzvestajFilterDTO lekarskiIzvestajFilterDTO = new LekarskiIzvestajFilterDTO();
+        lekarskiIzvestajFilterDTO.setLbp(UUID.randomUUID().toString());
+        ResponseEntity<?> response = lekarskiIzvestajController.searchLekarskiIzvestaji(lekarskiIzvestajFilterDTO);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+    }
+
     public CreateOtpusnaListaDTO getRequestOtpusnalista(){
         CreateOtpusnaListaDTO request = new CreateOtpusnaListaDTO();
         request.setLbp("237e9877-e79b-12d4-a765-321741963000");
@@ -254,6 +327,27 @@ public class ZdravstveniKartonTests {
         assertThat(response.getBody()).isInstanceOf(String.class);
 
         assertThat(response.getBody()).isEqualTo("Lbp je obavezno polje");
+    }
+
+    @Test
+    public void testCreateOtpusnaListaRequest(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.NACELNIK);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+        when(hospitalizacijaService.findCurrentByLbp(any(UUID.class))).thenAnswer(i-> new Hospitalizacija());
+        when(hospitalizacijaService.save(any(Hospitalizacija.class))).thenAnswer(i -> new Hospitalizacija());
+        when(bolnickaSobaService.findById(any(Long.class))).thenAnswer(i -> new BolnickaSoba());
+        when(bolnickaSobaService.decrement(any(BolnickaSoba.class))).thenAnswer(i -> 1);
+        when(bolnickaSobaService.save(any(BolnickaSoba.class))).thenAnswer(i -> new BolnickaSoba());
+        when(otpusnaListaService.save(any(OtpusnaLista.class))).thenAnswer(i -> new OtpusnaLista());
+
+        CreateOtpusnaListaDTO request = getRequestOtpusnalista();
+
+        ResponseEntity<?> response = otpusnaListaController.registerOtpusnaLista(request);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
     }
 
 }
