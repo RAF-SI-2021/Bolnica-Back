@@ -4,6 +4,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.laboratory.constants.Constants;
 import raf.si.bolnica.laboratory.controllers.LaboratoryController;
@@ -57,6 +58,9 @@ public class LaboratoryWorkOrdersTests {
 
     @Mock
     private ZakazanLaboratorijskiPregledService zakazanLaboratorijskiPregledService;
+
+    @Mock
+    private PdfGeneratorService pdfGeneratorService;
 
     @Mock
     private EntityManager entityManager;
@@ -296,6 +300,12 @@ public class LaboratoryWorkOrdersTests {
         setUputStatusDTO.setTipUputa(TipUputa.LABORATORIJA);
         ResponseEntity<?> response = laboratoryController.unprocessedUputiWithType(setUputStatusDTO);
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+    @Test
+    public void labReportTest() {
+        when(pdfGeneratorService.reportPrint(any(Map.class))).thenAnswer(i -> new ResponseEntity<Void>(HttpStatus.OK));
+        laboratoryController.labReportPrint(new HashMap<>());
     }
 
     @Test
