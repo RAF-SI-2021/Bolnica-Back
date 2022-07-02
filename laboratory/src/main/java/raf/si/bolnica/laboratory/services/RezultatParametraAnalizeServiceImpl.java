@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import raf.si.bolnica.laboratory.entities.RezultatParametraAnalize;
 import raf.si.bolnica.laboratory.entities.RezultatParametraAnalizeKey;
+import raf.si.bolnica.laboratory.entities.*;
+import raf.si.bolnica.laboratory.repositories.ParametarAnalizeRepository;
 import raf.si.bolnica.laboratory.repositories.RezultatParametraAnalizeRepository;
 
 import java.util.List;
@@ -24,6 +26,11 @@ public class RezultatParametraAnalizeServiceImpl implements RezultatParametraAna
     @Override
     public List<RezultatParametraAnalize> getRezultateParametaraAnalize() {
         return rezultatParametraAnalizeRepository.findAll();
+    }
+
+    @Override
+    public List<RezultatParametraAnalize> getRezultateParametaraAnalizeByRadniNalog(LaboratorijskiRadniNalog labRadniNalog) {
+        return rezultatParametraAnalizeRepository.findByLaboratorijskiRadniNalog(labRadniNalog);
     }
 
     @Override
