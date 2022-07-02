@@ -4,17 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
-import raf.si.bolnica.laboratory.entities.LaboratorijskaAnaliza;
-import raf.si.bolnica.laboratory.entities.Parametar;
-import raf.si.bolnica.laboratory.entities.ParametarAnalize;
+import raf.si.bolnica.laboratory.entities.*;
 import raf.si.bolnica.laboratory.entities.enums.TipVrednosti;
-import raf.si.bolnica.laboratory.repositories.LaboratorijskaAnalizaRepository;
-import raf.si.bolnica.laboratory.repositories.ParametarAnalizeRepository;
-import raf.si.bolnica.laboratory.repositories.ParametarRepository;
+import raf.si.bolnica.laboratory.repositories.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Component
 public class BootstrapData implements CommandLineRunner {
@@ -28,8 +23,24 @@ public class BootstrapData implements CommandLineRunner {
     @Autowired
     ParametarAnalizeRepository parametarAnalizeRepository;
 
+    @Autowired
+    LaboratorijskiRadniNalogRepository laboratorijskiRadniNalogRepository;
+
+    @Autowired
+    RezultatParametraAnalizeRepository rezultatParametraAnalizeRepository;
+
     @Override
     public void run(String... args) {
+
+        LaboratorijskiRadniNalog laboratorijskiRadniNalog = new LaboratorijskiRadniNalog();
+        laboratorijskiRadniNalog.setLaboratorijskiRadniNalogId(1);
+        laboratorijskiRadniNalog.setLbp(UUID.fromString("237e9877-e79b-12d4-a765-321741963000"));
+        laboratorijskiRadniNalog.setDatumVremeKreiranja(new Timestamp(System.currentTimeMillis()));
+
+        laboratorijskiRadniNalogRepository.save(laboratorijskiRadniNalog);
+
+
+
         String[] analizaNaziv = {"Glukoza","Holesterol","Triglicerid","Urea","Kreatinin","Mokraćna kiselina","Bilirubin","Alanin aminotransferaza","Aspartat aminotransferaza","Kreatinin kinaza","Tireostimulirajući hormon","Slobodni T4","C-reaktivni protein","Leukociti","Eritrociti","Trombociti","Hemoglobin","Kompletna krvna slika","Sedimentacija","SARS CoV-2 antigen","Urin"};
         String[] analizaSkracenica = {"GLU","HOL","TRIG","URE","KREAT","MK","BILIR-uk","ALT","AST","CK","TSH","FT4","CRP","WBC","RBC","PLT","Hb","KKS","SE","SARS CoV-2 antigen","URIN"};
         int brojAnaliza = 21;
@@ -80,13 +91,29 @@ public class BootstrapData implements CommandLineRunner {
             if(upperBound.keySet().contains(i+1)) {
                 r=upperBound.get(i+1)-1;
             }
+            ParametarAnalize parametarAnalize = new ParametarAnalize();
             for(int j=l;j<=r;j++) {
-                ParametarAnalize parametarAnalize = new ParametarAnalize();
+                parametarAnalize = new ParametarAnalize();
                 parametarAnalize.setLaboratorijskaAnaliza(analize.get(i));
                 parametarAnalize.setParametar(parametri.get(j));
                 parametarAnalizeRepository.save(parametarAnalize);
             }
+
+            RezultatParametraAnalize rezultatParametraAnalize = new RezultatParametraAnalize();
+            rezultatParametraAnalize.setLaboratorijskiRadniNalog(laboratorijskiRadniNalog);
+            rezultatParametraAnalize.setRezultat("2.3");
+            rezultatParametraAnalize.setParametarAnalize(parametarAnalize);
+            rezultatParametraAnalize.setDatumVreme(new Timestamp(System.currentTimeMillis()-1000));
+            RezultatParametraAnalizeKey key = new RezultatParametraAnalizeKey();
+            key.setParametarAnalizeId(parametarAnalize.getParametarAnalizeId());
+            key.setLaboratorijskiRadniNalogId(1);
+            rezultatParametraAnalize.setId(key);
+            rezultatParametraAnalizeRepository.save(rezultatParametraAnalize);
         }
+
+
+
+
 
 
 

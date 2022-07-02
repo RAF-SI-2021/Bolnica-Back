@@ -4,6 +4,7 @@ import org.hibernate.annotations.Type;
 import raf.si.bolnica.laboratory.entities.enums.StatusObrade;
 
 import javax.persistence.*;
+import java.sql.Blob;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -36,7 +37,8 @@ public class LaboratorijskiRadniNalog {
     @JoinColumn(name = "uput")
     private Uput uput;
 
-    private String labReport;
+    @Lob
+    private Blob labReport;
 
     public long getLaboratorijskiRadniNalogId() {
         return laboratorijskiRadniNalogId;
@@ -94,7 +96,7 @@ public class LaboratorijskiRadniNalog {
         this.uput = uput;
     }
 
-    public String getLabReport() { return labReport; }
+    public Blob getLabReport() { return labReport; }
 
-    public void setLabReport(String labReport) { this.labReport = labReport; }
+    public void setLabReport(Blob labReport) { this.labReport = labReport; }
 }
