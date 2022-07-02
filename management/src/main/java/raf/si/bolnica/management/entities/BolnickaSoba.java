@@ -1,7 +1,5 @@
 package raf.si.bolnica.management.entities;
 
-import lombok.Cleanup;
-
 import javax.persistence.*;
 
 @Entity
@@ -17,6 +15,9 @@ public class BolnickaSoba {
 
     @Column(nullable = false)
     private int brojSobe;
+
+    @Column(nullable = false)
+    private int bolnicaId;
 
     private String nazivSobe;
 
@@ -83,5 +84,13 @@ public class BolnickaSoba {
 
     public void setOpis(String opis) {
         this.opis = opis;
+    }
+
+    public int getBolnicaId() {
+        return bolnicaId;
+    }
+
+    public void setBolnicaId(int bolnicaId) {
+        this.bolnicaId = bolnicaId;
     }
 }

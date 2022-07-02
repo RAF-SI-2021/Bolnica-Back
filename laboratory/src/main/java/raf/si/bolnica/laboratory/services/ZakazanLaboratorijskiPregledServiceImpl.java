@@ -7,11 +7,8 @@ import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
 import raf.si.bolnica.laboratory.repositories.ZakazanLaboratorijskiPregledRepository;
 
 import java.sql.Date;
-import java.util.UUID;
-
-import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional

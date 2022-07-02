@@ -22,7 +22,6 @@ import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -118,7 +117,7 @@ public class PacijentCRUDTests {
 
         ResponseEntity<?> response = managementController.updatePatient(request,"1");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+        assertThat(response.getStatusCodeValue()).isEqualTo(400);
 
         assertThat(response.getBody()).isInstanceOf(String.class);
 
@@ -143,7 +142,7 @@ public class PacijentCRUDTests {
 
         response = managementController.updatePatient(request,UUID.randomUUID().toString());
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(403);
+        assertThat(response.getStatusCodeValue()).isEqualTo(404);
     }
 
     @Test

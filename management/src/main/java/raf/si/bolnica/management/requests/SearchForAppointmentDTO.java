@@ -1,7 +1,6 @@
 package raf.si.bolnica.management.requests;
 
 import java.sql.Timestamp;
-import java.util.UUID;
 
 public class SearchForAppointmentDTO {
 

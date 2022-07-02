@@ -7,15 +7,13 @@ import lombok.Setter;
 import raf.si.bolnica.laboratory.entities.Parametar;
 import raf.si.bolnica.laboratory.entities.enums.TipVrednosti;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParametarResponseDTO {
+
+    private long parametarId;
 
     private String nazivParametra;
 
@@ -28,6 +26,7 @@ public class ParametarResponseDTO {
     private double gornjaGranica;
 
     public ParametarResponseDTO(Parametar parametar) {
+        this.parametarId = parametar.getParametarId();
         this.nazivParametra = parametar.getNazivParametra();
         this.tipVrednosti = parametar.getTipVrednosti();
         this.jedinicaMere = parametar.getJedinicaMere();

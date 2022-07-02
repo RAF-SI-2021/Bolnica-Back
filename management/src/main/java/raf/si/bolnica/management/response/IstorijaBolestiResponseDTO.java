@@ -1,37 +1,33 @@
 package raf.si.bolnica.management.response;
 
 import lombok.Getter;
-import lombok.Setter;
 import raf.si.bolnica.management.entities.IstorijaBolesti;
 import raf.si.bolnica.management.entities.enums.RezultatLecenja;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.sql.Date;
 
 @Getter
 public class IstorijaBolestiResponseDTO {
 
-    private String dijagnoza;
+    private final String dijagnoza;
 
-    private Boolean indikatorPoverljivosti;
+    private final Boolean indikatorPoverljivosti;
 
-    private Date datumPocetkaZdravstvenogProblema;
+    private final Date datumPocetkaZdravstvenogProblema;
 
-    private Date datumZavrsetkaZdravstvenogProblema;
+    private final Date datumZavrsetkaZdravstvenogProblema;
 
-    private RezultatLecenja rezultatLecenja;
+    private final RezultatLecenja rezultatLecenja;
 
-    private String opisTekucegStanja;
+    private final String opisTekucegStanja;
 
-    private Date podatakValidanOd;
+    private final Date podatakValidanOd;
 
-    private Date podatakValidanDo;
+    private final Date podatakValidanDo;
 
-    private Boolean podaciValidni;
+    private final Boolean podaciValidni;
 
-    private Boolean obrisan;
+    private final Boolean obrisan;
 
     public IstorijaBolestiResponseDTO(IstorijaBolesti i) {
         dijagnoza = i.getDijagnoza();

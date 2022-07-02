@@ -11,7 +11,8 @@ public class JwtProperties {
 
     private long validityInMilliseconds;
 
-    public JwtProperties() {}
+    public JwtProperties() {
+    }
 
     public String getSecretKey() {
         return secretKey;

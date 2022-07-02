@@ -2,7 +2,6 @@ package raf.si.bolnica.laboratory.bootstrap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 import raf.si.bolnica.laboratory.entities.LaboratorijskaAnaliza;
 import raf.si.bolnica.laboratory.entities.Parametar;

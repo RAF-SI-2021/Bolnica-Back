@@ -17,7 +17,12 @@ public class LoggedInUser {
 
     private UUID lbz;
 
-    public LoggedInUser() {}
+    private long odeljenjeId;
+
+    private long PBB;
+
+    public LoggedInUser() {
+    }
 
     public String getUsername() {
         return username;
@@ -41,5 +46,21 @@ public class LoggedInUser {
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
+    }
+
+    public long getOdeljenjeId() {
+        return odeljenjeId;
+    }
+
+    public void setOdeljenjeId(long odeljenjeId) {
+        this.odeljenjeId = odeljenjeId;
+    }
+
+    public long getPBB() {
+        return PBB;
+    }
+
+    public void setPBB(long PBB) {
+        this.PBB = PBB;
     }
 }

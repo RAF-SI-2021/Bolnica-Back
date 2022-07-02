@@ -2,7 +2,6 @@ package raf.si.bolnica.management.requests;
 
 import lombok.Data;
 import raf.si.bolnica.management.entities.enums.RezultatLecenja;
-import java.util.UUID;
 
 @Data
 public class CreatePregledReportRequestDTO {

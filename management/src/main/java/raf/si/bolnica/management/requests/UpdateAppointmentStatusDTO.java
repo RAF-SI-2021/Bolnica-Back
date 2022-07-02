@@ -2,8 +2,8 @@ package raf.si.bolnica.management.requests;
 
 public class UpdateAppointmentStatusDTO {
 
-   private String appointmentStatus;
-   private long appointmentId;
+    private String appointmentStatus;
+    private long appointmentId;
 
     public String getAppointmentStatus() {
         return appointmentStatus;

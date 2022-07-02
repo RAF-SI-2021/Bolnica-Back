@@ -1,7 +1,6 @@
 package raf.si.bolnica.management.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -48,7 +47,7 @@ public class Pregled {
     private ZdravstveniKarton zdravstveniKarton;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbz;
 
     public long getPregledId() {

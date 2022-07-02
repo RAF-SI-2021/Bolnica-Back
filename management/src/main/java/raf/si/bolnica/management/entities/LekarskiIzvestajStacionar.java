@@ -3,7 +3,7 @@ package raf.si.bolnica.management.entities;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.UUID;
 
 @Entity
@@ -15,15 +15,15 @@ public class LekarskiIzvestajStacionar {
     private long stanjePacijentaId;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbpPacijenta;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbzLekaraSpecijaliste;
 
     @Column(nullable = false)
-    private Timestamp datumVremeKreiranja;
+    private Date datumVremeKreiranja;
 
     private boolean indikatorPoverljivosti = false;
 
@@ -62,11 +62,12 @@ public class LekarskiIzvestajStacionar {
         this.lbzLekaraSpecijaliste = lbzLekaraSpecijaliste;
     }
 
-    public Timestamp getDatumVremeKreiranja() {
+    public Date getDatumVremeKreiranja() {
         return datumVremeKreiranja;
     }
 
-    public void setDatumVremeKreiranja(Timestamp datumVremeKreiranja) {
+    public void setDatumVremeKreiranja(Date datumVremeKreiranja) {
+
         this.datumVremeKreiranja = datumVremeKreiranja;
     }
 

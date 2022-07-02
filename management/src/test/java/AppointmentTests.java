@@ -8,7 +8,6 @@ import org.springframework.security.access.AccessDeniedException;
 import raf.si.bolnica.management.constants.Constants;
 import raf.si.bolnica.management.controllers.ManagementController;
 import raf.si.bolnica.management.entities.ZakazaniPregled;
-import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.entities.enums.PrispecePacijenta;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
@@ -21,7 +20,6 @@ import raf.si.bolnica.management.services.PacijentService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAmount;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -133,7 +131,7 @@ public class AppointmentTests {
         UpdateAppointmentStatusDTO requestDTO = new UpdateAppointmentStatusDTO();
         requestDTO.setAppointmentStatus(StatusPregleda.U_TOKU.toString());
         when(appointmentService.fetchById(any(Long.class))).thenReturn(new ZakazaniPregled());
-        when(appointmentService.saveAppointment(any(ZakazaniPregled.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(appointmentService.saveAppointmentStatus(any(ZakazaniPregled.class))).thenAnswer(i -> i.getArguments()[0]);
         ResponseEntity<?> response = managementController.updateAppointmentStatus(requestDTO);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);

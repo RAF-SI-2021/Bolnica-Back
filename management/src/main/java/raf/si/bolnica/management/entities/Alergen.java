@@ -18,10 +18,11 @@ public class Alergen {
     @OneToMany(mappedBy = "alergen", cascade = CascadeType.ALL)
     private Set<AlergenZdravstveniKarton> alergenZdravstveniKarton;
 
-    public Alergen(){
+    public Alergen() {
 
     }
-    public Alergen(String naziv){
+
+    public Alergen(String naziv) {
         this.naziv = naziv;
     }
 

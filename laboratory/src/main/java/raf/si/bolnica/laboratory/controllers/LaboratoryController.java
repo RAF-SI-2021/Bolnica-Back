@@ -1,32 +1,26 @@
 package raf.si.bolnica.laboratory.controllers;
 
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import raf.si.bolnica.laboratory.constants.Constants;
-import raf.si.bolnica.laboratory.dto.request.UputHistoryRequestDTO;
-import raf.si.bolnica.laboratory.entities.ZakazanLaboratorijskiPregled;
-import raf.si.bolnica.laboratory.entities.enums.StatusPregleda;
 import raf.si.bolnica.laboratory.dto.request.LaboratorijskiRadniNalogRequestDTO;
 import raf.si.bolnica.laboratory.dto.request.LaboratorijskiRadniNalogSearchRequestDTO;
-import raf.si.bolnica.laboratory.dto.response.*;
 import raf.si.bolnica.laboratory.dto.request.RezultatParametraAnalizeSaveRequestDTO;
+import raf.si.bolnica.laboratory.dto.request.UputHistoryRequestDTO;
+import raf.si.bolnica.laboratory.dto.response.*;
 import raf.si.bolnica.laboratory.entities.*;
 import raf.si.bolnica.laboratory.entities.enums.StatusObrade;
+import raf.si.bolnica.laboratory.entities.enums.StatusPregleda;
 import raf.si.bolnica.laboratory.entities.enums.StatusUputa;
 import raf.si.bolnica.laboratory.interceptors.LoggedInUser;
 import raf.si.bolnica.laboratory.requests.*;
 import raf.si.bolnica.laboratory.services.*;
 
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -112,7 +106,7 @@ public class LaboratoryController {
 
         zakazanLaboratorijskiPregled.setStatusPregleda(StatusPregleda.valueOf(request.getStatus()));
         zakazanLaboratorijskiPregledService.saveZakazanPregled(zakazanLaboratorijskiPregled);
-        return ResponseEntity.ok("Status successfully changed to: " + zakazanLaboratorijskiPregled.getStatusPregleda().toString());
+        return ResponseEntity.ok(new ZakazanPregledDto(zakazanLaboratorijskiPregled));
 
     }
 
@@ -173,7 +167,6 @@ public class LaboratoryController {
         }
 
         UUID lbz = loggedInUser.getLBZ();
-
         UUID lbp = uput.getLbp();
 
         LaboratorijskiRadniNalog laboratorijskiRadniNalog = new LaboratorijskiRadniNalog();
@@ -190,7 +183,7 @@ public class LaboratoryController {
         laboratorijskiRadniNalog.setStatusObrade(StatusObrade.OBRADJEN);
         */
 
-        laboratorijskiRadniNalog = radniNalogService.saveRadniNalog(laboratorijskiRadniNalog);
+        LaboratorijskiRadniNalog noviNalog = radniNalogService.saveRadniNalog(laboratorijskiRadniNalog);
 
         String zahtevaneAnalize = uput.getZahtevaneAnalize();
 
@@ -200,14 +193,13 @@ public class LaboratoryController {
                 List<ParametarAnalize> parametriAnalize = parametarAnalizeService.getParametarAnalizeByLaboratorijskaAnaliza(analiza);
                 for (ParametarAnalize parametarAnalize : parametriAnalize) {
                     RezultatParametraAnalize rezultat = new RezultatParametraAnalize();
-                    rezultat.setLaboratorijskiRadniNalog(laboratorijskiRadniNalog);
+                    rezultat.setLaboratorijskiRadniNalog(noviNalog);
                     rezultat.setParametarAnalize(parametarAnalize);
                     rezultatParametraAnalizeService.saveRezultatParametraAnalize(rezultat);
                 }
             }
         }
-
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.ok(new LaboratorijskiRadniNalogResponseDTO(noviNalog));
     }
 
     @PostMapping(value = "/laboratory-work-order-history")
@@ -283,10 +275,10 @@ public class LaboratoryController {
         acceptedRoles.add(Constants.LABORATORIJSKI_TEHNICAR);
         acceptedRoles.add(Constants.VISI_LABORATORIJSKI_TEHNICAR);
         String msg = "";
-        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
-            s = s + " AND l.statusObrade = raf.si.bolnica.laboratory.entities.enums.StatusObrade.OBRADJEN";
-            msg = "koji je obradjen ";
-        }
+//        if (loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+//            s = s + " AND l.statusObrade = raf.si.bolnica.laboratory.entities.enums.StatusObrade.OBRADJEN";
+//            msg = "koji je obradjen ";
+//        }
 
         TypedQuery<LaboratorijskiRadniNalog> queryNalog
                 = entityManager.createQuery(
@@ -367,7 +359,6 @@ public class LaboratoryController {
 
         rezultatParametraAnalizeService.saveRezultatParametraAnalize(rezultatParametraAnalize);
 
-
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
@@ -384,28 +375,49 @@ public class LaboratoryController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab";
+//        String s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn INNER JOIN lrn.uput u WHERE u.zaOdeljenjeId = :lab";
+        String s = "";
+        s = "SELECT lrn FROM LaboratorijskiRadniNalog lrn";
         Map<String, Object> param = new HashMap<>();
-        param.put("lab", loggedInUser.getOdeljenjeId());
+//        param.put("lab", loggedInUser.getOdeljenjeId());
+        boolean hasAnyParams = false;
 
         if (request.getLbp() != null) {
-            s = s + " AND lrn.lbp = :lbp";
+            hasAnyParams = true;
             param.put("lbp", request.getLbp());
+            s = s + " WHERE lrn.lbp = :lbp";
         }
 
         if (request.getDoDatuma() != null) {
+            if (!hasAnyParams) {
+                hasAnyParams = true;
+                s = s + " WHERE";
+            } else {
+                s = s + " AND";
+            }
             param.put("do", request.getDoDatuma());
-            s = s + " AND lrn.datumVremeKreiranja <= :do";
+            s = s + " lrn.datumVremeKreiranja <= :do";
         }
 
         if (request.getStatusObrade() != null) {
+            if (!hasAnyParams) {
+                hasAnyParams = true;
+                s = s + " WHERE";
+            } else {
+                s = s + " AND";
+            }
             param.put("status", request.getStatusObrade());
-            s = s + " AND lrn.statusObrade = :status";
+            s = s + " lrn.statusObrade = :status";
         }
 
         if (request.getOdDatuma() != null) {
+            if (hasAnyParams) {
+                s = s + " AND";
+            } else {
+                s = s + " WHERE";
+            }
             param.put("od", request.getOdDatuma());
-            s = s + " AND lrn.datumVremeKreiranja >= :od";
+            s = s + " lrn.datumVremeKreiranja >= :od";
         }
 
         TypedQuery<LaboratorijskiRadniNalog> query
@@ -519,7 +531,7 @@ public class LaboratoryController {
         Uput noviUput = new Uput(request);
         uputService.saveUput(noviUput);
 
-        return ResponseEntity.ok("Uput napravljen");
+        return ResponseEntity.ok(new UputResponseDTO(noviUput));
     }
 
     @DeleteMapping(value = "/delete-uput")
@@ -550,6 +562,25 @@ public class LaboratoryController {
         }
 
         Uput uput = uputService.fetchUputById(uputId);
+
+        return ok(uput);
+    }
+
+    @PostMapping(value = "/set-uput-status")
+    public ResponseEntity<?> setUputStatus(@RequestBody SetUputStatusDTO request) {
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.ADMIN);
+        acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
+        acceptedRoles.add(Constants.DR_SPEC);
+        acceptedRoles.add(Constants.DR_SPEC_POV);
+
+        if (!loggedInUser.getRoles().stream().anyMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Uput uput = uputService.fetchUputById(request.getUputId());
+        uput.setStatus(request.getStatusUputa());
+        uputService.saveUput(uput);
 
         return ok(uput);
     }
@@ -585,13 +616,14 @@ public class LaboratoryController {
         for (String t : param.keySet()) {
             query.setParameter(t, param.get(t));
         }
+        query.setFirstResult((page - 1) * size);
+        query.setMaxResults(size);
+
         List<UputResponseDTO> ret = new ArrayList<>();
         for (Uput uput : query.getResultList()) {
             ret.add(new UputResponseDTO(uput));
         }
 
-        query.setFirstResult((page - 1) * size);
-        query.setMaxResults(size);
 
         return ok(ret);
 
@@ -623,6 +655,37 @@ public class LaboratoryController {
             ret.add(new UputResponseDTO(uput));
         }
         return ok(ret);
+    }
 
+    @PostMapping(value = "/unprocessed-uputi-with-type")
+    public ResponseEntity<?> unprocessedUputiWithType(@RequestBody SearchUputiDTO request) {
+        StatusUputa status = StatusUputa.NEREALIZOVAN;
+        List<String> acceptedRoles = new ArrayList<>();
+        acceptedRoles.add(Constants.VISA_MED_SESTRA);
+        acceptedRoles.add(Constants.MED_SESTRA);
+
+        if (loggedInUser.getRoles().stream().noneMatch(acceptedRoles::contains)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.tip = :tip";
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", status);
+        param.put("tip", request.getTipUputa().toString());
+        param.put("lbp", UUID.fromString(request.getLbp()));
+
+
+        TypedQuery<Uput> query
+                = entityManager.createQuery(
+                s, Uput.class);
+        for (String t : param.keySet()) {
+            query.setParameter(t, param.get(t));
+        }
+
+        List<UputResponseDTO> ret = new ArrayList<>();
+        for (Uput uput : query.getResultList()) {
+            ret.add(new UputResponseDTO(uput));
+        }
+        return ok(ret);
     }
 }

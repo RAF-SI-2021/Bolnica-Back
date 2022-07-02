@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
 import raf.si.bolnica.management.interceptors.UserInfoInterceptor;
 import raf.si.bolnica.management.jwt.JwtProperties;
@@ -34,7 +33,7 @@ public class SpringWebConfiguration extends WebMvcConfigurationSupport {
         registry.addInterceptor(new UserInfoInterceptor(loggedInUser, secretKey));
     }
 
-    public Docket api(){
+    public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors

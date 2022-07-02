@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.user.models.Odeljenje;
+import raf.si.bolnica.user.models.ZdravstvenaUstanova;
 import raf.si.bolnica.user.repositories.OdeljenjeRepository;
+import raf.si.bolnica.user.repositories.ZdravstvenaUstanovaRepository;
 
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +17,8 @@ public class OdeljenjeServiceImpl implements OdeljenjeService {
 
     @Autowired
     OdeljenjeRepository odeljenjeRepository;
+    @Autowired
+    ZdravstvenaUstanovaRepository zdravstvenaUstanovaRepository;
 
     @Override
     public Odeljenje fetchOdeljenjeById(long id) {
@@ -27,11 +31,15 @@ public class OdeljenjeServiceImpl implements OdeljenjeService {
     }
 
     @Override
-    public List<Odeljenje> findAllByPbb(long pbb) {
-        final List<Odeljenje> allDepartments = findAll();
-        allDepartments.removeIf(odeljenje -> odeljenje.getBolnica().getPoslovniBrojBolnice() != pbb);
+    public List<Odeljenje> findAllByPbb() {
+        //        allDepartments.removeIf(odeljenje -> odeljenje.getBolnica().getPoslovniBrojBolnice() != pbb);
 
-        return allDepartments;
+        return findAll();
+    }
+
+    @Override
+    public List<ZdravstvenaUstanova> findAllHospitals() {
+        return zdravstvenaUstanovaRepository.findAll();
     }
 
     @Override

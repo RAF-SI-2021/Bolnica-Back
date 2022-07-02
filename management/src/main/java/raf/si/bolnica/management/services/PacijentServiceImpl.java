@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Service
 @Transactional("transactionManager")
-public class PacijentServiceImpl implements  PacijentService{
+public class PacijentServiceImpl implements PacijentService {
 
     @Autowired
     private PacijentRepository pacijentRepository;

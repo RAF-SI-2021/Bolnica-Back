@@ -3,11 +3,12 @@ package raf.si.bolnica.management.entities;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
-public class PosetaPacijentu {
+public class PosetaPacijentu implements Serializable {
 
     @Id
     @Column(name = "poseta_pacijentu_id")
@@ -15,15 +16,18 @@ public class PosetaPacijentu {
     private long posetaPacijentuId;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbpPacijenta;
 
     @Column(nullable = false)
-    @Type(type="org.hibernate.type.UUIDCharType")
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID lbzRegistratora;
 
     @Column(nullable = false)
     private Timestamp datumVreme;
+
+    @Column(nullable = false)
+    private String imePosetioca;
 
     @Column(nullable = false)
     private String prezimePosetioca;
@@ -32,6 +36,14 @@ public class PosetaPacijentu {
     private String jmbgPosetioca;
 
     private String napomena;
+
+    public String getImePosetioca() {
+        return imePosetioca;
+    }
+
+    public void setImePosetioca(String imePosetioca) {
+        this.imePosetioca = imePosetioca;
+    }
 
     public long getPosetaPacijentuId() {
         return posetaPacijentuId;
