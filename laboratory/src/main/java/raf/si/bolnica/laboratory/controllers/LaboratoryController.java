@@ -280,9 +280,7 @@ public class LaboratoryController {
 //            msg = "koji je obradjen ";
 //        }
 
-        TypedQuery<LaboratorijskiRadniNalog> queryNalog
-                = entityManager.createQuery(
-                s, LaboratorijskiRadniNalog.class);
+        TypedQuery<LaboratorijskiRadniNalog> queryNalog = entityManager.createQuery(s, LaboratorijskiRadniNalog.class);
         for (String t : param.keySet()) {
             queryNalog.setParameter(t, param.get(t));
         }
