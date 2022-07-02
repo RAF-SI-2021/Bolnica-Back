@@ -5,6 +5,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import raf.si.bolnica.management.constants.Constants;
+import raf.si.bolnica.management.controllers.LekarskiIzvestajController;
+import raf.si.bolnica.management.controllers.OtpusnaListaController;
 import raf.si.bolnica.management.controllers.ZdravstveniKartonController;
 import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.entities.enums.KrvnaGrupa;
@@ -12,8 +14,12 @@ import raf.si.bolnica.management.entities.enums.RhFaktor;
 import raf.si.bolnica.management.exceptionHandler.medicalRecord.AllergenRecordExceptionHandler;
 import raf.si.bolnica.management.exceptions.MissingRequestFieldsException;
 import raf.si.bolnica.management.interceptors.LoggedInUser;
+import raf.si.bolnica.management.requests.CreateOtpusnaListaDTO;
+import raf.si.bolnica.management.requests.LekarskiIzvestajDTO;
 import raf.si.bolnica.management.requests.UpdateMedicalRecordBloodTypeRhFactorRequestDTO;
 import raf.si.bolnica.management.services.AlergenZdravstveniKartonService;
+import raf.si.bolnica.management.services.lekarskiIzvestaj.LekarskiIzvestajService;
+import raf.si.bolnica.management.services.otpusnaLista.OtpusnaListaService;
 import raf.si.bolnica.management.services.vakcina.VakcinaService;
 import raf.si.bolnica.management.services.zdravstveniKarton.ZdravstveniKartonService;
 
@@ -44,6 +50,18 @@ public class ZdravstveniKartonTests {
 
     @Mock
     AllergenRecordExceptionHandler allergenRecordExceptionHandler;
+
+    @Mock
+    OtpusnaListaService otpusnaListaService;
+
+    @InjectMocks
+    OtpusnaListaController otpusnaListaController;
+
+    @Mock
+    LekarskiIzvestajService lekarskiIzvestajService;
+
+    @InjectMocks
+    LekarskiIzvestajController lekarskiIzvestajController;
 
     @Mock
     EntityManager entityManager;
@@ -156,6 +174,86 @@ public class ZdravstveniKartonTests {
         ResponseEntity<?> response = zdravstveniKartonController.updatePatientMedicalRecord(request);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
+    }
+
+    LekarskiIzvestajDTO getRequestIzvestaj(){
+        LekarskiIzvestajDTO req = new LekarskiIzvestajDTO();
+        req.setLbp("237e9877-e79b-12d4-a765-321741963000");
+        req.setDijagnoza("Dijagnoza");
+        req.setIndikatorPoverljivosti(false);
+        req.setSavet("Savet");
+        req.setObjektivniNalaz("Objektivni nalaz");
+        req.setPredlozenaTerapija("Predlozena terapija");
+
+        return req;
+    }
+
+    @Test
+    public void testCreateLekarskiIzvestajInvalidRequest(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.SPECIJLISTA_POV);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        LekarskiIzvestajDTO req = getRequestIzvestaj();
+        req.setLbp(null);
+
+        ResponseEntity<?> response = lekarskiIzvestajController.registerLekarskiIzvestaj(req);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(406);
+
+        assertThat(response.getBody()).isInstanceOf(String.class);
+
+        assertThat(response.getBody()).isEqualTo("LBP je obavezno polje");
+    }
+
+
+    @Test
+    public void testCreateLekarskiIzvestajSuccess(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.SPECIJLISTA_POV);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+        LekarskiIzvestajDTO req = getRequestIzvestaj();
+        ResponseEntity<?> response = lekarskiIzvestajController.registerLekarskiIzvestaj(req);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+
+    }
+
+    public CreateOtpusnaListaDTO getRequestOtpusnalista(){
+        CreateOtpusnaListaDTO request = new CreateOtpusnaListaDTO();
+        request.setLbp("237e9877-e79b-12d4-a765-321741963000");
+        request.setAnalize("analize");
+        request.setAnamneza("anamneza");
+        request.setTerapija("terapija");
+        request.setPbo(1);
+        request.setZakljucak("zakljucak");
+        request.setPrateceDijagnoze("pratece bolesti");
+        request.setTokBolesti("Tok bolesti");
+
+        return request;
+    }
+
+    @Test
+    public void testCreateOtpusnaListaInvalidRequest(){
+        Set<String> roles = new TreeSet<>();
+
+        roles.add(Constants.SPECIJLISTA_POV);
+
+        when(loggedInUser.getRoles()).thenReturn(roles);
+
+        CreateOtpusnaListaDTO request = getRequestOtpusnalista();
+        request.setLbp(null);
+
+        ResponseEntity<?> response = otpusnaListaController.registerOtpusnaLista(request);
+
+        assertThat(response.getStatusCodeValue()).isEqualTo(406);
+
+        assertThat(response.getBody()).isInstanceOf(String.class);
+
+        assertThat(response.getBody()).isEqualTo("Lbp je obavezno polje");
     }
 
 }
