@@ -2,8 +2,10 @@ package raf.si.bolnica.management.requests;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class SavePatientVisitRequestDTO {
+public class SavePatientVisitRequestDTO implements Serializable {
 
     private String lbp;
 

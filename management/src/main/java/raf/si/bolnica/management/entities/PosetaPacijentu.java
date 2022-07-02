@@ -3,11 +3,12 @@ package raf.si.bolnica.management.entities;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
-public class PosetaPacijentu {
+public class PosetaPacijentu implements Serializable {
 
     @Id
     @Column(name = "poseta_pacijentu_id")
