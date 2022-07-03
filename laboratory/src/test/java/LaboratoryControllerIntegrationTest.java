@@ -1,5 +1,4 @@
 import com.google.gson.*;
-import org.json.JSONArray;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,6 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import raf.si.bolnica.laboratory.LaboratoryApplication;
@@ -112,8 +109,6 @@ class LaboratoryControllerIntegrationTest {
                         "    \"zahtevaneAnalize\" : \"GLU,HOL\"\n" +
                         "}")
         ).andExpect(status().isOk());
-
-
     }
 
     @AfterAll
@@ -251,28 +246,81 @@ class LaboratoryControllerIntegrationTest {
     @Test
     void getLaboratorijskiRadniNalogIstorija() throws Exception {
         // TODO
-        // Parameter value [237e9877-e79b-12d4-a765-321741963000] did not match expected type [java.util.UUID (n/a)]
-        // ? verovatno problem zbog metode iznad (nema istorije za ovog pacijenta)
+        // ? Parameter value [237e9877-e79b-12d4-a765-321741963000] did not match expected type [java.util.UUID (n/a)]
+        // prima string i saljem string kao inace, ne vidim problem
 
-//        System.out.println(mockMvc.perform(post("/api/laboratory-work-order-history")
+//        /*
+//         *  --- CREATE TEST LAB RADNI NALOG ---
+//         */
+//        mockMvc.perform(post("/api/create-laboratory-work-order")
+//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+//                .param("uputId", "1")
+//        ).andExpect(status().isOk());
+//        /*
+//         *  --- SAVE LAB RESULT FOR NALOG ---
+//         */
+//        mockMvc.perform(put("/api/save-analysis-result")
+//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content("{\n" +
+//                        "    \"nalogId\" : 1,\n" +
+//                        "    \"parametarId\" : 1,\n" +
+//                        "    \"rezultat\": \"5.3\"\n" +
+//                        "}")
+//        ).andExpect(status().isAccepted());
+//
+//        mockMvc.perform(post("/api/laboratory-work-order-history")
 //                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
 //                .param("page","1")
 //                .param("size","5")
 //                .contentType(MediaType.APPLICATION_JSON)
 //                .content("{\n" +
 //                        "    \"lbp\" : \"237e9877-e79b-12d4-a765-321741963000\",\n" +
-//                        "    \"odDatuma\" : \"2022-06-28\",\n" +
-//                        "    \"doDatuma\" : \"2022-07-01\"\n" +
+//                        "    \"odDatuma\" : 1656399600000,\n" +
+//                        "    \"doDatuma\" : 1656745200000\n" +
 //                        "}")
-//        ).andReturn().getResponse().getContentAsString());
+//        ).andExpect(status().isOk());
     }
 
     @Test
     void fetchRezultatiParametaraAnalize() throws Exception {
         // TODO
-        // ? http status 406
-        // opet verovatno zbog metoda iznad, nema adekvatnih laboratorijskih radnih naloga
+        // ? http status 406 not accepted
+        // kao da ne vidi ovaj kreirani test lab radni nalog
+        // verovatno jer je status NEOBRADJEN
 
+//        /*
+//         *  --- CREATE TEST LAB RADNI NALOG ---
+//         */
+//        mockMvc.perform(post("/api/create-laboratory-work-order")
+//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+//                .param("uputId", "1")
+//        ).andExpect(status().isOk());
+//        /*
+//         *  --- SAVE FIRST LAB RESULT FOR NALOG ---
+//         */
+//        mockMvc.perform(put("/api/save-analysis-result")
+//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content("{\n" +
+//                        "    \"nalogId\" : 1,\n" +
+//                        "    \"parametarId\" : 1,\n" +
+//                        "    \"rezultat\": \"5.3\"\n" +
+//                        "}")
+//        ).andExpect(status().isAccepted());
+//        /*
+//         *  --- SAVE SECOND LAB RESULT FOR NALOG ---
+//         */
+//        mockMvc.perform(put("/api/save-analysis-result")
+//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content("{\n" +
+//                        "    \"nalogId\" : 1,\n" +
+//                        "    \"parametarId\" : 2,\n" +
+//                        "    \"rezultat\": \"3.7\"\n" +
+//                        "}")
+//        ).andExpect(status().isAccepted());
+//
 //        mockMvc.perform(get("/api/fetch-analysis-results")
 //                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
 //                        .param("id", "1"))
@@ -281,62 +329,125 @@ class LaboratoryControllerIntegrationTest {
 
     @Test
     void saveRezultatParametaraAnalize() throws Exception {
-        // TODO
-        // verovatno opet jer nemamo kreiran radni nalog
+        /*
+         *  --- CREATE TEST LAB RADNI NALOG ---
+         */
+        mockMvc.perform(post("/api/create-laboratory-work-order")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                .param("uputId", "1")
+        ).andExpect(status().isOk());
 
-//        mockMvc.perform(put("/api/save-analysis-result")
-//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{\n" +
-//                                "    \"nalogId\" : 1,\n" +
-//                                "    \"parametarId\" : 1,\n" +
-//                                "    \"rezultat\" : \"1.0\"\n" +
-//                                "}"))
-//                .andExpect(status().isOk());
+        mockMvc.perform(put("/api/save-analysis-result")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\n" +
+                                "    \"nalogId\" : 1,\n" +
+                                "    \"parametarId\" : 1,\n" +
+                                "    \"rezultat\" : \"1.0\"\n" +
+                                "}"))
+                .andExpect(status().isAccepted());
     }
 
     @Test
     void getLaboratorijskiRadniNalogPretraga() throws Exception {
         // TODO
         // ponovo Parameter value [237e9877-e79b-12d4-a765-321741963000] did not match expected type [java.util.UUID (n/a)]
-        // verovatno isti problem
+        // verovatno isti problem kao u getLaboratorijskiRadniNalogIstorija()
 
+//        /*
+//         *  --- CREATE TEST LAB RADNI NALOG ---
+//         */
+//        mockMvc.perform(post("/api/create-laboratory-work-order")
+//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+//                .param("uputId", "1")
+//        ).andExpect(status().isOk());
+//
 //        mockMvc.perform(post("/api/fetch-laboratory-work-orders")
 //                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                        .param("page","1")
-//                        .param("size","5")
+//                        .param("page", "1")
+//                        .param("size", "5")
 //                        .contentType(MediaType.APPLICATION_JSON)
 //                        .content("{\n" +
 //                                "    \"lbp\" : \"237e9877-e79b-12d4-a765-321741963000\",\n" +
 //                                "    \"odDatuma\" : \"2022-06-28\",\n" +
 //                                "    \"doDatuma\" : \"2022-07-01\",\n" +
-//                                "    \"statusObrade\" : \"OBRADJEN\"\n" +
+//                                "    \"statusObrade\" : \"NEOBRADJEN\"\n" +
 //                                "}"))
 //                .andExpect(status().isOk());
     }
 
     @Test
     void getLaboratorijskiRadniNalog() throws Exception {
-        // TODO
-        // ?? 403 forbidden
-        // verovatno isti problem
+        /*
+         *  --- CREATE TEST LAB RADNI NALOG ---
+         */
+        mockMvc.perform(post("/api/create-laboratory-work-order")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                .param("uputId", "1")
+        ).andExpect(status().isOk());
 
-//        mockMvc.perform(get("/api/get-work-order")
-//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                        .param("id", "1"))
-//                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/get-work-order")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .param("id", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("laboratorijskiRadniNalogId").value("1"))
+                .andExpect(jsonPath("datumVremeKreiranja").exists())
+                .andExpect(jsonPath("statusObrade").value("NEOBRADJEN"))
+                .andExpect(jsonPath("lbzTehnicar").value("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"))
+                .andExpect(jsonPath("lbzBiohemicar").doesNotExist())
+                .andExpect(jsonPath("uput.uputId").value("1"))
+                .andExpect(jsonPath("uput.tip").value("LABORATORIJA"))
+                .andExpect(jsonPath("uput.lbz").value("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"))
+                .andExpect(jsonPath("uput.izOdeljenjaId").value("1"))
+                .andExpect(jsonPath("uput.zaOdeljenjeId").value("2"))
+                .andExpect(jsonPath("uput.lbp").value("237e9877-e79b-12d4-a765-321741963000"))
+                .andExpect(jsonPath("uput.datumVremeKreiranja").exists())
+                .andExpect(jsonPath("uput.status").value("NEREALIZOVAN"))
+                .andExpect(jsonPath("uput.zahtevaneAnalize").value("GLU,HOL"))
+                .andExpect(jsonPath("uput.komentar").doesNotExist())
+                .andExpect(jsonPath("uput.uputnaDijagnoza").doesNotExist())
+                .andExpect(jsonPath("uput.razlogUpucivanja").doesNotExist())
+                .andExpect(jsonPath("rezultati").exists());
     }
 
     @Test
     void verifyLaboratorijskiRadniNalog() throws Exception {
-        // TODO
-        // ??? 405 method not allowed - mozda nije implementirano jos ?
-        // verovatno isti problem
+        /*
+         *  --- CREATE TEST LAB RADNI NALOG ---
+         */
+        mockMvc.perform(post("/api/create-laboratory-work-order")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                .param("uputId", "1")
+        ).andExpect(status().isOk());
+        /*
+         *  --- SAVE FIRST LAB RESULT FOR NALOG ---
+         */
+        mockMvc.perform(put("/api/save-analysis-result")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\n" +
+                        "    \"nalogId\" : 1,\n" +
+                        "    \"parametarId\" : 1,\n" +
+                        "    \"rezultat\": \"5.3\"\n" +
+                        "}")
+        ).andExpect(status().isAccepted());
+        /*
+         *  --- SAVE SECOND LAB RESULT FOR NALOG ---
+         */
+        mockMvc.perform(put("/api/save-analysis-result")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\n" +
+                        "    \"nalogId\" : 1,\n" +
+                        "    \"parametarId\" : 2,\n" +
+                        "    \"rezultat\": \"3.7\"\n" +
+                        "}")
+        ).andExpect(status().isAccepted());
 
-//        mockMvc.perform(get("/api/verify-work-order")
-//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                        .param("id", "1"))
-//                .andExpect(status().isOk());
+        mockMvc.perform(put("/api/verify-work-order")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+                        .param("id", "1"))
+                .andExpect(status().isAccepted()); // mora da ima sve lab rezultate da bi bio verifikovan
     }
 
     @Test
@@ -473,7 +584,7 @@ class LaboratoryControllerIntegrationTest {
 
         // ????????????????????????
         // potpuno nejasno - nekad radi nekad ne
-        // nekad baci error - Parameter value [LABORATORIJA] did not match expected type [raf.si.bolnica.laboratory.entities.enums.TipUputa (n/a)]
+        // najcesce baci error - Parameter value [LABORATORIJA] did not match expected type [raf.si.bolnica.laboratory.entities.enums.TipUputa (n/a)]
         // jednom je vratio za prosledjen tip DIJAGNOSTIKA iako postoji samo 1 uput i to tipa LABORATORIJA
 
 //        System.out.println(mockMvc.perform(post("/api/unprocessed-uputi-with-type")
@@ -481,7 +592,7 @@ class LaboratoryControllerIntegrationTest {
 //                .contentType(MediaType.APPLICATION_JSON)
 //                .content("{\n" +
 //                        "    \"lbp\" : \"237e9877-e79b-12d4-a765-321741963000\",\n" +
-//                        "    \"tipUputa\" : \"LABORATORIJA\"\n" +
+//                        "    \"tipUputa\" : \"DIJAGNOSTIKA\"\n" +
 //                        "}")
 //        ).andReturn().getResponse().getContentAsString());
     }
