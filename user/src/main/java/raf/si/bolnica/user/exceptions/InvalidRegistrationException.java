@@ -15,12 +15,4 @@ public class InvalidRegistrationException extends RuntimeException {
         errorResponse.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    public ErrorResponse getErrorResponse() {
-        return errorResponse;
-    }
-
-    public void setErrorResponse(ErrorResponse errorResponse) {
-        this.errorResponse = errorResponse;
-    }
 }

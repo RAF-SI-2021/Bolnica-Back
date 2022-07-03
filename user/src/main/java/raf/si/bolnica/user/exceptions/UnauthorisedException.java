@@ -19,9 +19,5 @@ public class UnauthorisedException extends RuntimeException {
     public ErrorResponse getErrorResponse() {
         return errorResponse;
     }
-
-    public void setErrorResponse(ErrorResponse errorResponse) {
-        this.errorResponse = errorResponse;
-    }
 }
 

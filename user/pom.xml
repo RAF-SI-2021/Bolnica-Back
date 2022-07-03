@@ -18,7 +18,7 @@
 		<spring-cloud.version>Greenwich.SR1</spring-cloud.version>
 		<sonar.organization>raf-si-2021-1</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.coverage.exclusions>**/bootstrap/*, **/configuration/*, **/properties/**, **/responses/*, **/models/*, **/requests/*</sonar.coverage.exclusions>
+		<sonar.coverage.exclusions>**/bootstrap/*, **/configuration/*, **/properties/**, **/responses/*, **/models/*, **/requests/*, **/JwtProperties*.java, **/UserApplication*.java</sonar.coverage.exclusions>
 	</properties>
 	<dependencies>
 		<!--LOMBOK-->
