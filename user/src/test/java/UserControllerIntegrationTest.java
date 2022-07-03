@@ -92,7 +92,7 @@ class UserControllerIntegrationTest {
 
         g = builder.create();
 
-        ResultActions resultActions = mockMvc.perform(post("http://localhost:" + 8081 + "/api/login")
+        ResultActions resultActions = mockMvc.perform(post("/api/login")
                         .contentType("application/json")
                         .content("{\n" +
                                 "    \"email\": \"test@gmail.com\",\n" +
@@ -131,7 +131,7 @@ class UserControllerIntegrationTest {
         lbz = responseDTO.getLbz().toString();
 
 
-        resultActions.andExpect(status().isOk())
+        resultActions.andExpect(status().isOk()).andDo(print())
                 .andExpect(content().json("{\n" +
                         "    \"name\": \"string\",\n" +
                         "    \"surname\": \"string\",\n" +
@@ -213,6 +213,7 @@ class UserControllerIntegrationTest {
                                 "    \"email\": \"test@gmail.com\",\n" +
                                 "    \"password\": \"superadmin\"\n" +
                                 "}"))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 
@@ -580,7 +581,6 @@ class UserControllerIntegrationTest {
                         "    \"mesto\": \"Beograd\",\n" +
                         "    \"adresa\": \"Heroja Milana Tepića 1, Beograd\",\n" +
                         "    \"delatnost\": \"Ginekologija i akušerstvo\",\n" +
-                        "    \"datumOsnivanja\": 1656633600000,\n" +
                         "    \"obrisan\" : false\n" +
                         "}]"));
     }

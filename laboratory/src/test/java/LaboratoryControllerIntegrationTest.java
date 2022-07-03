@@ -61,13 +61,16 @@ class LaboratoryControllerIntegrationTest {
 
         g = builder.create();
 
-        // Jwt has to be used for all methods. For example:
+        RestTemplate restTemplate = new RestTemplate();
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject personJsonObject = new JSONObject();
+        personJsonObject.put("email", "test@gmail.com");
+        personJsonObject.put("password", "superadmin");
+        HttpEntity<String> entity = new HttpEntity<>(personJsonObject.toString(), headers);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:8081/api/login", HttpMethod.POST, entity, String.class);
+        jwt = response.getBody().replace("\"", "");
 
-        jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5hbWUiOiJhZG1pbiIsInN1cm5hbWUiOiJhZG1pbmljIiwidGl0bGUiOiJEci4gc2NpLiBtZWQiLCJwcm9mZXNzaW9uIjoiU3BlYy4gZW5kcm9rcmlub2xvZyIsIkxCWiI6IjZjZmU3MWJiLWU0ZWUtNDlkZC1hM2FkLTI4ZTA0M2Y4YjQzNSIsIlBCTyI6MTIzNDUsIm9kZWxqZW5qZUlkIjoxLCJkZXBhcnRtZW50IjoiSGlydXJnaWphIiwiUEJCIjoxMjM0LCJob3NwaXRhbCI6IktsaW5pxI1rby1ib2xuacSNa2kgY2VudGFyIFwiRHJhZ2nFoWEgTWnFoW92acSHXCIiLCJyb2xlcyI6IlJPTEVfQURNSU4sUk9MRV9NRURfU0VTVFJBLFJPTEVfVklTQV9NRURfU0VTVFJBLFJPTEVfVklTSV9MQUJPUkFUT1JJSlNLSV9URUhOSUNBUixST0xFX1JFQ0VQQ0lPTkVSLFJPTEVfU1BFQ0lKQUxJU1RBX01FRElDSU5TS0VfQklPSEVNSUpFLFJPTEVfRFJfU1BFQ19PREVMSkVOSkEsUk9MRV9NRURJQ0lOU0tJX0JJT0hFTUlDQVIsUk9MRV9EUl9TUEVDX1BPVixST0xFX0RSX1NQRUMsUk9MRV9MQUJPUkFUT1JJSlNLSV9URUhOSUNBUiIsImlzcyI6IlFudVFibFFXbjhIOWdnaXdmR2JDeHBQQTNnZFkxb0FlIiwiZXhwIjoxNjU3Nzg1MDY4fQ.VrOIRRsGwikgvZwvNLYdBdvuSyiKkKfQPRK8i177lBc";
-
-        /*
-         * --- CREATE TEST SCHEDULED LAB EXAMINATION ---
-         */
         mockMvc.perform(post("/api/schedule-lab-examination")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                 .contentType(MediaType.APPLICATION_JSON)
