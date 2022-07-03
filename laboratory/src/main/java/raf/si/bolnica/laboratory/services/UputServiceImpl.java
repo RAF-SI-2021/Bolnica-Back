@@ -10,7 +10,7 @@ import raf.si.bolnica.laboratory.repositories.UputRepository;
 import java.util.List;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class UputServiceImpl implements UputService {
 
     @Autowired
@@ -33,16 +33,19 @@ public class UputServiceImpl implements UputService {
     }
 
     @Override
+    @Transactional()
     public Uput saveUput(Uput uput) {
         return repository.save(uput);
     }
 
     @Override
+    @Transactional()
     public Uput updateUput(Uput uput) {
         return repository.save(uput);
     }
 
     @Override
+    @Transactional()
     public void deleteUput(Long id) {
         repository.deleteById(id);
     }

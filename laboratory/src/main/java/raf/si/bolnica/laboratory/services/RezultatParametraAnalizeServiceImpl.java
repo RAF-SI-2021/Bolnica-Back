@@ -2,6 +2,7 @@ package raf.si.bolnica.laboratory.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.laboratory.entities.RezultatParametraAnalize;
 import raf.si.bolnica.laboratory.entities.RezultatParametraAnalizeKey;
 import raf.si.bolnica.laboratory.entities.*;
@@ -11,6 +12,7 @@ import raf.si.bolnica.laboratory.repositories.RezultatParametraAnalizeRepository
 import java.util.List;
 
 @Service
+@Transactional(value = "transactionManager", readOnly = true)
 public class RezultatParametraAnalizeServiceImpl implements RezultatParametraAnalizeService {
 
     @Autowired
@@ -34,11 +36,13 @@ public class RezultatParametraAnalizeServiceImpl implements RezultatParametraAna
     }
 
     @Override
+    @Transactional()
     public RezultatParametraAnalize updateRezultatParametraAnalize(RezultatParametraAnalize rezultatParametraAnalize) {
         return rezultatParametraAnalizeRepository.save(rezultatParametraAnalize);
     }
 
     @Override
+    @Transactional()
     public RezultatParametraAnalize saveRezultatParametraAnalize(RezultatParametraAnalize rezultatParametraAnalize) {
         return rezultatParametraAnalizeRepository.save(rezultatParametraAnalize);
     }

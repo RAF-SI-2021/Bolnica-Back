@@ -9,7 +9,7 @@ import raf.si.bolnica.laboratory.repositories.LaboratorijskiRadniNalogRepository
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(value = "transactionManager", readOnly = true)
 public class LaboratorijskiRadniNalogServiceImpl implements LaboratorijskiRadniNalogService {
 
     @Autowired
@@ -32,17 +32,20 @@ public class LaboratorijskiRadniNalogServiceImpl implements LaboratorijskiRadniN
     }
 
     @Override
+    @Transactional()
     public LaboratorijskiRadniNalog updateRadniNalog(LaboratorijskiRadniNalog radniNalog) {
         return repository.save(radniNalog);
     }
 
     @Override
+    @Transactional()
     public LaboratorijskiRadniNalog saveRadniNalog(LaboratorijskiRadniNalog radniNalog) {
         System.out.println("Servis " + radniNalog.getLbp());
         return repository.save(radniNalog);
     }
 
     @Override
+    @Transactional()
     public void deleteRadniNalog(Long id) {
         repository.deleteById(id);
     }

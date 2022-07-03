@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(value = "transactionManager", readOnly = true)
 public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaboratorijskiPregledService {
 
 
@@ -19,6 +19,7 @@ public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaborator
     ZakazanLaboratorijskiPregledRepository repository;
 
     @Override
+    @Transactional()
     public ZakazanLaboratorijskiPregled saveZakazanPregled(ZakazanLaboratorijskiPregled pregled) {
         return repository.save(pregled);
     }
@@ -34,11 +35,13 @@ public class ZakazanLaboratorijskiPregledServiceImpl implements ZakazanLaborator
     }
 
     @Override
+    @Transactional()
     public void deleteZakazanPregled(Long id) {
         repository.deleteById(id);
     }
 
     @Override
+    @Transactional()
     public ZakazanLaboratorijskiPregled updateZakazanPregled(ZakazanLaboratorijskiPregled pregled) {
         return repository.save(pregled);
     }

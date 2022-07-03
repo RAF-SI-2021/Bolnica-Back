@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import raf.si.bolnica.laboratory.entities.LaboratorijskiRadniNalog;
 import raf.si.bolnica.laboratory.entities.LaboratoriskiNalazParametar;
 import raf.si.bolnica.laboratory.entities.RezultatParametraAnalize;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional(value = "transactionManager")
 public class PdfGeneratorServiceImpl implements PdfGeneratorService{
 
     @Autowired
@@ -27,6 +29,7 @@ public class PdfGeneratorServiceImpl implements PdfGeneratorService{
     RezultatParametraAnalizeService rezultatParametraAnalizeService;
 
     @Override
+    @Transactional()
     public ResponseEntity<?> reportPrint(Map<String, Object> request) {
         try {
             String laboratorijskiRadniNalogId = request.get("labRadniNalogId").toString();
