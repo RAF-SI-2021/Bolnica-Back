@@ -7,7 +7,7 @@ import raf.si.bolnica.management.entities.Vakcina;
 import raf.si.bolnica.management.repositories.VakcinaRepository;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class VakcinaServiceImpl implements VakcinaService {
 
     @Autowired
@@ -19,6 +19,7 @@ public class VakcinaServiceImpl implements VakcinaService {
     }
 
     @Override
+    @Transactional()
     public Vakcina save(Vakcina vakcina) {
         return vakcinaRepository.save(vakcina);
     }

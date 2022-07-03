@@ -7,13 +7,14 @@ import raf.si.bolnica.management.entities.AlergenZdravstveniKarton;
 import raf.si.bolnica.management.repositories.AlergenZdravstveniKartonRepository;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class AlergenZdravstveniKartonServiceImpl implements AlergenZdravstveniKartonService {
 
     @Autowired
     AlergenZdravstveniKartonRepository alergenZdravstveniKartonRepository;
 
     @Override
+    @Transactional()
     public AlergenZdravstveniKarton save(AlergenZdravstveniKarton alergenZdravstveniKarton) {
         return alergenZdravstveniKartonRepository.save(alergenZdravstveniKarton);
     }

@@ -6,14 +6,14 @@ import raf.si.bolnica.management.entities.ZakazaniTerminPrijema;
 import raf.si.bolnica.management.entities.enums.StatusTermina;
 import raf.si.bolnica.management.repositories.ZakazaniTerminPrijemaRepository;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(value = "transactionManager", readOnly = true)
 public class ZakazaniTerminPrijemaServiceImpl implements ZakazaniTerminPrijemaService {
 
     @Autowired
@@ -21,6 +21,7 @@ public class ZakazaniTerminPrijemaServiceImpl implements ZakazaniTerminPrijemaSe
 
 
     @Override
+    @Transactional()
     public ZakazaniTerminPrijema save(ZakazaniTerminPrijema zakazaniTerminPrijema) {
         return repository.save(zakazaniTerminPrijema);
     }
@@ -47,6 +48,7 @@ public class ZakazaniTerminPrijemaServiceImpl implements ZakazaniTerminPrijemaSe
     }
 
     @Override
+    @Transactional()
     public void setStatus(long id, StatusTermina status) {
         ZakazaniTerminPrijema zakazaniTerminPrijema = repository.getOne(id);
         zakazaniTerminPrijema.setStatusTermina(status);

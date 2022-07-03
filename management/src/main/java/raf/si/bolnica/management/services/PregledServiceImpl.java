@@ -10,7 +10,7 @@ import raf.si.bolnica.management.repositories.PregledRepository;
 import raf.si.bolnica.management.repositories.ZdravstveniKartonRepository;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class PregledServiceImpl implements PregledService {
 
     @Autowired
@@ -27,6 +27,7 @@ public class PregledServiceImpl implements PregledService {
 
 
     @Override
+    @Transactional()
     public Pregled savePregled(Pregled pregled) {
         return pregledRepository.save(pregled);
     }

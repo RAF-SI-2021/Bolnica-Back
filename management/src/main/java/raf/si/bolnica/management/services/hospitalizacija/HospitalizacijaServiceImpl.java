@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class HospitalizacijaServiceImpl implements HospitalizacijaService {
 
     @Autowired
@@ -19,6 +19,7 @@ public class HospitalizacijaServiceImpl implements HospitalizacijaService {
 
 
     @Override
+    @Transactional()
     public Hospitalizacija save(Hospitalizacija hospitalizacija) {
         return hospitalizacijaRepository.save(hospitalizacija);
     }

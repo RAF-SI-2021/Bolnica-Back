@@ -8,7 +8,7 @@ import raf.si.bolnica.management.entities.ZakazaniPregled;
 import raf.si.bolnica.management.entities.enums.StatusPregleda;
 import raf.si.bolnica.management.repositories.ScheduledAppointmentRepository;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -16,13 +16,14 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@Transactional
+@Transactional(value = "transactionManager", readOnly = true)
 public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentService {
 
     @Autowired
     private ScheduledAppointmentRepository scheduledAppointmentRepository;
 
     @Override
+    @Transactional()
     public ZakazaniPregled saveAppointment(ZakazaniPregled appointment) {
         long appointmentDuration = 60;
         Timestamp startTime = new Timestamp(appointment.getDatumIVremePregleda().getTime());
@@ -38,6 +39,7 @@ public class ScheduledAppointmentServiceImpl implements ScheduledAppointmentServ
     }
 
     @Override
+    @Transactional()
     public ZakazaniPregled saveAppointmentStatus(ZakazaniPregled appointment) {
         return scheduledAppointmentRepository.save(appointment);
     }

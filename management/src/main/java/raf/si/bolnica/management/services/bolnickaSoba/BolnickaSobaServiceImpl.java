@@ -9,7 +9,7 @@ import raf.si.bolnica.management.repositories.BolnickaSobaRepository;
 import java.util.List;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class BolnickaSobaServiceImpl implements BolnickaSobaService {
 
     @Autowired
@@ -22,6 +22,7 @@ public class BolnickaSobaServiceImpl implements BolnickaSobaService {
     }
 
     @Override
+    @Transactional()
     public BolnickaSoba save(BolnickaSoba bolnickaSoba) {
         return bolnickaSobaRepository.save(bolnickaSoba);
     }
@@ -32,12 +33,14 @@ public class BolnickaSobaServiceImpl implements BolnickaSobaService {
     }
 
     @Override
+    @Transactional()
     public synchronized int decrement(BolnickaSoba bolnickaSoba) {
         bolnickaSoba.setPopunjenost(bolnickaSoba.getPopunjenost() - 1);
         return bolnickaSoba.getPopunjenost();
     }
 
     @Override
+    @Transactional()
     public synchronized int increment(BolnickaSoba bolnickaSoba) {
         bolnickaSoba.setPopunjenost(bolnickaSoba.getPopunjenost() + 1);
         return bolnickaSoba.getPopunjenost();

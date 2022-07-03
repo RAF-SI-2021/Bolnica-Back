@@ -7,7 +7,7 @@ import raf.si.bolnica.management.entities.Alergen;
 import raf.si.bolnica.management.repositories.AlergenRepository;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class AlergenServiceImpl implements AlergenService {
 
     @Autowired
@@ -19,6 +19,7 @@ public class AlergenServiceImpl implements AlergenService {
     }
 
     @Override
+    @Transactional()
     public Alergen saveAlergen(Alergen alergen) {
         return alergenRepository.save(alergen);
     }

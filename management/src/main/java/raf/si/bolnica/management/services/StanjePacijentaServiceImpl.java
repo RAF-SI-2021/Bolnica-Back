@@ -7,7 +7,7 @@ import raf.si.bolnica.management.entities.StanjePacijenta;
 import raf.si.bolnica.management.repositories.StanjePacijentaRepository;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class StanjePacijentaServiceImpl implements StanjePacijentaService {
 
 
@@ -15,6 +15,7 @@ public class StanjePacijentaServiceImpl implements StanjePacijentaService {
     StanjePacijentaRepository stanjePacijentaRepository;
 
     @Override
+    @Transactional()
     public StanjePacijenta saveStanje(StanjePacijenta stanje) {
         return stanjePacijentaRepository.save(stanje);
     }

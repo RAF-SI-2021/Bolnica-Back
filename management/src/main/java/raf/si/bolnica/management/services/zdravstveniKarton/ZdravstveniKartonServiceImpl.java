@@ -10,7 +10,7 @@ import java.util.UUID;
 
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class ZdravstveniKartonServiceImpl implements ZdravstveniKartonService {
 
     @Autowired
@@ -22,6 +22,7 @@ public class ZdravstveniKartonServiceImpl implements ZdravstveniKartonService {
     }
 
     @Override
+    @Transactional()
     public ZdravstveniKarton saveZdravstveniKarton(ZdravstveniKarton zdravstveniKarton) {
         return zdravstveniKartonRepository.save(zdravstveniKarton);
     }

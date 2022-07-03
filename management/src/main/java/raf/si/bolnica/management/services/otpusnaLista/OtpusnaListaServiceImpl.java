@@ -12,13 +12,14 @@ import java.util.UUID;
 
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class OtpusnaListaServiceImpl implements OtpusnaListaService {
 
     @Autowired
     OtpusnaListaRepository otpusnaListaRepository;
 
     @Override
+    @Transactional()
     public OtpusnaLista save(OtpusnaLista otpusnaLista) {
         return otpusnaListaRepository.save(otpusnaLista);
     }

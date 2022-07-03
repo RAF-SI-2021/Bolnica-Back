@@ -13,13 +13,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class LekarskiIzvestajServiceImpl implements LekarskiIzvestajService {
 
     @Autowired
     LekarskiIzvestajRepository lekarskiIzvestajRepository;
 
     @Override
+    @Transactional()
     public LekarskiIzvestajStacionar save(LekarskiIzvestajStacionar lekarskiIzvestajStacionar) {
         return lekarskiIzvestajRepository.save(lekarskiIzvestajStacionar);
     }

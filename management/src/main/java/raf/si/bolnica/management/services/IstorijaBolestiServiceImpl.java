@@ -8,13 +8,14 @@ import raf.si.bolnica.management.entities.ZdravstveniKarton;
 import raf.si.bolnica.management.repositories.IstorijaBolestiRepository;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class IstorijaBolestiServiceImpl implements IstorijaBolestiService {
 
     @Autowired
     IstorijaBolestiRepository istorijaBolestiRepository;
 
     @Override
+    @Transactional()
     public IstorijaBolesti saveIstorijaBolesti(IstorijaBolesti istorijaBolesti) {
         return istorijaBolestiRepository.save(istorijaBolesti);
     }

@@ -9,7 +9,7 @@ import raf.si.bolnica.management.repositories.PacijentRepository;
 import java.util.UUID;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class PacijentServiceImpl implements PacijentService {
 
     @Autowired
@@ -26,11 +26,13 @@ public class PacijentServiceImpl implements PacijentService {
     }
 
     @Override
+    @Transactional()
     public Pacijent savePacijent(Pacijent pacijent) {
         return pacijentRepository.save(pacijent);
     }
 
     @Override
+    @Transactional()
     public void deleteById(Long id) {
         pacijentRepository.deleteById(id);
     }
