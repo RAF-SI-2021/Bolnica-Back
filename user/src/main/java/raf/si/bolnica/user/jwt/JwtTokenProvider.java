@@ -49,6 +49,9 @@ public class JwtTokenProvider {
     }
 
     private Date calculateExpirationDate() {
+        if (secretKey == null)
+            secretKey = "secretKey";
+
         Date now = new Date();
         return new Date(now.getTime() + jwtProperties.getValidityInMilliseconds());
     }

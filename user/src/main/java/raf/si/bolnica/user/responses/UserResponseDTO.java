@@ -4,9 +4,6 @@ import java.util.Set;
 
 public class UserResponseDTO {
 
-    public UserResponseDTO() {
-    }
-
     public UserResponseDTO(Long userId, String name, String surname, String password, String email, Set<Role> roles) {
         this.userId = userId;
         this.name = name;
