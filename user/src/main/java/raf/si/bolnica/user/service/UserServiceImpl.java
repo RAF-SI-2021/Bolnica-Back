@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     public User fetchUserByLBZ(UUID lbz) { return userRepository.findByLbz(lbz); }
 
     @Override
+    @Transactional()
     public User saveEmployee(User user) {
         return userRepository.save(user);
     }
@@ -62,6 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional()
     public User savePassword(User user, String password) {
         // Encrypting password before saving it in database
         user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
@@ -87,6 +89,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional()
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }

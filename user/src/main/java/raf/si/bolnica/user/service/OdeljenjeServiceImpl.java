@@ -12,11 +12,12 @@ import java.util.Iterator;
 import java.util.List;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class OdeljenjeServiceImpl implements OdeljenjeService {
 
     @Autowired
     OdeljenjeRepository odeljenjeRepository;
+
     @Autowired
     ZdravstvenaUstanovaRepository zdravstvenaUstanovaRepository;
 
@@ -43,6 +44,7 @@ public class OdeljenjeServiceImpl implements OdeljenjeService {
     }
 
     @Override
+    @Transactional()
     public Odeljenje saveOdeljenje(Odeljenje odeljenje) {
         return odeljenjeRepository.save(odeljenje);
     }

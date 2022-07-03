@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.function.Function;
 
 @Service
-@Transactional("transactionManager")
+@Transactional(value = "transactionManager", readOnly = true)
 public class LoginServiceImpl implements LoginService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginServiceImpl.class);
