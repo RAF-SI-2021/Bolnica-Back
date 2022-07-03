@@ -67,7 +67,7 @@ public class OtpusnaListaController {
         UUID lbzNacelnika;
 
         if (loggedInUser.getRoles().stream().noneMatch(Constants.NACELNIK::contains)) {
-            String uri = "http://host.docker.internal:8081/api/find-dr-spec-odeljenja/" + req.getPbo();
+            String uri = "http://bolnica.k8s.elab.rs:32264/bolnica-user/api/find-dr-spec-odeljenja/" + req.getPbo();
             RestTemplate restTemplate = new RestTemplate();
             lbzNacelnika = UUID.fromString(Objects.requireNonNull(restTemplate.getForObject(uri, String.class)));
         } else {
@@ -140,8 +140,8 @@ public class OtpusnaListaController {
         List<OtpusnaListaResponseDTO> responseDTOS = new ArrayList<>();
         for (int i = 0; i < otpusnaListaList.size(); i++) {
             OtpusnaListaResponseDTO o = new OtpusnaListaResponseDTO();
-            String uri1 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzNacelnikOdeljenja();
-            String uri2 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzOrdinirajucegLekara();
+            String uri1 = "http://bolnica.k8s.elab.rs:32264/bolnica-user/api/employee-info/" + otpusnaListaList.get(i).getLbzNacelnikOdeljenja();
+            String uri2 = "http://bolnica.k8s.elab.rs:32264/bolnica-user/api/employee-info/" + otpusnaListaList.get(i).getLbzOrdinirajucegLekara();
             RestTemplate restTemplate = new RestTemplate();
             Object nacelnik = restTemplate.getForObject(uri1, Object.class);
             Object ordinirajuciLekar = restTemplate.getForObject(uri2, Object.class);
