@@ -65,22 +65,6 @@ class LaboratoryControllerIntegrationTest {
 
         jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5hbWUiOiJhZG1pbiIsInN1cm5hbWUiOiJhZG1pbmljIiwidGl0bGUiOiJEci4gc2NpLiBtZWQiLCJwcm9mZXNzaW9uIjoiU3BlYy4gZW5kcm9rcmlub2xvZyIsIkxCWiI6IjZjZmU3MWJiLWU0ZWUtNDlkZC1hM2FkLTI4ZTA0M2Y4YjQzNSIsIlBCTyI6MTIzNDUsIm9kZWxqZW5qZUlkIjoxLCJkZXBhcnRtZW50IjoiSGlydXJnaWphIiwiUEJCIjoxMjM0LCJob3NwaXRhbCI6IktsaW5pxI1rby1ib2xuacSNa2kgY2VudGFyIFwiRHJhZ2nFoWEgTWnFoW92acSHXCIiLCJyb2xlcyI6IlJPTEVfQURNSU4sUk9MRV9NRURfU0VTVFJBLFJPTEVfVklTQV9NRURfU0VTVFJBLFJPTEVfVklTSV9MQUJPUkFUT1JJSlNLSV9URUhOSUNBUixST0xFX1JFQ0VQQ0lPTkVSLFJPTEVfU1BFQ0lKQUxJU1RBX01FRElDSU5TS0VfQklPSEVNSUpFLFJPTEVfRFJfU1BFQ19PREVMSkVOSkEsUk9MRV9NRURJQ0lOU0tJX0JJT0hFTUlDQVIsUk9MRV9EUl9TUEVDX1BPVixST0xFX0RSX1NQRUMsUk9MRV9MQUJPUkFUT1JJSlNLSV9URUhOSUNBUiIsImlzcyI6IlFudVFibFFXbjhIOWdnaXdmR2JDeHBQQTNnZFkxb0FlIiwiZXhwIjoxNjU3Nzg1MDY4fQ.VrOIRRsGwikgvZwvNLYdBdvuSyiKkKfQPRK8i177lBc";
 
-        // TODO
-        //  bolje za sad jwt zakucan
-        //  ne moze za sada da se gadja endpoint drugog servisa (login)
-
-//        ResultActions resultActions = mockMvc.perform(post("http://localhost:" + 8081 + "/api/login")
-//                        .contentType("application/json")
-//                        .content("{\n" +
-//                                "    \"email\": \"test@gmail.com\",\n" +
-//                                "    \"password\": \"superadmin\"\n" +
-//                                "}"))
-//                .andExpect(status().isOk());
-//
-//        MvcResult mvcResult = resultActions.andReturn();
-//        System.out.println(mvcResult.getResponse().getContentAsString());
-//        jwt = mvcResult.getResponse().getContentAsString().replace("\"", "");
-
         /*
          * --- CREATE TEST SCHEDULED LAB EXAMINATION ---
          */
@@ -116,9 +100,6 @@ class LaboratoryControllerIntegrationTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
-    //TODO
-    // setovati redosled testova ako je moguce
-
     @Test
     public void givenWac_whenServletContext_thenItProvidesGreetController() {
         final ServletContext servletContext = webApplicationContext.getServletContext();
@@ -136,7 +117,7 @@ class LaboratoryControllerIntegrationTest {
                                 "    \"dateAndTime\" : \"2022-07-01\"\n" +
                                 "}"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("1"));
+                .andExpect(content().string("2"));
     }
 
     @Test
@@ -153,7 +134,7 @@ class LaboratoryControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].odeljenjeId").value("12345"))
                 .andExpect(jsonPath("$[0].lbp").value("237e9877-e79b-12d4-a765-321741963000"))
                 .andExpect(jsonPath("$[0].zakazanDatum").exists())
-                .andExpect(jsonPath("$[0].statusPregleda").value("ZAKAZANO"))
+                .andExpect(jsonPath("$[0].statusPregleda").value("OTKAZANO"))
                 .andExpect(jsonPath("$[0].napomena").value("test_napomena"))
                 .andExpect(jsonPath("$[0].lbz").value("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"));
     }
@@ -235,96 +216,12 @@ class LaboratoryControllerIntegrationTest {
                 .andExpect(jsonPath("uput.zaOdeljenjeId").value("2"))
                 .andExpect(jsonPath("uput.lbp").value("237e9877-e79b-12d4-a765-321741963000"))
                 .andExpect(jsonPath("uput.datumVremeKreiranja").exists())
-                .andExpect(jsonPath("uput.status").value("NEREALIZOVAN"))
+                .andExpect(jsonPath("uput.status").value("REALIZOVAN"))
                 .andExpect(jsonPath("uput.zahtevaneAnalize").value("GLU,HOL"))
                 .andExpect(jsonPath("uput.komentar").doesNotExist())
                 .andExpect(jsonPath("uput.uputnaDijagnoza").doesNotExist())
                 .andExpect(jsonPath("uput.razlogUpucivanja").doesNotExist())
                 .andExpect(jsonPath("rezultati").exists());
-    }
-
-    @Test
-    void getLaboratorijskiRadniNalogIstorija() throws Exception {
-        // TODO
-        // ? Parameter value [237e9877-e79b-12d4-a765-321741963000] did not match expected type [java.util.UUID (n/a)]
-        // prima string i saljem string kao inace, ne vidim problem
-
-//        /*
-//         *  --- CREATE TEST LAB RADNI NALOG ---
-//         */
-//        mockMvc.perform(post("/api/create-laboratory-work-order")
-//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                .param("uputId", "1")
-//        ).andExpect(status().isOk());
-//        /*
-//         *  --- SAVE LAB RESULT FOR NALOG ---
-//         */
-//        mockMvc.perform(put("/api/save-analysis-result")
-//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("{\n" +
-//                        "    \"nalogId\" : 1,\n" +
-//                        "    \"parametarId\" : 1,\n" +
-//                        "    \"rezultat\": \"5.3\"\n" +
-//                        "}")
-//        ).andExpect(status().isAccepted());
-//
-//        mockMvc.perform(post("/api/laboratory-work-order-history")
-//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                .param("page","1")
-//                .param("size","5")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("{\n" +
-//                        "    \"lbp\" : \"237e9877-e79b-12d4-a765-321741963000\",\n" +
-//                        "    \"odDatuma\" : 1656399600000,\n" +
-//                        "    \"doDatuma\" : 1656745200000\n" +
-//                        "}")
-//        ).andExpect(status().isOk());
-    }
-
-    @Test
-    void fetchRezultatiParametaraAnalize() throws Exception {
-        // TODO
-        // ? http status 406 not accepted
-        // kao da ne vidi ovaj kreirani test lab radni nalog
-        // verovatno jer je status NEOBRADJEN
-
-//        /*
-//         *  --- CREATE TEST LAB RADNI NALOG ---
-//         */
-//        mockMvc.perform(post("/api/create-laboratory-work-order")
-//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                .param("uputId", "1")
-//        ).andExpect(status().isOk());
-//        /*
-//         *  --- SAVE FIRST LAB RESULT FOR NALOG ---
-//         */
-//        mockMvc.perform(put("/api/save-analysis-result")
-//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("{\n" +
-//                        "    \"nalogId\" : 1,\n" +
-//                        "    \"parametarId\" : 1,\n" +
-//                        "    \"rezultat\": \"5.3\"\n" +
-//                        "}")
-//        ).andExpect(status().isAccepted());
-//        /*
-//         *  --- SAVE SECOND LAB RESULT FOR NALOG ---
-//         */
-//        mockMvc.perform(put("/api/save-analysis-result")
-//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("{\n" +
-//                        "    \"nalogId\" : 1,\n" +
-//                        "    \"parametarId\" : 2,\n" +
-//                        "    \"rezultat\": \"3.7\"\n" +
-//                        "}")
-//        ).andExpect(status().isAccepted());
-//
-//        mockMvc.perform(get("/api/fetch-analysis-results")
-//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                        .param("id", "1"))
-//                .andExpect(status().isOk());
     }
 
     @Test
@@ -349,34 +246,6 @@ class LaboratoryControllerIntegrationTest {
     }
 
     @Test
-    void getLaboratorijskiRadniNalogPretraga() throws Exception {
-        // TODO
-        // ponovo Parameter value [237e9877-e79b-12d4-a765-321741963000] did not match expected type [java.util.UUID (n/a)]
-        // verovatno isti problem kao u getLaboratorijskiRadniNalogIstorija()
-
-//        /*
-//         *  --- CREATE TEST LAB RADNI NALOG ---
-//         */
-//        mockMvc.perform(post("/api/create-laboratory-work-order")
-//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                .param("uputId", "1")
-//        ).andExpect(status().isOk());
-//
-//        mockMvc.perform(post("/api/fetch-laboratory-work-orders")
-//                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                        .param("page", "1")
-//                        .param("size", "5")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{\n" +
-//                                "    \"lbp\" : \"237e9877-e79b-12d4-a765-321741963000\",\n" +
-//                                "    \"odDatuma\" : \"2022-06-28\",\n" +
-//                                "    \"doDatuma\" : \"2022-07-01\",\n" +
-//                                "    \"statusObrade\" : \"NEOBRADJEN\"\n" +
-//                                "}"))
-//                .andExpect(status().isOk());
-    }
-
-    @Test
     void getLaboratorijskiRadniNalog() throws Exception {
         /*
          *  --- CREATE TEST LAB RADNI NALOG ---
@@ -392,9 +261,9 @@ class LaboratoryControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("laboratorijskiRadniNalogId").value("1"))
                 .andExpect(jsonPath("datumVremeKreiranja").exists())
-                .andExpect(jsonPath("statusObrade").value("NEOBRADJEN"))
+                .andExpect(jsonPath("statusObrade").value("OBRADJEN"))
                 .andExpect(jsonPath("lbzTehnicar").value("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"))
-                .andExpect(jsonPath("lbzBiohemicar").doesNotExist())
+                .andExpect(jsonPath("lbzBiohemicar").exists())
                 .andExpect(jsonPath("uput.uputId").value("1"))
                 .andExpect(jsonPath("uput.tip").value("LABORATORIJA"))
                 .andExpect(jsonPath("uput.lbz").value("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"))
@@ -402,7 +271,7 @@ class LaboratoryControllerIntegrationTest {
                 .andExpect(jsonPath("uput.zaOdeljenjeId").value("2"))
                 .andExpect(jsonPath("uput.lbp").value("237e9877-e79b-12d4-a765-321741963000"))
                 .andExpect(jsonPath("uput.datumVremeKreiranja").exists())
-                .andExpect(jsonPath("uput.status").value("NEREALIZOVAN"))
+                .andExpect(jsonPath("uput.status").exists())
                 .andExpect(jsonPath("uput.zahtevaneAnalize").value("GLU,HOL"))
                 .andExpect(jsonPath("uput.komentar").doesNotExist())
                 .andExpect(jsonPath("uput.uputnaDijagnoza").doesNotExist())
@@ -479,15 +348,6 @@ class LaboratoryControllerIntegrationTest {
     }
 
     @Test
-    void deleteUput() throws Exception {
-        mockMvc.perform(delete("/api/delete-uput")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                        .param("uputId", "1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Uput obrisan"));
-    }
-
-    @Test
     void fetchUput() throws Exception {
         mockMvc.perform(get("/api/fetch-uput")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
@@ -500,7 +360,7 @@ class LaboratoryControllerIntegrationTest {
                 .andExpect(jsonPath("zaOdeljenjeId").value("2"))
                 .andExpect(jsonPath("lbp").value("237e9877-e79b-12d4-a765-321741963000"))
                 .andExpect(jsonPath("datumVremeKreiranja").exists())
-                .andExpect(jsonPath("status").value("NEREALIZOVAN"))
+                .andExpect(jsonPath("status").value("REALIZOVAN"))
                 .andExpect(jsonPath("zahtevaneAnalize").value("GLU,HOL"))
                 .andExpect(jsonPath("komentar").doesNotExist())
                 .andExpect(jsonPath("uputnaDijagnoza").doesNotExist())
@@ -551,49 +411,10 @@ class LaboratoryControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].zaOdeljenjeId").value("2"))
                 .andExpect(jsonPath("$[0].lbp").value("237e9877-e79b-12d4-a765-321741963000"))
                 .andExpect(jsonPath("$[0].datumVremeKreiranja").exists())
-                .andExpect(jsonPath("$[0].status").value("NEREALIZOVAN"))
+                .andExpect(jsonPath("$[0].status").value("REALIZOVAN"))
                 .andExpect(jsonPath("$[0].zahtevaneAnalize").value("GLU,HOL"))
                 .andExpect(jsonPath("$[0].komentar").doesNotExist())
                 .andExpect(jsonPath("$[0].uputnaDijagnoza").doesNotExist())
                 .andExpect(jsonPath("$[0].razlogUpucivanja").doesNotExist());
-    }
-
-    @Test
-    void unprocessedUputi() throws Exception {
-        mockMvc.perform(get("/api/unprocessed-uputi")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                        .param("lbp", "237e9877-e79b-12d4-a765-321741963000"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].uputId").value("1"))
-                .andExpect(jsonPath("$[0].tip").value("LABORATORIJA"))
-                .andExpect(jsonPath("$[0].lbz").value("6cfe71bb-e4ee-49dd-a3ad-28e043f8b435"))
-                .andExpect(jsonPath("$[0].izOdeljenjaId").value("1"))
-                .andExpect(jsonPath("$[0].zaOdeljenjeId").value("2"))
-                .andExpect(jsonPath("$[0].lbp").value("237e9877-e79b-12d4-a765-321741963000"))
-                .andExpect(jsonPath("$[0].datumVremeKreiranja").exists())
-                .andExpect(jsonPath("$[0].status").value("NEREALIZOVAN"))
-                .andExpect(jsonPath("$[0].zahtevaneAnalize").value("GLU,HOL"))
-                .andExpect(jsonPath("$[0].komentar").doesNotExist())
-                .andExpect(jsonPath("$[0].uputnaDijagnoza").doesNotExist())
-                .andExpect(jsonPath("$[0].razlogUpucivanja").doesNotExist());
-    }
-
-    @Test
-    void unprocessedUputiWithType() throws Exception {
-        //TODO
-
-        // ????????????????????????
-        // potpuno nejasno - nekad radi nekad ne
-        // najcesce baci error - Parameter value [LABORATORIJA] did not match expected type [raf.si.bolnica.laboratory.entities.enums.TipUputa (n/a)]
-        // jednom je vratio za prosledjen tip DIJAGNOSTIKA iako postoji samo 1 uput i to tipa LABORATORIJA
-
-//        System.out.println(mockMvc.perform(post("/api/unprocessed-uputi-with-type")
-//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content("{\n" +
-//                        "    \"lbp\" : \"237e9877-e79b-12d4-a765-321741963000\",\n" +
-//                        "    \"tipUputa\" : \"DIJAGNOSTIKA\"\n" +
-//                        "}")
-//        ).andReturn().getResponse().getContentAsString());
     }
 }
