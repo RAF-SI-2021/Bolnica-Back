@@ -1,16 +1,17 @@
 import com.google.gson.*;
+import org.codehaus.jettison.json.JSONObject;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import raf.si.bolnica.laboratory.LaboratoryApplication;
 import raf.si.bolnica.laboratory.configuration.SpringWebConfiguration;
@@ -19,6 +20,7 @@ import raf.si.bolnica.laboratory.jwt.JwtProperties;
 import javax.servlet.ServletContext;
 import java.lang.reflect.Type;
 import java.sql.Date;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -63,8 +65,16 @@ class LaboratoryControllerIntegrationTest {
 
         // Jwt has to be used for all methods. For example:
 
-        jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5hbWUiOiJhZG1pbiIsInN1cm5hbWUiOiJhZG1pbmljIiwidGl0bGUiOiJEci4gc2NpLiBtZWQiLCJwcm9mZXNzaW9uIjoiU3BlYy4gZW5kcm9rcmlub2xvZyIsIkxCWiI6IjZjZmU3MWJiLWU0ZWUtNDlkZC1hM2FkLTI4ZTA0M2Y4YjQzNSIsIlBCTyI6MTIzNDUsIm9kZWxqZW5qZUlkIjoxLCJkZXBhcnRtZW50IjoiSGlydXJnaWphIiwiUEJCIjoxMjM0LCJob3NwaXRhbCI6IktsaW5pxI1rby1ib2xuacSNa2kgY2VudGFyIFwiRHJhZ2nFoWEgTWnFoW92acSHXCIiLCJyb2xlcyI6IlJPTEVfQURNSU4sUk9MRV9NRURfU0VTVFJBLFJPTEVfVklTQV9NRURfU0VTVFJBLFJPTEVfVklTSV9MQUJPUkFUT1JJSlNLSV9URUhOSUNBUixST0xFX1JFQ0VQQ0lPTkVSLFJPTEVfU1BFQ0lKQUxJU1RBX01FRElDSU5TS0VfQklPSEVNSUpFLFJPTEVfRFJfU1BFQ19PREVMSkVOSkEsUk9MRV9NRURJQ0lOU0tJX0JJT0hFTUlDQVIsUk9MRV9EUl9TUEVDX1BPVixST0xFX0RSX1NQRUMsUk9MRV9MQUJPUkFUT1JJSlNLSV9URUhOSUNBUiIsImlzcyI6IlFudVFibFFXbjhIOWdnaXdmR2JDeHBQQTNnZFkxb0FlIiwiZXhwIjoxNjU3Nzg1MDY4fQ.VrOIRRsGwikgvZwvNLYdBdvuSyiKkKfQPRK8i177lBc";
-
+        RestTemplate restTemplate = new RestTemplate();
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject personJsonObject = new JSONObject();
+        personJsonObject.put("email", "test@gmail.com");
+        personJsonObject.put("password", "superadmin");
+        HttpEntity<String> entity = new HttpEntity<>(personJsonObject.toString(), headers);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:8081/api/login", HttpMethod.POST, entity, String.class);
+        jwt = Objects.requireNonNull(response.getBody()).replace("\"", "");
+        
         /*
          * --- CREATE TEST SCHEDULED LAB EXAMINATION ---
          */
