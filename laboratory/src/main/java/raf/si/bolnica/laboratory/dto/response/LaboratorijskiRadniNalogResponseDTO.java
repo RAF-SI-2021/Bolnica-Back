@@ -44,9 +44,9 @@ public class LaboratorijskiRadniNalogResponseDTO {
         this.lbzBiohemicar = nalog.getLbzBiohemicar();
         this.uput = new UputResponseDTO(nalog.getUput());
         List<RezultatParametraAnalizeResponseDTO> rezultati = new ArrayList<>();
-        for (RezultatParametraAnalize rezultatParametraAnalize : nalog.getRezultati()) {
-            rezultati.add(new RezultatParametraAnalizeResponseDTO(rezultatParametraAnalize));
-        }
+//        for (RezultatParametraAnalize rezultatParametraAnalize : nalog.getRezultati()) {
+//            rezultati.add(new RezultatParametraAnalizeResponseDTO(rezultatParametraAnalize));
+//        }
         this.rezultati = rezultati;
     }
 }
