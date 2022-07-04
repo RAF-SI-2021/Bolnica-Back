@@ -40,6 +40,6 @@ public class LaboratorijskiRadniNalogResponseDTO {
         this.statusObrade = nalog.getStatusObrade();
         this.lbzTehnicar = nalog.getLbzTehnicar();
         this.lbzBiohemicar = nalog.getLbzBiohemicar();
-        this.uput = new UputResponseDTO(nalog.getUput());
+//        this.uput = new UputResponseDTO(nalog.getUput());
     }
 }

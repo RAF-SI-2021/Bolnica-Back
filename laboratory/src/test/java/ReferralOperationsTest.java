@@ -219,19 +219,19 @@ public class ReferralOperationsTest{
         assertThat(response.getStatusCodeValue()).isEqualTo(403);
     }
 
-    @Test
-    public void unproccesedUputiSuccess() {
-        when(loggedInUser.getRoles()).thenReturn(allRoles());
-        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput.uputId from LaboratorijskiRadniNalog) ";
-        TypedQuery query = mock(TypedQuery.class);
-        List<Uput> lista = new ArrayList<>();
-        lista.add(new Uput());
-        when(query.getResultList()).thenReturn(lista);
-        when(entityManager.createQuery(eq(s),any(Class.class))).thenReturn(query);
-        makeUput(1);
-        UUID lbp  = UUID.fromString("4fa54fea-d850-11ec-9d64-0242ac120002");
-        ResponseEntity<?> response = laboratoryController.unprocessedUputi(lbp.toString());
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-    }
+//    @Test
+//    public void unproccesedUputiSuccess() {
+//        when(loggedInUser.getRoles()).thenReturn(allRoles());
+//        String s = "SELECT u from Uput u WHERE u.lbp = :lbp AND u.status = :status AND u.uputId NOT IN (SELECT uput.uputId from LaboratorijskiRadniNalog) ";
+//        TypedQuery query = mock(TypedQuery.class);
+//        List<Uput> lista = new ArrayList<>();
+//        lista.add(new Uput());
+//        when(query.getResultList()).thenReturn(lista);
+//        when(entityManager.createQuery(eq(s),any(Class.class))).thenReturn(query);
+//        makeUput(1);
+//        UUID lbp  = UUID.fromString("4fa54fea-d850-11ec-9d64-0242ac120002");
+//        ResponseEntity<?> response = laboratoryController.unprocessedUputi(lbp.toString());
+//        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+//    }
 
 }

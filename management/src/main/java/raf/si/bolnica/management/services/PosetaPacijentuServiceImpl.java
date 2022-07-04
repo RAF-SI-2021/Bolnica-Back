@@ -26,7 +26,7 @@ public class PosetaPacijentuServiceImpl implements PosetaPacijentuService {
     }
 
     @Override
-    @Cacheable(value = "visits", key = "#lbp")
+//    @Cacheable(value = "visits", key = "#lbp")
     public List<PosetaPacijentu> findAllByLBP(UUID lbp) {
         return posetPacijentuRepository.getPosetaPacijentuByLbpPacijenta(lbp);
     }
