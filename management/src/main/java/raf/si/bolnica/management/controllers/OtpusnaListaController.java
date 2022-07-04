@@ -2,6 +2,7 @@ package raf.si.bolnica.management.controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,7 +45,8 @@ public class OtpusnaListaController {
 
     @Autowired
     BolnickaSobaService bolnickaSobaService;
-
+    @Autowired
+    private Environment env;
 
     @PostMapping(value = Constants.REGISTER_OTPUSNA_LISTA)
     public ResponseEntity<?> registerOtpusnaLista(@RequestBody CreateOtpusnaListaDTO req){
@@ -65,7 +67,12 @@ public class OtpusnaListaController {
         UUID lbzNacelnika;
 
         if(!loggedInUser.getRoles().stream().anyMatch(Constants.NACELNIK :: contains)){
-            String uri = "http://host.docker.internal:8081/api/find-dr-spec-odeljenja/" + req.getPbo();
+            String uri;
+            if(env.getProperty("spring.datasource.url").contains("localhost")){
+                uri = "http://localhost:8081/api/find-dr-spec-odeljenja/" + req.getPbo();
+            }else{
+                uri = "http://host.docker.internal:8081/api/find-dr-spec-odeljenja/" + req.getPbo();
+            }
             RestTemplate restTemplate = new RestTemplate();
             lbzNacelnika = UUID.fromString(restTemplate.getForObject(uri, String.class));
         } else{
@@ -107,6 +114,7 @@ public class OtpusnaListaController {
 
     @PostMapping(value = Constants.SEARCH_OTPUSNA_LISTA)
     public ResponseEntity<?> searchOtpusneListe(@RequestBody OtpusnaLIstaFilterDTO req){
+
         List<String> acceptedRoles = new ArrayList<>();
         acceptedRoles.add(Constants.NACELNIK_ODELJENJA);
         acceptedRoles.add(Constants.SPECIJALISTA);
@@ -140,8 +148,14 @@ public class OtpusnaListaController {
         List<OtpusnaListaResponseDTO> responseDTOS = new ArrayList<>();
         for(int i = 0; i < otpusnaListaList.size(); i++){
             OtpusnaListaResponseDTO o = new OtpusnaListaResponseDTO();
-            String uri1 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzNacelnikOdeljenja();
-            String uri2 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzOrdinirajucegLekara();
+            String uri1,uri2;
+            if(env.getProperty("spring.datasource.url").contains("localhost")){
+                uri1 = "http://localhost:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzNacelnikOdeljenja();
+                uri2 = "http://localhost:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzOrdinirajucegLekara();
+            }else {
+                uri1 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzNacelnikOdeljenja();
+                uri2 = "http://host.docker.internal:8081/api/employee-info/" + otpusnaListaList.get(i).getLbzOrdinirajucegLekara();
+            }
             RestTemplate restTemplate = new RestTemplate();
             Object nacelnik = restTemplate.getForObject(uri1, Object.class);
             Object ordinirajuciLekar = restTemplate.getForObject(uri2, Object.class);

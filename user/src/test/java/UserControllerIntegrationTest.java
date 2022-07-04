@@ -92,7 +92,7 @@ class UserControllerIntegrationTest {
 
         g = builder.create();
 
-        ResultActions resultActions = mockMvc.perform(post("http://localhost:" + 8081 + "/api/login")
+        ResultActions resultActions = mockMvc.perform(post("/api/login")
                         .contentType("application/json")
                         .content("{\n" +
                                 "    \"email\": \"test@gmail.com\",\n" +
@@ -131,7 +131,7 @@ class UserControllerIntegrationTest {
         lbz = responseDTO.getLbz().toString();
 
 
-        resultActions.andExpect(status().isOk())
+        resultActions.andExpect(status().isOk()).andDo(print())
                 .andExpect(content().json("{\n" +
                         "    \"name\": \"string\",\n" +
                         "    \"surname\": \"string\",\n" +
@@ -213,6 +213,7 @@ class UserControllerIntegrationTest {
                                 "    \"email\": \"test@gmail.com\",\n" +
                                 "    \"password\": \"superadmin\"\n" +
                                 "}"))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 
@@ -361,7 +362,7 @@ class UserControllerIntegrationTest {
                         .contentType("application/json")
                         .content("{}")
                         .param("page", "1")
-                        .param("size", "5"));
+                        .param("size", "2"));
 
         String content = resultActions.andReturn().getResponse().getContentAsString();
 
@@ -402,22 +403,7 @@ class UserControllerIntegrationTest {
                         "    \"profession\": \"Spec. hirurg\",\n" +
                         "    \"department\": 1,\n" +
                         "    \"username\": \"zaposleni\"\n" +
-                        "},\n" +
-                        "{\n" +
-                        "    \"name\": \"string2\",\n" +
-                        "    \"surname\": \"string2\",\n" +
-                        "    \"dob\": 1650067200000,\n" +
-                        "    \"gender\": \"male\",\n" +
-                        "    \"jmbg\": \"string2\",\n" +
-                        "    \"address\": \"string2\",\n" +
-                        "    \"lbz\": \"" + lbz2 + "\",\n" +
-                        "    \"city\": \"string2\",\n" +
-                        "    \"contact\": \"string2\",\n" +
-                        "    \"email\": \"zaposleni2@ibis.rs\",\n" +
-                        "    \"title\": \"Prof. dr. med.\",\n" +
-                        "    \"profession\": \"Spec. hirurg\",\n" +
-                        "    \"department\": 3,\n" +
-                        "    \"username\": \"zaposleni2\"\n" +
+
                         "}\n" +
                         "]"));
     }
@@ -580,7 +566,6 @@ class UserControllerIntegrationTest {
                         "    \"mesto\": \"Beograd\",\n" +
                         "    \"adresa\": \"Heroja Milana Tepića 1, Beograd\",\n" +
                         "    \"delatnost\": \"Ginekologija i akušerstvo\",\n" +
-                        "    \"datumOsnivanja\": 1656633600000,\n" +
                         "    \"obrisan\" : false\n" +
                         "}]"));
     }

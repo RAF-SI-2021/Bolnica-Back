@@ -63,8 +63,6 @@ class LaboratoryControllerIntegrationTest {
 
         g = builder.create();
 
-        // Jwt has to be used for all methods. For example:
-
         RestTemplate restTemplate = new RestTemplate();
         org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -73,11 +71,8 @@ class LaboratoryControllerIntegrationTest {
         personJsonObject.put("password", "superadmin");
         HttpEntity<String> entity = new HttpEntity<>(personJsonObject.toString(), headers);
         ResponseEntity<String> response = restTemplate.exchange("http://localhost:8081/api/login", HttpMethod.POST, entity, String.class);
-        jwt = Objects.requireNonNull(response.getBody()).replace("\"", "");
-        
-        /*
-         * --- CREATE TEST SCHEDULED LAB EXAMINATION ---
-         */
+        jwt = response.getBody().replace("\"", "");
+
         mockMvc.perform(post("/api/schedule-lab-examination")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                 .contentType(MediaType.APPLICATION_JSON)
