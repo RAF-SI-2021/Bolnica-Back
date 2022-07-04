@@ -362,7 +362,7 @@ class UserControllerIntegrationTest {
                         .contentType("application/json")
                         .content("{}")
                         .param("page", "1")
-                        .param("size", "5"));
+                        .param("size", "2"));
 
         String content = resultActions.andReturn().getResponse().getContentAsString();
 
@@ -403,22 +403,7 @@ class UserControllerIntegrationTest {
                         "    \"profession\": \"Spec. hirurg\",\n" +
                         "    \"department\": 1,\n" +
                         "    \"username\": \"zaposleni\"\n" +
-                        "},\n" +
-                        "{\n" +
-                        "    \"name\": \"string2\",\n" +
-                        "    \"surname\": \"string2\",\n" +
-                        "    \"dob\": 1650067200000,\n" +
-                        "    \"gender\": \"male\",\n" +
-                        "    \"jmbg\": \"string2\",\n" +
-                        "    \"address\": \"string2\",\n" +
-                        "    \"lbz\": \"" + lbz2 + "\",\n" +
-                        "    \"city\": \"string2\",\n" +
-                        "    \"contact\": \"string2\",\n" +
-                        "    \"email\": \"zaposleni2@ibis.rs\",\n" +
-                        "    \"title\": \"Prof. dr. med.\",\n" +
-                        "    \"profession\": \"Spec. hirurg\",\n" +
-                        "    \"department\": 3,\n" +
-                        "    \"username\": \"zaposleni2\"\n" +
+
                         "}\n" +
                         "]"));
     }
